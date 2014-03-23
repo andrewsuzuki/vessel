@@ -1,6 +1,8 @@
 <?php namespace Hokeo\Vessel;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Config;
+
 
 class VesselServiceProvider extends ServiceProvider {
 
@@ -19,6 +21,8 @@ class VesselServiceProvider extends ServiceProvider {
 	public function boot()
 	{
 		$this->package('hokeo/vessel');
+
+		include __DIR__.'/../../routes.php';
 	}
 
 	/**
@@ -28,7 +32,18 @@ class VesselServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		//
+		// $this->app->bind("Formativ\Cms\CompilerInterface", function() {
+		// 	return new Compiler\Blade(
+		// 		$this->app->make("files"),
+		// 		$this->app->make("path.storage") . "/views"
+		// 		);
+		// });
+
+		// $this->app->bind("Formativ\Cms\EngineInterface", "Formativ\Cms\Engine\Blade");
+
+		// $this->app->bind("Formativ\Cms\FilesystemInterface", function() {
+		// 	return new Filesystem(new Local($this->app->make("path.base") . "/app/views"));
+		// });
 	}
 
 	/**
