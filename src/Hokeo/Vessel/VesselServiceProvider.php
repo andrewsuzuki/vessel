@@ -3,7 +3,6 @@
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Config;
 
-
 class VesselServiceProvider extends ServiceProvider {
 
 	/**
@@ -32,17 +31,23 @@ class VesselServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		// $this->app->bind("Formativ\Cms\CompilerInterface", function() {
-		// 	return new Compiler\Blade(
-		// 		$this->app->make("files"),
-		// 		$this->app->make("path.storage") . "/views"
-		// 		);
-		// });
+		$this->app->bind('Hokeo\Vessel\CompilerInterface', function() {
+			return new Compiler\Blade(
+				$this->app->make('files'),
+				$this->app->make('path.storage') . '/views'
+				);
+		});
 
-		// $this->app->bind("Formativ\Cms\EngineInterface", "Formativ\Cms\Engine\Blade");
+		$this->app->bind('Hokeo\Vessel\EngineInterface', 'Hokeo\Vessel\Engine\Blade');
 
-		// $this->app->bind("Formativ\Cms\FilesystemInterface", function() {
-		// 	return new Filesystem(new Local($this->app->make("path.base") . "/app/views"));
+		$this->app->bind('Hokeo\Vessel\VesselInterface', function() {
+			return new Vessel;
+		});
+
+		$app = $this->app;
+
+		// $this->app->finish(function() use ($app) {
+		// 	echo 'hey';
 		// });
 	}
 
@@ -53,7 +58,10 @@ class VesselServiceProvider extends ServiceProvider {
 	 */
 	public function provides()
 	{
-		return array();
+		return [
+    		"Hokeo\Vessel\CompilerInterface",
+    		"Hokeo\Vessel\EngineInterface",
+    	];
 	}
 
 }

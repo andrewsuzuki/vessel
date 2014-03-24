@@ -1,6 +1,7 @@
 <?php namespace Hokeo\Vessel;
 
-class Vessel {
+interface VesselInterface {
 
-	
+	//
+
 }

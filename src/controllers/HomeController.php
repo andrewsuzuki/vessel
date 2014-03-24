@@ -2,13 +2,13 @@
 
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\View;
 
 class HomeController extends Controller {
 
 	public function getHome()
 	{
-		//dd(Config::get('vessel::vessel.uri'));
-		return 'Hey, this is Vessel home!';
+		return View::make('vessel::home');
 	}
 
 }
