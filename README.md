@@ -2,7 +2,7 @@
 
 Vessel is a simple, yet powerful file-based CMS (content management system). Written in PHP, built on Laravel.
 
-Currently 
+Currently being built; not ready for use.
 
 ### License
 
