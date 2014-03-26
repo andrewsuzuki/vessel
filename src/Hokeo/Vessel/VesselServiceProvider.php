@@ -2,6 +2,7 @@
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Session;
 
 class VesselServiceProvider extends ServiceProvider {
 
@@ -21,7 +22,16 @@ class VesselServiceProvider extends ServiceProvider {
 	{
 		$this->package('hokeo/vessel');
 
+		// Constant for easy determination of Laravel 4.1.x vs. 4.0.x
+		$this->app['hokeo.vessel.4.1'] = version_compare(\Illuminate\Foundation\Application::VERSION, '4.1') > -1;
+
+		include __DIR__.'/../../errors.php';
 		include __DIR__.'/../../routes.php';
+		include __DIR__.'/../../filters.php';
+		include __DIR__.'/../../macros.php';
+		include __DIR__.'/../../validators.php';
+		include __DIR__.'/../../events.php';
+		include __DIR__.'/../../composers.php';
 	}
 
 	/**
@@ -31,8 +41,8 @@ class VesselServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		$this->app->bind('Hokeo\Vessel\CompilerInterface', function() {
-			return new Compiler\Blade(
+		$this->app->bind('Hokeo\Vessel\FormatterInterface', function() {
+			return new Formatter\Blade(
 				$this->app->make('files'),
 				$this->app->make('path.storage') . '/views'
 				);
@@ -40,15 +50,15 @@ class VesselServiceProvider extends ServiceProvider {
 
 		$this->app->bind('Hokeo\Vessel\EngineInterface', 'Hokeo\Vessel\Engine\Blade');
 
-		$this->app->bind('Hokeo\Vessel\VesselInterface', function() {
-			return new Vessel;
-		});
+		$this->app->singleton('hokeo.vessel.vessel',    'Hokeo\\Vessel\\Vessel');
+		$this->app->singleton('hokeo.vessel.formatter', 'Hokeo\\Vessel\\Formatter');
+		$this->app->singleton('hokeo.vessel.asset',     'Hokeo\\Vessel\\Asset');
 
 		$app = $this->app;
 
-		// $this->app->finish(function() use ($app) {
-		// 	echo 'hey';
-		// });
+		$this->app->before(function() use ($app) {
+
+		});
 	}
 
 	/**
@@ -59,8 +69,10 @@ class VesselServiceProvider extends ServiceProvider {
 	public function provides()
 	{
 		return [
-    		"Hokeo\Vessel\CompilerInterface",
-    		"Hokeo\Vessel\EngineInterface",
+    		'Hokeo\Vessel\FormatterInterface',
+    		'Hokeo\Vessel\EngineInterface',
+    		'hokeo.vessel.vessel',
+    		'hokeo.vessel.formatter',
     	];
 	}
 

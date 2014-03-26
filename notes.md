@@ -18,7 +18,27 @@
 
 	Handles json ajax requests from ember (?) on client side of vessel admin.
 
+## Page Setup
 
+Record of page saved in db
+History of edits (with fields and raw content) saved in relation to page record
+Current content stored raw (as user typed it) in storage/content/pages
+Current content stored compiled (if markdown: markdown -> html) in storage/content/pages/compiled
+
+request:
+	1. get record from db
+	2. 	a) if it's a compiled format (like md), check storage/content/pages/compiled
+			if not there, then check ../, then compile and use
+		b) if it's not a comp. format, check storage/content/pages and use
+	
+	If not found in db, or not in storage/content/pages/compiled or ../, return 404.
+
+saving:
+	1. if editing and fields or content changed:
+		insert new history row with relation to page, with old fields, updated_at timestamp AS created_at, user_id, and raw content
+			if raw content isn't changing, set as NULL
+	2. save raw in storage/content/pages
+	3. compile if it's a compiled format (like md)
 
 ## Routes with notes
 

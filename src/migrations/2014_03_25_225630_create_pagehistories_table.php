@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePagesTable extends Migration {
+class CreatePagehistoriesTable extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -12,33 +12,27 @@ class CreatePagesTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('vessel_pages', function($table)
+		Schema::create('vessel_pagehistories', function($table)
 		{
 			$table->increments('id');
-			
-			$table->integer('edit')->nullable();
 
+			$table->integer('page_id')->unsigned();
+			$table->integer('edit')->nullable();
+			
 			$table->string('slug');
 			$table->string('title');
 			$table->text('description');
 
-			$table->integer('user_id'); // last updated user
+			$table->integer('user_id');
 			
-			// start baum
 			$table->integer('parent_id')->nullable();
-			$table->integer('lft')->nullable();
-			$table->integer('rgt')->nullable();
-			$table->integer('depth')->nullable();
 			$table->index('parent_id');
-			$table->index('lft');
-			$table->index('rgt');
-			// end baum
 
 			$table->string('formatter')->nullable();
 
-			$table->text('content');
+			$table->text('content')->nullable();
 
-			$table->timestamps();
+			$table->timestamp('created_at');
 		});
 	}
 
@@ -49,7 +43,7 @@ class CreatePagesTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('vessel_pages');
+		Schema::drop('vessel_pagehistories');
 	}
 
 }

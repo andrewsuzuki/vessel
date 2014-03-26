@@ -9,4 +9,11 @@ return array(
 	 */
 	'uri' => 'vessel',
 
+	/**
+	 * Default date format
+	 *
+	 * @type string
+	 */
+	'date_format' => 'M j, Y',
+
 );
