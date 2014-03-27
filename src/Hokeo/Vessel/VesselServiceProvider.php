@@ -25,7 +25,15 @@ class VesselServiceProvider extends ServiceProvider {
 		$this->package('hokeo/vessel', 'vessel', __DIR__.'/../../');
 
 		// Constant for easy determination of Laravel 4.1.x vs. 4.0.x
-		$this->app['vessel.4.1'] = version_compare(\Illuminate\Foundation\Application::VERSION, '4.1') > -1;
+		$this->app['vessel.laravel.4.1'] = version_compare(\Illuminate\Foundation\Application::VERSION, '4.1') > -1;
+
+		// Version
+		$this->app['vessel.version.major'] = '0';
+		$this->app['vessel.version.minor'] = '5';
+		$this->app['vessel.version.patch'] = '0';
+		$this->app['vessel.version.short'] = $this->app['vessel.version.major'].'.'.$this->app['vessel.version.minor'];
+		$this->app['vessel.version.full']  = $this->app['vessel.version.short'].'.'.$this->app['vessel.version.patch'];
+		$this->app['vessel.version']       = $this->app['vessel.version.full'];
 
 		$this->app->singleton('vessel.theme', 'Hokeo\\Vessel\\Theme');
 		$this->app->make('vessel.theme'); // construct

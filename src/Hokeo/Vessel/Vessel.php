@@ -1,5 +1,7 @@
 <?php namespace Hokeo\Vessel;
 
+use Illuminate\Support\Facades\App;
+
 class Vessel {
 
 	protected $storage_path;
@@ -11,7 +13,19 @@ class Vessel {
 		$this->storage_path = storage_path().'/vessel';
 		$this->checkStoragePath();
 	}
-	
+
+	/**
+	 * Gets vessel version or version component
+	 * 
+	 * @param  string $type full|short|major|minor|patch
+	 * @return string
+	 */
+	public function getVersion($type = 'full')
+	{
+		$available = array('full', 'short', 'major', 'minor', 'patch');
+		if (in_array($type, $available)) return (string) App::make('vessel.version.'.$type);
+	}
+
 	/**
 	 * Checks if all vessel storage directories exist, and makes them if not.
 	 */

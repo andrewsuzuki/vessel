@@ -24,6 +24,10 @@
 			margin-bottom: 30px;
 		}
 
+		footer {
+			margin-top: 25px;
+		}
+
 		.heading-top {
 			margin: 0 0 15px 0;
 		}
@@ -100,6 +104,12 @@
 			</div> 
 		</div>
 	</div>
+
+	<footer>
+		<div class="container">
+			<p>Vessel v{{ Hokeo\Vessel\VesselFacade::getVersion('full') }} &nbsp;&middot;&nbsp; <a href="//vesselcms.com">Home</a> &nbsp;&middot;&nbsp; <a href="//vesselcms.com/support">Support</a></p>
+		</div>
+	</footer>
 	
 	<script id="vessel-alert-template" type="text/x-handlebars-template">
 

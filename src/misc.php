@@ -2,7 +2,7 @@
 
 /*
 |--------------------------------------------------------------------------
-| Misc
+| Misc extensions, functions, helpers, etc
 |--------------------------------------------------------------------------
 */
 
@@ -14,14 +14,13 @@ Blade::extend(function($view, $compiler)
 	$pattern = $compiler->createMatcher('v');
 
 	return preg_replace_callback($pattern, function($replace) {
-		return $replace[1].'<?php v'.$replace[2].'; ?>';
+		if (substr($replace[2], 0, 1) == '(' && substr($replace[2], -1, 1) == ')')
+			return $replace[1].'<?php v'.$replace[2].'; ?>';
 	}, $view);
 });
 
 /**
- * Echos vr() (below)
- * 
- * @return string
+ * Echos vr() (see below)
  */
 function v()
 {

@@ -59,15 +59,29 @@
 							</div>
 						</div>
 						<div class="form-group">
+							{{ Form::label('visibility', 'Visibility', array('class' => 'col-sm-3 control-label')) }}
+							<div class="col-sm-5 col-md-6">
+								{{ Form::select('visibility', array('public' => 'Public', 'private' => 'Private'), null, array('class' => 'vessel-carry-field form-control input-sm')) }}
+							</div>
+							<div class="col-sm-4 col-md-3">
+								<div class="checkbox" style="padding-top:5px">
+									<label>
+										{{ Form::checkbox('menu', '1', true) }} Menu
+									</label>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
 							{{ Form::label('subtemplate', 'Template', array('class' => 'col-sm-3 control-label')) }}
 							<div class="col-sm-9">
 								{{ Form::select('subtemplate', array(), null, array('class' => 'vessel-carry-field form-control input-sm')) }}
 							</div>
 						</div>
-
 					</div>
 				</div>
 			</div>
+
+			<div class="clearfix mb-15"></div>
 
 			{{ Form::submit('Save', array('class' => 'btn btn-success mb-15')) }}
 			<a href="#" class="btn btn-info mb-15">Preview</a>
