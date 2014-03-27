@@ -186,11 +186,14 @@ class PageController extends Controller
 			return Redirect::back()->withInput();
 		}
 
-		$page->title = Input::get('title');
-		$page->slug = Input::get('slug');
+		$page->title       = Input::get('title');
+		$page->slug        = Input::get('slug');
 		$page->description = Input::get('description');
-		$page->formatter = Input::get('formatter');
-		$page->nest_url = Input::get('nest_url');
+		$page->formatter   = Input::get('formatter');
+		$page->nest_url    = (bool) Input::get('nest_url');
+		$page->visible     = (bool) Input::get('visible');
+		$page->in_menu     = (bool) Input::get('in_menu');
+
 		$page->user()->associate(Auth::user());
 		
 		$page->save();

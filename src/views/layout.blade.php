@@ -25,7 +25,7 @@
 		}
 
 		footer {
-			margin-top: 25px;
+			margin: 25px 0 15px;
 		}
 
 		.heading-top {
@@ -54,7 +54,7 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-				<a href="/" class="navbar-brand">Vessel</a>
+				{{ link_to_route('vessel', 'Vessel', null, array('class' => 'navbar-brand')) }}
 			</div>
 			<nav class="collapse navbar-collapse" role="navigation">
 				<ul class="nav navbar-nav">

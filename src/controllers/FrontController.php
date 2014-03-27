@@ -29,7 +29,7 @@ class FrontController extends Controller {
 		$main = Page::where('slug', end($hierarchy))->first();
 		reset($hierarchy);
 
-		if ($main)
+		if ($main && $main->visible)
 		{
 			$valid = true;
 
@@ -59,7 +59,14 @@ class FrontController extends Controller {
 			if ($valid)
 			{
 				ThemeFacade::setElement([
-					['page-title', function() use ($main) { return $main->title; }],
+					['page-title', function() use ($main) {
+						return $main->title;
+					}],
+
+					['menu', function($name, $attributes = array(), $active_class = 'active', $active_parent_class = 'active-parent') use ($main) {
+						return VesselFacade::getMenu($main, $attributes, $active_class, $active_parent_class);
+					}],
+
 					['content', $this->pageController->evalContent($main->id)],
 				]);
 

@@ -59,22 +59,22 @@
 							</div>
 						</div>
 						<div class="form-group">
-							{{ Form::label('visibility', 'Visibility', array('class' => 'col-sm-3 control-label')) }}
+							{{ Form::label('visible', 'Visibility', array('class' => 'col-sm-3 control-label')) }}
 							<div class="col-sm-5 col-md-6">
-								{{ Form::select('visibility', array('public' => 'Public', 'private' => 'Private'), null, array('class' => 'vessel-carry-field form-control input-sm')) }}
+								{{ Form::select('visible', array('1' => 'Public', '0' => 'Private'), null, array('class' => 'vessel-carry-field form-control input-sm')) }}
 							</div>
 							<div class="col-sm-4 col-md-3">
 								<div class="checkbox" style="padding-top:5px">
 									<label>
-										{{ Form::checkbox('menu', '1', true) }} Menu
+										{{ Form::checkbox('in_menu', '1', true) }} Menu
 									</label>
 								</div>
 							</div>
 						</div>
 						<div class="form-group">
-							{{ Form::label('subtemplate', 'Template', array('class' => 'col-sm-3 control-label')) }}
+							{{ Form::label('template', 'Template', array('class' => 'col-sm-3 control-label')) }}
 							<div class="col-sm-9">
-								{{ Form::select('subtemplate', array(), null, array('class' => 'vessel-carry-field form-control input-sm')) }}
+								{{ Form::select('template', array(), null, array('class' => 'vessel-carry-field form-control input-sm')) }}
 							</div>
 						</div>
 					</div>
@@ -87,7 +87,9 @@
 			<a href="#" class="btn btn-info mb-15">Preview</a>
 			@if ($mode == 'edit')
 			<a href="#" class="btn btn-danger mb-15">Delete</a>
+			@if ($page->visible)
 			<a href="{{ $page->url() }}" class="btn btn-default mb-15" target="_blank">View</a>
+			@endif
 			<a href="#" class="btn btn-default mb-15">Save As Draft</a>
 			{{ Form::button('Save As New', array('class' => 'btn btn-default mb-15', 'formaction' => URL::route('vessel.pages.new'), 'type' => 'submit', 'name' => 'duplicate', 'value' => 'true')) }}
 			@endif
