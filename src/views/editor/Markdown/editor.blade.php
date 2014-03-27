@@ -1,2 +1,3 @@
 
-{{ Form::textarea('content', null, array('class' => 'form-control input-monospaced')) }}
+<div id="epiceditor"></div>
+<textarea name="content" id="content" class="vessel-carry-field form-control input-monospaced hidden">{{ $content }}</textarea>

@@ -2,7 +2,9 @@
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Session;
+use League\Flysystem\Adapter\Local as FlyAdapter;
 
 class VesselServiceProvider extends ServiceProvider {
 
@@ -20,10 +22,13 @@ class VesselServiceProvider extends ServiceProvider {
 	 */
 	public function boot()
 	{
-		$this->package('hokeo/vessel');
+		$this->package('hokeo/vessel', 'vessel', __DIR__.'/../../');
 
 		// Constant for easy determination of Laravel 4.1.x vs. 4.0.x
-		$this->app['hokeo.vessel.4.1'] = version_compare(\Illuminate\Foundation\Application::VERSION, '4.1') > -1;
+		$this->app['vessel.4.1'] = version_compare(\Illuminate\Foundation\Application::VERSION, '4.1') > -1;
+
+		$this->app->singleton('vessel.theme', 'Hokeo\\Vessel\\Theme');
+		$this->app->make('vessel.theme'); // construct
 
 		include __DIR__.'/../../errors.php';
 		include __DIR__.'/../../routes.php';
@@ -32,6 +37,7 @@ class VesselServiceProvider extends ServiceProvider {
 		include __DIR__.'/../../validators.php';
 		include __DIR__.'/../../events.php';
 		include __DIR__.'/../../composers.php';
+		include __DIR__.'/../../misc.php';
 	}
 
 	/**
@@ -41,18 +47,16 @@ class VesselServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		$this->app->bind('Hokeo\Vessel\FormatterInterface', function() {
-			return new Formatter\Blade(
-				$this->app->make('files'),
-				$this->app->make('path.storage') . '/views'
-				);
+		$this->app->singleton('vessel.vessel',    'Hokeo\\Vessel\\Vessel');
+		$this->app->singleton('vessel.formatter', 'Hokeo\\Vessel\\Formatter');
+		$this->app->singleton('vessel.asset',     'Hokeo\\Vessel\\Asset');
+
+		$this->app->bind('Hokeo\Vessel\FilesystemInterface', function($app, array $params) {
+			if (!isset($params['path'])) $params['path'] = $this->app->make('vessel.vessel')->path('/');
+			return new Filesystem(new FlyAdapter($params['path']));
 		});
 
-		$this->app->bind('Hokeo\Vessel\EngineInterface', 'Hokeo\Vessel\Engine\Blade');
-
-		$this->app->singleton('hokeo.vessel.vessel',    'Hokeo\\Vessel\\Vessel');
-		$this->app->singleton('hokeo.vessel.formatter', 'Hokeo\\Vessel\\Formatter');
-		$this->app->singleton('hokeo.vessel.asset',     'Hokeo\\Vessel\\Asset');
+		$this->app->make('vessel.vessel'); // construct
 
 		$app = $this->app;
 
@@ -69,11 +73,12 @@ class VesselServiceProvider extends ServiceProvider {
 	public function provides()
 	{
 		return [
-    		'Hokeo\Vessel\FormatterInterface',
-    		'Hokeo\Vessel\EngineInterface',
-    		'hokeo.vessel.vessel',
-    		'hokeo.vessel.formatter',
-    	];
+			'vessel.vessel',
+			'vessel.formatter',
+			'vessel.asset',
+			'vessel.theme',
+			'Hokeo\Vessel\FilesystemInterface',
+		];
 	}
 
 }

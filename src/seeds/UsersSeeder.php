@@ -21,6 +21,7 @@ class UsersSeeder extends Seeder {
 					'last_login'=> Carbon\Carbon::now(),
 					'created_at'=> Carbon\Carbon::now(),
 					'updated_at'=> Carbon\Carbon::now(),
+					'preferred_formatter' => 'Markdown',
 					),
 				));
 	}

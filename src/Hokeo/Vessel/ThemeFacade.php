@@ -2,10 +2,10 @@
 
 use Illuminate\Support\Facades\Facade;
 
-class VesselFacade extends Facade {
+class ThemeFacade extends Facade {
 
 	protected static function getFacadeAccessor()
 	{
-		return 'vessel.vessel';
+		return 'vessel.theme';
 	}
 }

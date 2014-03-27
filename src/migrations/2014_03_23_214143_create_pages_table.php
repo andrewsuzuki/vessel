@@ -33,6 +33,8 @@ class CreatePagesTable extends Migration {
 			$table->index('lft');
 			$table->index('rgt');
 			// end baum
+			
+			$table->boolean('nest_url')->default(true);
 
 			$table->string('formatter')->nullable();
 

@@ -7,18 +7,25 @@ use Hokeo\Vessel\FormatterInterface;
 
 class Blade implements FormatterInterface
 {
-	public function useAssets()
+	public function getName()
 	{
-		//
+		return 'Blade';
 	}
 
-	public function getEditorHtml()
+	public function useAssets()	{}
+
+	public function getEditorHtml($content = null)
 	{
-		return View::make('vessel::editor.Blade.editor')->render();
+		return View::make('vessel::editor.Blade.editor')->with(compact('content'))->render();
+	}
+
+	public function isCompiled()
+	{
+		return false;
 	}
 
 	public function render($string)
 	{
-		return 'dis is blade compiled';
+		return $string;
 	}
 }

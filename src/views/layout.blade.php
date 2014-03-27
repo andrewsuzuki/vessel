@@ -24,7 +24,7 @@
 			margin-bottom: 30px;
 		}
 
-		#vessel-page-title {
+		.heading-top {
 			margin: 0 0 15px 0;
 		}
 
@@ -93,8 +93,8 @@
 					{{ Krucas\Notification\Facades\Notification::showAll() }}
 				</div>
 
-				{{ isset($title) ? '<h2 id="vessel-page-title">'.$title.'</h2>' : '' }}
-				
+				{{ isset($title) ? '<h2 id="vessel-page-title" class="heading-top">'.$title.'</h2>' : '' }}
+
 				@yield('content')
 
 			</div> 
@@ -127,7 +127,8 @@
 	@yield('templates')
 	
 	<!-- end other handlebars templates -->
-
+	
+	<script> var base_site_url = '{{ URL::to('/') }}'; var base_vessel_url = '{{ URL::route('vessel') }}'; </script>
 	<script type='text/javascript' src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script type='text/javascript' src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/js/bootstrap.min.js"></script>
 	<script type='text/javascript' src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.1.2/handlebars.min.js"></script>

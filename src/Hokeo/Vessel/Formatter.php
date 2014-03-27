@@ -49,7 +49,7 @@ class Formatter {
 				{
 					$formatters[] = $base;
 
-					\Illuminate\Support\Facades\App::bind('hokeo.vessel.formatters.'.$base, function($app) use ($class)
+					\Illuminate\Support\Facades\App::bind('vessel.formatters.'.$base, function($app) use ($class)
 					{
 						return new $class;
 					});
@@ -78,9 +78,9 @@ class Formatter {
 	 */
 	public function get($name)
 	{
-		if (in_array($name, $this->formatters))
+		if ($this->exists($name))
 		{
-			return \Illuminate\Support\Facades\App::make('hokeo.vessel.formatters.'.$name);
+			return \Illuminate\Support\Facades\App::make('vessel.formatters.'.$name);
 		}
 		else
 		{
@@ -95,7 +95,7 @@ class Formatter {
 	 */
 	public function set($name)
 	{
-		if (in_array($name, $this->formatters))
+		if ($this->exists($name))
 		{
 			$this->set_formatter_name = $name;
 		}
@@ -109,6 +109,17 @@ class Formatter {
 	public function is_set()
 	{
 		return true && $this->set_formatter_name;
+	}
+
+	/**
+	 * Checks if a formatter is available
+	 * 
+	 * @param  string $name
+	 * @return bool
+	 */
+	public function exists($name)
+	{
+		return in_array($name, $this->formatters);
 	}
 
 	/**
@@ -130,5 +141,21 @@ class Formatter {
 		{
 			$this->formatter()->useAssets();
 		}
+	}
+
+	public function selectArray()
+	{
+		return array_combine($this->getAll(), $this->getAll());
+	}
+
+	/**
+	 * Compiles string as blade (to php)
+	 * 
+	 * @param  string $string
+	 * @return string
+	 */
+	public function compileBlade($string)
+	{
+		return \Illuminate\Support\Facades\Blade::compileString($string);
 	}
 }

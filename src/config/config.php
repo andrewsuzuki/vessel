@@ -10,6 +10,13 @@ return array(
 	'uri' => 'vessel',
 
 	/**
+	 * Theme path
+	 *
+	 * @type string
+	 */
+	'theme_path' => app_path().'/themes',
+
+	/**
 	 * Default date format
 	 *
 	 * @type string

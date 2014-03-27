@@ -136,6 +136,30 @@ function showAlert(message, type, title) {
 
 $(document).ready(function() {
 
-	//
+	$(document).on('change', '.vessel-page-edit-form .vessel-select-formatter', function() {
+
+		var inputs = {};
+
+		$('.vessel-page-edit-form .vessel-carry-field').each(function() {
+			if (this.nodeName == 'INPUT' || this.nodeName == 'TEXTAREA' || this.nodeName == 'SELECT') {
+				name = $(this).attr('name');
+				if (name) {
+					if (!inputs.hasOwnProperty(name)) {
+						inputs[name] = $(this).val();
+					}
+				}
+			}
+		});
+
+		showAlert('Reloading...', 'info');
+
+		trip({
+			endpoint: '/vessel/api/flashinput',
+			data: inputs,
+			success: function(response) {
+				location.reload();
+			}
+		});
+	});
 
 });

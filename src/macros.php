@@ -1,6 +1,50 @@
 <?php
 
-// Form and HTML macros
+/*
+|--------------------------------------------------------------------------
+| Response, Form, and HTML macros
+|--------------------------------------------------------------------------
+*/
+
+// Response macros
+
+Response::macro('trip', function($send = array(), $message = null)
+{
+	if (is_bool($send))
+	{
+		$send = array('success' => $send);
+
+		if (is_string($message))
+		{
+			$send['message'] = $message;
+		}
+	}
+	elseif (!is_array($send))
+	{
+		$send = array('success' => true);
+	}
+	
+	if (!isset($send['success']))
+		$send['success'] = true;
+
+    $send['success'] = (bool) $send['success'];
+
+    if (!isset($send['message']) || !is_string($send['message']))
+		$send['message'] = '';
+
+	if ($send['success'] === false && $send['message'] == '')
+		$send['message'] = 'An unknown error occurred. Please try again.';
+	
+	if (!isset($send['data']) || !is_array($send['data']))
+		$send['data'] = array();
+
+	if (!isset($send['entities']) || !is_array($send['entities']))
+		$send['entities'] = array();
+
+	return Response::json($send);
+});
+
+// Form macros
 
 Form::macro('selectPageParent', function($name, $thispage = null, array $attributes = array())
 {
