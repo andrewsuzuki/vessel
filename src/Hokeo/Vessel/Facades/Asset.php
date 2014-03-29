@@ -1,8 +1,8 @@
-<?php namespace Hokeo\Vessel;
+<?php namespace Hokeo\Vessel\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class AssetFacade extends Facade {
+class Asset extends Facade {
 
 	protected static function getFacadeAccessor()
 	{

@@ -21,5 +21,5 @@ Validator::extend('pageParent', function($attribute, $value, $parameters)
 // Checks if formatter exists
 Validator::extend('formatter', function($attribute, $value, $parameters)
 {
-	return Hokeo\Vessel\FormatterFacade::exists($value);
+	return Hokeo\Vessel\Facades\Formatter::exists($value);
 });

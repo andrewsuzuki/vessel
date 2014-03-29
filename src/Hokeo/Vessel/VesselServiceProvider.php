@@ -56,6 +56,7 @@ class VesselServiceProvider extends ServiceProvider {
 	public function register()
 	{
 		$this->app->singleton('vessel.vessel',    'Hokeo\\Vessel\\Vessel');
+		$this->app->singleton('vessel.plugin',    'Hokeo\\Vessel\\Plugin');
 		$this->app->singleton('vessel.formatter', 'Hokeo\\Vessel\\Formatter');
 		$this->app->singleton('vessel.asset',     'Hokeo\\Vessel\\Asset');
 
@@ -69,7 +70,6 @@ class VesselServiceProvider extends ServiceProvider {
 		$app = $this->app;
 
 		$this->app->before(function() use ($app) {
-
 		});
 	}
 
@@ -82,6 +82,7 @@ class VesselServiceProvider extends ServiceProvider {
 	{
 		return [
 			'vessel.vessel',
+			'vessel.plugin',
 			'vessel.formatter',
 			'vessel.asset',
 			'vessel.theme',

@@ -4,7 +4,7 @@ namespace Hokeo\Vessel\Formatter;
 
 use Illuminate\Support\Facades\View;
 use Hokeo\Vessel\FormatterInterface;
-use Hokeo\Vessel\AssetFacade;
+use Hokeo\Vessel\Facades\Asset;
 
 class Markdown extends \cebe\markdown\Markdown implements FormatterInterface
 {
@@ -14,8 +14,8 @@ class Markdown extends \cebe\markdown\Markdown implements FormatterInterface
 
 	public function useAssets()
 	{
-		AssetFacade::js(asset('packages/hokeo/vessel/editor/Markdown/EpicEditor/js/epiceditor.min.js'), 'epic-editor');
-		AssetFacade::js(asset('packages/hokeo/vessel/editor/Markdown/EpicEditor/js/epiceditor-init.js'), 'epic-editor-init');
+		Asset::js(asset('packages/hokeo/vessel/editor/Markdown/EpicEditor/js/epiceditor.min.js'), 'epic-editor');
+		Asset::js(asset('packages/hokeo/vessel/editor/Markdown/EpicEditor/js/epiceditor-init.js'), 'epic-editor-init');
 	}
 
 	public function getEditorHtml($content = null)

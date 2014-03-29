@@ -1,10 +1,14 @@
 <?php namespace Hokeo\Vessel;
 
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Config;
+use Illuminate\Foundation\Application as App;
+use Illuminate\Config\Repository as Config;
 use Illuminate\Support\Facades\View;
 
 class Theme {
+
+	protected $config;
+
+	protected $app;
 
 	protected $filesystem;
 
@@ -14,10 +18,12 @@ class Theme {
 
 	protected $elements = array();
 
-	public function __construct()
+	public function __construct(Config $config, App $app)
 	{
-		$this->theme_path = Config::get('vessel::vessel.theme_path', app_path().'/themes');
-		$this->filesystem = App::make('Hokeo\Vessel\FilesystemInterface', array('path' => $this->theme_path));
+		$this->config      = $config;
+		$this->app         = $app;
+		$this->theme_path  = $this->config->get('vessel::vessel.theme_path', app_path().'/themes');
+		$this->filesystem  = $this->app->make('Hokeo\Vessel\FilesystemInterface', array('path' => $this->theme_path));
 		View::addNamespace('vessel-themes', $this->theme_path);
 	}
 
@@ -44,7 +50,7 @@ class Theme {
 				{
 					$formatters[] = $base;
 
-					\Illuminate\Support\Facades\App::bind('vessel.formatters.'.$base, function($app) use ($class)
+					$this->app->bind('vessel.formatters.'.$base, function($app) use ($class)
 					{
 						return new $class;
 					});

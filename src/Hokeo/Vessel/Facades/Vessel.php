@@ -1,11 +1,11 @@
-<?php namespace Hokeo\Vessel;
+<?php namespace Hokeo\Vessel\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class ThemeFacade extends Facade {
+class Vessel extends Facade {
 
 	protected static function getFacadeAccessor()
 	{
-		return 'vessel.theme';
+		return 'vessel.vessel';
 	}
 }

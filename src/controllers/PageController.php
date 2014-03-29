@@ -33,7 +33,7 @@ class PageController extends Controller
 		$page = new Page;
 		View::share('title', 'New Page');
 		$this->setPageFormatter($page);
-		$editor = FormatterFacade::formatter()->getEditorHtml();
+		$editor = Facades\Formatter::formatter()->getEditorHtml();
 		return View::make('vessel::pages_edit')->with(compact('page', 'mode', 'editor'));
 	}
 
@@ -54,7 +54,7 @@ class PageController extends Controller
 		View::share('title', 'Edit '.$page->title); // set view title
 		$this->setPageFormatter($page);
 		$content = $this->getContent($page->id, true);
-		$editor = FormatterFacade::formatter()->getEditorHtml($content); // get editor html
+		$editor = Facades\Formatter::formatter()->getEditorHtml($content); // get editor html
 
 		return View::make('vessel::pages_edit')->with(compact('page', 'mode', 'editor'));
 	}
@@ -73,33 +73,33 @@ class PageController extends Controller
 	public function setPageFormatter($page)
 	{
 		// try for a set formatter input
-		if (Input::get('formatter') && FormatterFacade::exists(Input::get('formatter')))
+		if (Input::get('formatter') && Facades\Formatter::exists(Input::get('formatter')))
 		{
-			FormatterFacade::set(Input::get('formatter'));
+			Facades\Formatter::set(Input::get('formatter'));
 			return 1;
 		}
 		// or try old input
-		elseif (Input::old('formatter') && FormatterFacade::exists(Input::old('formatter')))
+		elseif (Input::old('formatter') && Facades\Formatter::exists(Input::old('formatter')))
 		{
-			FormatterFacade::set(Input::old('formatter'));
+			Facades\Formatter::set(Input::old('formatter'));
 			return 2;
 		}
 		// or try set page setting
-		elseif ($page && $page->formatter && FormatterFacade::exists($page->formatter))
+		elseif ($page && $page->formatter && Facades\Formatter::exists($page->formatter))
 		{
-			FormatterFacade::set($page->formatter);
+			Facades\Formatter::set($page->formatter);
 			return 3;
 		}
 		// or try user preference
-		elseif (Auth::user()->preferred_formatter && FormatterFacade::exists(Auth::user()->preferred_formatter))
+		elseif (Auth::user()->preferred_formatter && Facades\Formatter::exists(Auth::user()->preferred_formatter))
 		{
-			FormatterFacade::set(Auth::user()->preferred_formatter);
+			Facades\Formatter::set(Auth::user()->preferred_formatter);
 			return 4;
 		}
 		// whoops, let's revert to Markdown
 		else
 		{
-			FormatterFacade::set('Markdown');
+			Facades\Formatter::set('Markdown');
 			return 5;
 		}
 
@@ -149,13 +149,13 @@ class PageController extends Controller
 		$this->filesystem->put('pages/'.$page_id.'.v', $content);
 
 		// save formatted and compiled content
-		if (FormatterFacade::exists($formatter))
+		if (Facades\Formatter::exists($formatter))
 		{
-			FormatterFacade::set($formatter);
-			$formatter = FormatterFacade::formatter();
+			Facades\Formatter::set($formatter);
+			$formatter = Facades\Formatter::formatter();
 
 			$formatted = $formatter->render($content);
-			$compiled = FormatterFacade::compileBlade($formatted);
+			$compiled = Facades\Formatter::compileBlade($formatted);
 
 			$this->filesystem->put('pages/compiled/'.$page_id.'.php', $compiled);
 		}

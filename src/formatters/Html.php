@@ -4,7 +4,7 @@ namespace Hokeo\Vessel\Formatter;
 
 use Illuminate\Support\Facades\View;
 use Hokeo\Vessel\FormatterInterface;
-use Hokeo\Vessel\AssetFacade;
+use Hokeo\Vessel\Facades\Asset;
 
 class Html implements FormatterInterface
 {
@@ -13,8 +13,8 @@ class Html implements FormatterInterface
 	public function isCompiled() { return false; }
 
 	public function useAssets()	{
-		AssetFacade::js('//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js', 'ace');
-		AssetFacade::js(asset('packages/hokeo/vessel/editor/Html/Ace/js/ace-init.js'), 'ace-init');
+		Asset::js('//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js', 'ace');
+		Asset::js(asset('packages/hokeo/vessel/editor/Html/Ace/js/ace-init.js'), 'ace-init');
 	}
 
 	public function getEditorHtml($content = null)

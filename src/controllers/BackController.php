@@ -15,6 +15,8 @@ class BackController extends Controller {
 
 	public function getHome()
 	{
+		Facades\Plugin::enable('helloworld');
+
 		return View::make('vessel::home');
 	}
 

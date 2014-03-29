@@ -19,7 +19,7 @@
 				</div>
 				<div class="col-md-2 col-sm-3">
 					<div class="form-group">
-						{{ Form::select('formatter', \Hokeo\Vessel\FormatterFacade::selectArray(), \Hokeo\Vessel\FormatterFacade::formatter()->getName(), array('class' => 'vessel-carry-field vessel-select-formatter form-control input-lg')) }}
+						{{ Form::select('formatter', \Hokeo\Vessel\Facades\Formatter::selectArray(), \Hokeo\Vessel\Facades\Formatter::formatter()->getName(), array('class' => 'vessel-carry-field vessel-select-formatter form-control input-lg')) }}
 					</div>
 				</div>
 			</div>

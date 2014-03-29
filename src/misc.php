@@ -28,11 +28,29 @@ function v()
 }
 
 /**
- * Alias or ThemeFacade::element()
+ * Alias or Facades\Theme::element()
  * 
  * @return string|null
  */
 function vr()
 {
-	return call_user_func_array(array('Hokeo\\Vessel\\ThemeFacade', 'element'), func_get_args());
+	return call_user_func_array(array('Hokeo\\Vessel\\Facades\\Theme', 'element'), func_get_args());
+}
+
+/**
+ * Alias or Facades\Plugin::hook()
+ */
+function hook()
+{
+	return call_user_func_array(array('Hokeo\\Vessel\\Facades\\Plugin', 'hook'), func_get_args());
+}
+
+/**
+ * Alias or Facades\Plugin::fire()
+ * 
+ * @return string|null
+ */
+function fire()
+{
+	return call_user_func_array(array('Hokeo\\Vessel\\Facades\\Plugin', 'fire'), func_get_args());
 }

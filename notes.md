@@ -40,6 +40,11 @@ saving:
 	2. save raw in storage/content/pages
 	3. compile if it's a compiled format (like md)
 
+## Plugins
+
+each plugin is a vendor/package directory in main plugins folder, must contain plugin.json with meta data
+must have a class that implements PluggableInterface, including an enable() and disable() function 
+
 ## Routes with notes
 
 pages

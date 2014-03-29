@@ -5,14 +5,16 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\View;
+use Menu\Menu;
 
 class FrontController extends Controller {
 
 	protected $pageController;
 
-	public function __construct(PageController $pageController)
+	public function __construct(PageController $pageController, Menu $menu)
 	{
 		$this->pageController = $pageController;
+		$this->menu = $menu;
 	}
 
 	/**
@@ -58,21 +60,61 @@ class FrontController extends Controller {
 			
 			if ($valid)
 			{
-				ThemeFacade::setElement([
+				$menu = $this->menu->handler('vessel.menu.front', array('class' => 'nav navbar-nav'));
+
+				$menu->add('/', 'Home')
+				->add('/about', 'About')
+				->add('#', 'More', $this->menu->items('more')
+					->add('/blog', 'Blog'));
+
+				// $menu->hydrate(function()
+				// {
+				// 	return Menu::where('type', '=', 'topmenu')
+				// 	->orderBy('order', 'asc')
+				// 	->get();
+				// },
+				// function($children, $item)
+				// {
+				// 	if($item->is_seperator)
+				// 	{
+				// 		$children->raw('')->onItem()->addClass('seperator');
+				// 	}
+				// 	else
+				// 	{
+				// 		$children->add($item->name, $item->content, Menu::items($item->name));
+				// 	}
+				// });
+
+				$this->menu->handler('vessel.menu.front')->getItemsAtDepth(0)->map(function($item)
+				{
+					if($item->hasChildren())
+					{
+						$item->addClass('dropdown');
+
+						$item->getChildren()
+						->addClass('dropdown-menu');
+
+						$item->getContent()
+						->addClass('dropdown-toggle')
+						->dataToggle('dropdown')
+						->nest(' <b class="caret"></b>');
+					}
+				});
+
+
+				Facades\Theme::setElement([
 					['page-title', function() use ($main) {
 						return $main->title;
 					}],
 
-					['menu', function($name, $attributes = array(), $active_class = 'active', $active_parent_class = 'active-parent') use ($main) {
-						return VesselFacade::getMenu($main, $attributes, $active_class, $active_parent_class);
+					['menu', function($call, $name) use ($main) {
+						return \Menu\Menu::handler('vessel.menu.'.$name)->render();
 					}],
 
 					['content', $this->pageController->evalContent($main->id)],
 				]);
 
 				return View::make('vessel-themes::suzuki.template');
-				// $compiler = App::make('vessel.blade.compiler');
-				// return $compiler->compileString(App::make('files')->get('vessel-themes::suzuki.template'));
 			}
 		}
 

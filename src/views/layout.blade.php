@@ -7,7 +7,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
 
-	{{ Hokeo\Vessel\AssetFacade::make('css') }}
+	{{ $css }}
 
 	<!--[if lt IE 9]>
 	<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -57,13 +57,8 @@
 				{{ link_to_route('vessel', 'Vessel', null, array('class' => 'navbar-brand')) }}
 			</div>
 			<nav class="collapse navbar-collapse" role="navigation">
-				<ul class="nav navbar-nav">
-					<li>{{ link_to_route('vessel.pages', 'Pages') }}</li>
-					<li><a href="#">Blocks</a></li>
-					<li><a href="#">Media</a></li>
-					<li><a href="#">Users</a></li>
-					<li><a href="#">Settings</a></li>
-				</ul>
+				{{ $mainmenu }}
+				
 				<ul class="nav navbar-nav navbar-right">
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ Auth::user()->username }} <b class="caret"></b></a>
@@ -93,11 +88,15 @@
 
 			</div> -->
 			<div class="col-lg-12">
-				<div id="vessel-alerts">
-					{{ Krucas\Notification\Facades\Notification::showAll() }}
+				<div id="vessel-notifications">
+					{{ $notifications }}
 				</div>
 
+				{{ fire('back.page-top') }}
+
 				{{ isset($title) ? '<h2 id="vessel-page-title" class="heading-top">'.$title.'</h2>' : '' }}
+
+				{{ fire('back.content-top') }}
 
 				@yield('content')
 
@@ -107,7 +106,7 @@
 
 	<footer>
 		<div class="container">
-			<p>Vessel v{{ Hokeo\Vessel\VesselFacade::getVersion('full') }} &nbsp;&middot;&nbsp; <a href="//vesselcms.com">Home</a> &nbsp;&middot;&nbsp; <a href="//vesselcms.com/support">Support</a></p>
+			<p>Vessel v{{ Hokeo\Vessel\Facades\Vessel::getVersion('full') }} &nbsp;&middot;&nbsp; <a href="//vesselcms.com">Home</a> &nbsp;&middot;&nbsp; <a href="//vesselcms.com/support">Support</a></p>
 		</div>
 	</footer>
 	
@@ -143,7 +142,7 @@
 	<script type='text/javascript' src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/js/bootstrap.min.js"></script>
 	<script type='text/javascript' src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.1.2/handlebars.min.js"></script>
 
-	{{ Hokeo\Vessel\AssetFacade::make('js') }}
+	{{ $js }}
 
 	<script type='text/javascript' src="<?php echo URL::asset('packages/hokeo/vessel/js/app.js') ?>"></script>
 

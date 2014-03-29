@@ -2,15 +2,22 @@
 
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\HTML;
+use Illuminate\Support\Facades\URL;
+use Menu\Menu;
 
 class Vessel {
 
+	protected $menu;
+
 	protected $storage_path;
+
+	protected $back_menu_built = false;
 
 	protected $dirs = array('/', '/pages', '/pages/compiled');
 
-	public function __construct()
+	public function __construct(Menu $menu)
 	{
+		$this->menu = $menu;
 		$this->storage_path = storage_path().'/vessel';
 		$this->checkStoragePath();
 	}
@@ -52,6 +59,38 @@ class Vessel {
 		if (in_array($path, $this->dirs))
 		{
 			return $this->storage_path.$path;
+		}
+	}
+
+	public function backMenu()
+	{
+		if (!$this->back_menu_built)
+		{
+			$menu = $this->menu->handler('vessel.menu.main', array('class' => 'nav navbar-nav'));
+			$menu->add(URL::route('vessel'), 'Home')
+			->add(URL::route('vessel.pages'), 'Pages')
+			->add('#', 'Blocks')
+			->add('#', 'Media')
+			->add('#', 'Users')
+			->add('#', 'Settings');
+
+			$this->menu->handler('vessel.menu.main')->getItemsAtDepth(0)->map(function($item)
+			{
+				if($item->hasChildren())
+				{
+					$item->addClass('dropdown');
+
+					$item->getChildren()
+					->addClass('dropdown-menu');
+
+					$item->getContent()
+					->addClass('dropdown-toggle')
+					->dataToggle('dropdown')
+					->nest(' <b class="caret"></b>');
+				}
+			});
+
+			$this->back_menu_built = true;
 		}
 	}
 
