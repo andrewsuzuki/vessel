@@ -2,7 +2,7 @@
 
 use Illuminate\Foundation\Application as App;
 use Illuminate\Config\Repository as Config;
-use Illuminate\Support\Facades\View;
+use Illuminate\View\Environment as View;
 
 class Theme {
 
@@ -18,13 +18,17 @@ class Theme {
 
 	protected $elements = array();
 
-	public function __construct(Config $config, App $app)
+	public function __construct(App $app, Config $config, View $view)
 	{
-		$this->config      = $config;
 		$this->app         = $app;
-		$this->theme_path  = $this->config->get('vessel::vessel.theme_path', app_path().'/themes');
+		$this->config      = $config;
+		$this->view        = $view;
+
+		$this->theme_path  = base_path().'/themes';
+
 		$this->filesystem  = $this->app->make('Hokeo\Vessel\FilesystemInterface', array('path' => $this->theme_path));
-		View::addNamespace('vessel-themes', $this->theme_path);
+
+		$this->view->addNamespace('vessel-themes', $this->theme_path);
 	}
 
 	/**

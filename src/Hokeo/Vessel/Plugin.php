@@ -22,12 +22,12 @@ class Plugin {
 
 	protected $hooks = array();
 
-	public function __construct(ClassLoader $classloader, Config $config, App $app)
+	public function __construct(App $app, Config $config, ClassLoader $classloader)
 	{
-		$this->classloader = $classloader;
-		$this->config      = $config;
 		$this->app         = $app;
-		$this->plugin_path = $this->config->get('vessel::vessel.plugin_path', app_path().'/plugins');
+		$this->config      = $config;
+		$this->classloader = $classloader;
+		$this->plugin_path = base_path().'/plugins';
 		$this->filesystem  = $this->app->make('Hokeo\Vessel\FilesystemInterface', array('path' => $this->plugin_path));
 	}
 

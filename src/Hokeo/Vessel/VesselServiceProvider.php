@@ -22,7 +22,7 @@ class VesselServiceProvider extends ServiceProvider {
 	 */
 	public function boot()
 	{
-		$this->package('hokeo/vessel', 'vessel', __DIR__.'/../../');
+		$this->package('hokeo/vessel', null, __DIR__.'/../..');
 
 		// Constant for easy determination of Laravel 4.1.x vs. 4.0.x
 		$this->app['vessel.laravel.4.1'] = version_compare(\Illuminate\Foundation\Application::VERSION, '4.1') > -1;
@@ -38,14 +38,19 @@ class VesselServiceProvider extends ServiceProvider {
 		$this->app->singleton('vessel.theme', 'Hokeo\\Vessel\\Theme');
 		$this->app->make('vessel.theme'); // construct
 
-		include __DIR__.'/../../errors.php';
-		include __DIR__.'/../../routes.php';
-		include __DIR__.'/../../filters.php';
-		include __DIR__.'/../../macros.php';
-		include __DIR__.'/../../validators.php';
-		include __DIR__.'/../../events.php';
-		include __DIR__.'/../../composers.php';
-		include __DIR__.'/../../misc.php';
+		// clone Philf/Setting and configure
+		$this->app['vessel.setting'] = $this->app->make('setting');
+		$this->app['vessel.setting']->path($this->app['vessel.vessel']->path('/'));
+		$this->app['vessel.setting']->filename('settings.json');
+
+		include __DIR__.'/../../errors.php'; // errors
+		include __DIR__.'/../../routes.php'; // routes
+		include __DIR__.'/../../filters.php'; // filters
+		include __DIR__.'/../../macros.php'; // html/form macros
+		include __DIR__.'/../../validators.php'; // validators
+		include __DIR__.'/../../events.php'; // events
+		include __DIR__.'/../../composers.php'; // composer and creators
+		include __DIR__.'/../../misc.php'; // blade extensions, helper functions, etc
 	}
 
 	/**
@@ -55,6 +60,21 @@ class VesselServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
+		// Register dependencies
+		$dependent_provides = [
+			'Krucas\Notification\NotificationServiceProvider',
+			'Philf\Setting\SettingServiceProvider',
+			'Zizaco\Entrust\EntrustServiceProvider',
+			'Menu\MenuServiceProvider',
+		];
+
+		foreach ($dependent_provides as $provider)
+		{
+			if (!class_exists($provider)) throw new \Exception('Vessel dependency '.$provider.' was not found.');
+			$this->app->register($provider);
+		}
+
+		// IoC Bindings
 		$this->app->singleton('vessel.vessel',    'Hokeo\\Vessel\\Vessel');
 		$this->app->singleton('vessel.plugin',    'Hokeo\\Vessel\\Plugin');
 		$this->app->singleton('vessel.formatter', 'Hokeo\\Vessel\\Formatter');
@@ -81,6 +101,7 @@ class VesselServiceProvider extends ServiceProvider {
 	public function provides()
 	{
 		return [
+			'vessel.setting',
 			'vessel.vessel',
 			'vessel.plugin',
 			'vessel.formatter',
