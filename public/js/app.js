@@ -134,6 +134,12 @@ function showAlert(message, type, title) {
 	$('#vessel-alert').modal();
 }
 
+function refreshAutoslugs() {
+	$('[data-slugto]').each(function() {
+		$($(this).data('slugto')).slugify(this);
+	});
+}
+
 $(document).ready(function() {
 
 	$(document).on('change', '.vessel-page-edit-form .vessel-select-formatter', function() {
@@ -162,4 +168,7 @@ $(document).ready(function() {
 		});
 	});
 
+	// autoslugs
+	
+	refreshAutoslugs();
 });

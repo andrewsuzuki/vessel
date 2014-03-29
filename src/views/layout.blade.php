@@ -141,6 +141,7 @@
 	<script type='text/javascript' src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script type='text/javascript' src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/js/bootstrap.min.js"></script>
 	<script type='text/javascript' src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.1.2/handlebars.min.js"></script>
+	<script type='text/javascript' src="{{ asset('packages/hokeo/vessel/js/jquery.slugify.js') }}"></script>
 
 	{{ $js }}
 

@@ -8,7 +8,7 @@ Currently being built; not ready for use.
 
 Todo, roughly in order:
 
-* JS auto-slugs
+* ~~JS auto-slugs~~
 * Menu builder
 * Page sub-templates
 * Page edit history

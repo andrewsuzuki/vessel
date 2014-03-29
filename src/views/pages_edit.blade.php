@@ -14,7 +14,7 @@
 			<div class="row">
 				<div class="col-md-10 col-sm-9">
 					<div class="form-group">
-						{{ Form::text('title', null, array('class' => 'vessel-carry-field form-control input-lg', 'placeholder' => 'Title')) }}
+						{{ Form::text('title', null, array('class' => 'vessel-carry-field form-control input-lg', 'data-slugto' => '#slug', 'placeholder' => 'Title')) }}
 					</div>
 				</div>
 				<div class="col-md-2 col-sm-3">

@@ -68,10 +68,10 @@ class Plugin {
 					}
 
 					if (is_array($json) &&
-						isset($json['name']) &&
-						isset($json['class']) &&
-						isset($json['title']) &&
-						isset($json['author']) &&
+						isset($json['name']) && strlen($json['name']) &&
+						isset($json['class']) && strlen($json['class']) &&
+						isset($json['title']) && strlen($json['title']) &&
+						isset($json['author']) && strlen($json['author']) &&
 						$json['name'] == $plugin['basename']
 						)
 					{
