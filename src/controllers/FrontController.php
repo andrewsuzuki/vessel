@@ -9,11 +9,11 @@ use Menu\Menu;
 
 class FrontController extends Controller {
 
-	protected $pageController;
+	protected $pagehelper;
 
-	public function __construct(PageController $pageController, Menu $menu)
+	public function __construct(PageHelper $pagehelper, Menu $menu)
 	{
-		$this->pageController = $pageController;
+		$this->pagehelper = $pagehelper;
 		$this->menu = $menu;
 	}
 
@@ -111,7 +111,7 @@ class FrontController extends Controller {
 						return \Menu\Menu::handler('vessel.menu.'.$name)->render();
 					}],
 
-					['content', $this->pageController->evalContent($main->id)],
+					['content', $this->pagehelper->evalContent($main->id)],
 				]);
 
 				return View::make('vessel-themes::suzuki.template');

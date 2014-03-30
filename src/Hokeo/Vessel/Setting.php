@@ -1,5 +1,6 @@
 <?php namespace Hokeo\Vessel;
 
+use Hokeo\Vessel\Vessel;
 use Philf\Setting\Setting as PSetting;
 
 class Setting extends PSetting {

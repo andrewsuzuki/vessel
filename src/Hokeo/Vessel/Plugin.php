@@ -1,8 +1,9 @@
 <?php namespace Hokeo\Vessel;
 
-use Illuminate\Foundation\Application as App;
-use Illuminate\Config\Repository as Config;
+use Illuminate\Foundation\Application;
+use Illuminate\Config\Repository;
 use Illuminate\Support\ClassLoader;
+use Illuminate\Filesystem\Filesystem;
 use Hokeo\Vessel\Setting;
 
 class Plugin {
@@ -13,9 +14,9 @@ class Plugin {
 
 	protected $classloader;
 
-	protected $setting;
-
 	protected $filesystem;
+
+	protected $setting;
 
 	protected $available = null;
 
@@ -25,14 +26,15 @@ class Plugin {
 
 	protected $hooks = array();
 
-	public function __construct(App $app, Config $config, ClassLoader $classloader, Setting $setting)
+	public function __construct(Application $app, Repository $config, ClassLoader $classloader, Filesystem $filesystem, Setting $setting)
 	{
-		$this->app         = $app;
-		$this->config      = $config;
-		$this->classloader = $classloader;
-		$this->setting     = $setting;
-		$this->plugin_path = base_path().'/plugins';
-		$this->filesystem  = $this->app->make('Hokeo\Vessel\FilesystemInterface', array('path' => $this->plugin_path));
+		$this->app          = $app;
+		$this->config       = $config;
+		$this->classloader  = $classloader;
+		$this->filesystem   = $filesystem;
+		$this->setting      = $setting;
+		$this->plugins_path = base_path().'/plugins';
+		$this->filesystem   = $filesystem;
 	}
 
 	/**
@@ -42,7 +44,7 @@ class Plugin {
 	 */
 	public function getBasePath()
 	{
-		return $this->plugin_path;
+		return $this->plugins_path;
 	}
 
 	/**
@@ -52,12 +54,13 @@ class Plugin {
 	 */
 	public function getAvailable($save = false)
 	{
-		$vendors = $this->filesystem->listContents('/');
+		$vendors = $this->filesystem->directories($this->plugins_path);
 
 		$available = array();
 
 		foreach ($vendors as $vendor)
 		{
+			//dd($vendor);
 			if ($vendor['type'] == 'dir')
 			{
 				$plugins = $this->filesystem->listContents('/'.$vendor['path']);
@@ -68,10 +71,10 @@ class Plugin {
 					{
 						if ($this->filesystem->has('/'.$plugin['path'].'/plugin.php'))
 						{
-							$this->classloader->addDirectories(array($this->plugin_path));
+							$this->classloader->addDirectories(array($this->plugins_path));
 
 							// include plugin info file
-							$info = @include $this->plugin_path.DIRECTORY_SEPARATOR.$plugin['path'].DIRECTORY_SEPARATOR.'plugin.php';
+							$info = @include $this->plugins_path.DIRECTORY_SEPARATOR.$plugin['path'].DIRECTORY_SEPARATOR.'plugin.php';
 
 							// validate plugin info
 							if (is_array($info) &&
@@ -141,7 +144,7 @@ class Plugin {
 		if (isset($this->available[$name]))
 		{
 			// autoload plugins
-			$this->classloader->addDirectories(array($this->plugin_path));
+			$this->classloader->addDirectories(array($this->plugins_path));
 
 			// register service provider if it's good
 			if (class_exists($this->available[$name]['pluggable']) && get_parent_class($this->available[$name]['pluggable']) == 'Hokeo\\Vessel\\Pluggable')

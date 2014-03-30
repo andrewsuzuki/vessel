@@ -4,7 +4,9 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Session;
-use League\Flysystem\Adapter\Local as FlyAdapter;
+use Illuminate\Html\HtmlBuilder;
+use Menu\Menu;
+use Illuminate\Support\ClassLoader;
 
 class VesselServiceProvider extends ServiceProvider {
 
@@ -75,19 +77,51 @@ class VesselServiceProvider extends ServiceProvider {
 		}
 
 		// IoC Bindings
-		$this->app->singleton('vessel.vessel',    'Hokeo\\Vessel\\Vessel');
-		$this->app->singleton('vessel.setting',   'Hokeo\\Vessel\\Setting');
-		$this->app->singleton('vessel.plugin',    'Hokeo\\Vessel\\Plugin');
-		$this->app->singleton('vessel.formatter', 'Hokeo\\Vessel\\Formatter');
-		$this->app->singleton('vessel.asset',     'Hokeo\\Vessel\\Asset');
+		// // 
+		// $this->app->singleton('vessel.vessel',    'Hokeo\\Vessel\\Vessel');
+		// $this->app->singleton('vessel.setting',   'Hokeo\\Vessel\\Setting');
+		// $this->app->singleton('vessel.plugin',    'Hokeo\\Vessel\\Plugin');
+		// $this->app->singleton('vessel.formatter', 'Hokeo\\Vessel\\Formatter');
+		// $this->app->singleton('vessel.asset',     'Hokeo\\Vessel\\Asset');
+		// $this->app->singleton('vessel.pagehelper','Hokeo\\Vessel\\PageHelper');
+		
+		$this->app->bindShared('vessel.vessel', function($app) {
+			return new Vessel($app['app'], new HtmlBuilder, $app['url'], new Menu);
+		});
 
-		$this->app->bind('Hokeo\Vessel\FilesystemInterface', function($app, array $params) {
-			if (!isset($params['path'])) $params['path'] = $this->app->make('vessel.vessel')->path('/');
-			return new Filesystem(new FlyAdapter($params['path']));
+		$this->app->bindShared('vessel.setting', function($app) {
+			return new Setting($app['vessel.vessel']);
+		});
+
+		$this->app->bindShared('vessel.plugin', function($app) {
+			return new Plugin($app['app'], $app['config'], new ClassLoader, $app['files'], $app['vessel.setting']);
+		});
+
+		$this->app->bindShared('vessel.formatter', function($app) {
+			echo 'FORMATTER CREATED';
+			return new Formatter($app['app'], $app['blade.compiler']);
+		});
+
+		$this->app->bindShared('vessel.asset', function($app) {
+			return new Asset();
+		});
+
+		$this->app->bindShared('vessel.pagehelper', function($app) {
+			echo 'PAGEHELPER CREATED';
+			return new PageHelper(
+				$app['vessel.vessel'],
+				$app['vessel.formatter'],
+				$app['files'],
+				$app['request'],
+				$app['redirect'],
+				$app['auth'],
+				$app['validator'],
+				$app['notification']
+				);
 		});
 
 		$this->app->make('vessel.vessel'); // construct
-
+		// exit;
 		// $this->app['vessel.plugin']->getAvailable(true); // enable all plugins
 		$this->app['vessel.plugin']->enableAll(); // enable all plugins
 
@@ -111,7 +145,6 @@ class VesselServiceProvider extends ServiceProvider {
 			'vessel.formatter',
 			'vessel.asset',
 			'vessel.theme',
-			'Hokeo\Vessel\FilesystemInterface',
 		];
 	}
 

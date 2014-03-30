@@ -1,11 +1,17 @@
 <?php namespace Hokeo\Vessel;
 
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\HTML;
-use Illuminate\Support\Facades\URL;
+use Illuminate\Foundation\Application;
+use Illuminate\Html\HtmlBuilder;
+use Illuminate\Routing\UrlGenerator;
 use Menu\Menu;
 
 class Vessel {
+
+	protected $app;
+
+	protected $html;
+
+	protected $url;
 
 	protected $menu;
 
@@ -15,9 +21,13 @@ class Vessel {
 
 	protected $dirs = array('/', '/pages', '/pages/compiled');
 
-	public function __construct(Menu $menu)
+	public function __construct(Application $app, HtmlBuilder $html, UrlGenerator $url, Menu $menu)
 	{
+		$this->app  = $app;
+		$this->html = $html;
+		$this->url  = $url;
 		$this->menu = $menu;
+
 		$this->storage_path = storage_path().'/vessel';
 		$this->checkStoragePath();
 	}
@@ -31,7 +41,7 @@ class Vessel {
 	public function getVersion($type = 'full')
 	{
 		$available = array('full', 'short', 'major', 'minor', 'patch');
-		if (in_array($type, $available)) return (string) App::make('vessel.version.'.$type);
+		if (in_array($type, $available)) return (string) $this->app->make('vessel.version.'.$type);
 	}
 
 	/**
@@ -54,7 +64,7 @@ class Vessel {
 	 * @param  string $path
 	 * @return string
 	 */
-	public function path($path)
+	public function path($path = '')
 	{
 		if (in_array($path, $this->dirs))
 		{
@@ -67,8 +77,8 @@ class Vessel {
 		if (!$this->back_menu_built)
 		{
 			$menu = $this->menu->handler('vessel.menu.main', array('class' => 'nav navbar-nav'));
-			$menu->add(URL::route('vessel'), 'Home')
-			->add(URL::route('vessel.pages'), 'Pages')
+			$menu->add($this->url->route('vessel'), 'Home')
+			->add($this->url->route('vessel.pages'), 'Pages')
 			->add('#', 'Blocks')
 			->add('#', 'Media')
 			->add('#', 'Users')
@@ -116,7 +126,7 @@ class Vessel {
 		foreach ($pages as $page)
 		{
 			// li tag with targeted attributes
-			$html .= '<li '.HTML::attributes($this->nestedAttributes($attributes, 'li', $page->getLevel(), $page->id, $page->slug));
+			$html .= '<li '.$this->html->attributes($this->nestedAttributes($attributes, 'li', $page->getLevel(), $page->id, $page->slug));
 
 			// a tag targeted attributes
 			$link_attributes = $this->nestedAttributes($attributes, 'a', $page->getLevel(), $page->id, $page->slug);
@@ -138,7 +148,7 @@ class Vessel {
 			}
 
 			// build a link tag with attributes
-			$link = '<a href="'.$page->url().'" '.HTML::attributes($link_attributes);
+			$link = '<a href="'.$page->url().'" '.$this->html->attributes($link_attributes);
 
 			$sub = '';
 
@@ -146,14 +156,14 @@ class Vessel {
 			if (!$page->children()->get()->isEmpty())
 			{
 				// add li:has-children attributes
-				$html .= ' '.HTML::attributes($this->nestedAttributes($attributes, 'li:has-children', $page->getLevel(), $page->id, $page->slug));
+				$html .= ' '.$this->html->attributes($this->nestedAttributes($attributes, 'li:has-children', $page->getLevel(), $page->id, $page->slug));
 
 				// add a:has-children attributes
 				$link_haschildren_attributes = $this->nestedAttributes($attributes, 'a:has-children', $page->getLevel(), $page->id, $page->slug);
-				$link .= ' '.HTML::attributes($link_haschildren_attributes);
+				$link .= ' '.$this->html->attributes($link_haschildren_attributes);
 
 				// let's go recursive and build a sub-menu
-				$sub .= '<ul '.HTML::attributes($this->nestedAttributes($attributes, 'ul', $page->getLevel(), $page->id, $page->slug)).'>';
+				$sub .= '<ul '.$this->html->attributes($this->nestedAttributes($attributes, 'ul', $page->getLevel(), $page->id, $page->slug)).'>';
 				$sub .= $this->getMenu($active, $attributes, $active_class, $active_parent_class, $page);
 				$sub .= '</ul>';
 			}

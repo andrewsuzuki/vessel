@@ -1,13 +1,23 @@
 <?php namespace Hokeo\Vessel;
 
+use Illuminate\Foundation\Application;
+use Illuminate\View\Compilers\BladeCompiler;
+
 class Formatter {
+
+	protected $app;
+
+	protected $blade;
 
 	protected $formatters = array();
 
 	protected $set_formatter_name = null;
 
-	public function __construct()
+	public function __construct(Application $app, BladeCompiler $blade)
 	{
+		$this->app = $app;
+		$this->blade = $blade;
+
 		$this->formatters = $this->getAvailable();
 	}
 
@@ -49,7 +59,7 @@ class Formatter {
 				{
 					$formatters[] = $base;
 
-					\Illuminate\Support\Facades\App::bind('vessel.formatters.'.$base, function($app) use ($class)
+					$this->app->bind('vessel.formatters.'.$base, function($app) use ($class)
 					{
 						return new $class;
 					});
@@ -80,7 +90,7 @@ class Formatter {
 	{
 		if ($this->exists($name))
 		{
-			return \Illuminate\Support\Facades\App::make('vessel.formatters.'.$name);
+			return $this->app->make('vessel.formatters.'.$name);
 		}
 		else
 		{
@@ -156,6 +166,6 @@ class Formatter {
 	 */
 	public function compileBlade($string)
 	{
-		return \Illuminate\Support\Facades\Blade::compileString($string);
+		return $this->blade->compileString($string);
 	}
 }
