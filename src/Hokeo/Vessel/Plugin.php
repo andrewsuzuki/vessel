@@ -60,41 +60,34 @@ class Plugin {
 
 		foreach ($vendors as $vendor)
 		{
-			//dd($vendor);
-			if ($vendor['type'] == 'dir')
+			$plugins = $this->filesystem->directories($vendor);
+
+			foreach ($plugins as $plugin)
 			{
-				$plugins = $this->filesystem->listContents('/'.$vendor['path']);
-
-				foreach ($plugins as $plugin)
+				if ($this->filesystem->exists($plugin.DIRECTORY_SEPARATOR.'plugin.php'))
 				{
-					if ($plugin['type'] == 'dir')
+					$this->classloader->addDirectories(array($this->plugins_path));
+
+					// include plugin info file
+					$info = @include $plugin.DIRECTORY_SEPARATOR.'plugin.php';
+
+					// validate plugin info
+					if (is_array($info) &&
+						isset($info['name']) && strlen($info['name']) &&
+						isset($info['pluggable']) && strlen($info['pluggable']) &&
+						isset($info['title']) && strlen($info['title']) &&
+						isset($info['author']) && strlen($info['author']) &&
+						$info['name'] == basename(dirname($plugin)).'/'.basename($plugin)
+						)
 					{
-						if ($this->filesystem->has('/'.$plugin['path'].'/plugin.php'))
+						// load pluggable (plugin)
+						$this->classloader->load($info['pluggable']);
+
+						// validate pluggable
+						if (class_exists($info['pluggable']) && get_parent_class($info['pluggable']) == 'Hokeo\\Vessel\\Pluggable')
 						{
-							$this->classloader->addDirectories(array($this->plugins_path));
-
-							// include plugin info file
-							$info = @include $this->plugins_path.DIRECTORY_SEPARATOR.$plugin['path'].DIRECTORY_SEPARATOR.'plugin.php';
-
-							// validate plugin info
-							if (is_array($info) &&
-								isset($info['name']) && strlen($info['name']) &&
-								isset($info['pluggable']) && strlen($info['pluggable']) &&
-								isset($info['title']) && strlen($info['title']) &&
-								isset($info['author']) && strlen($info['author']) &&
-								$info['name'] == $plugin['path']
-								)
-							{
-								// load pluggable (plugin)
-								$this->classloader->load($info['pluggable']);
-
-								// validate pluggable
-								if (class_exists($info['pluggable']) && get_parent_class($info['pluggable']) == 'Hokeo\\Vessel\\Pluggable')
-								{
-									// add to available
-									$available[$info['name']] = $info;
-								}
-							}
+							// add to available
+							$available[$info['name']] = $info;
 						}
 					}
 				}

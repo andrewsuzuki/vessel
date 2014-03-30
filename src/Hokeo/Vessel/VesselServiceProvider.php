@@ -69,14 +69,7 @@ class VesselServiceProvider extends ServiceProvider {
 		}
 
 		// IoC Bindings
-		// // 
-		// $this->app->singleton('vessel.vessel',    'Hokeo\\Vessel\\Vessel');
-		// $this->app->singleton('vessel.setting',   'Hokeo\\Vessel\\Setting');
-		// $this->app->singleton('vessel.plugin',    'Hokeo\\Vessel\\Plugin');
-		// $this->app->singleton('vessel.formatter', 'Hokeo\\Vessel\\Formatter');
-		// $this->app->singleton('vessel.asset',     'Hokeo\\Vessel\\Asset');
-		// $this->app->singleton('vessel.pagehelper','Hokeo\\Vessel\\PageHelper');
-		
+				
 		$this->app->bindShared('Hokeo\\Vessel\\Vessel', function($app) {
 			return new Vessel($app['app'], new HtmlBuilder, $app['url'], new Menu);
 		});
@@ -114,9 +107,9 @@ class VesselServiceProvider extends ServiceProvider {
 			return new Theme($app['app'], $app['config'], $app['view'], $app['files']);
 		});
 
+
 		$this->app->make('Hokeo\\Vessel\\Vessel'); // construct
-		// exit;
-		// $this->app['vessel.plugin']->getAvailable(true); // enable all plugins
+
 		$this->app['Hokeo\\Vessel\\Plugin']->enableAll(); // enable all plugins
 
 		$app = $this->app;
@@ -139,7 +132,7 @@ class VesselServiceProvider extends ServiceProvider {
 			'Hokeo\\Vessel\\Formatter',
 			'Hokeo\\Vessel\\Asset',
 			'Hokeo\\Vessel\\PageHelper',
-			'Hokeo\\Vessel\\Plugin',
+			'Hokeo\\Vessel\\Theme',
 		];
 	}
 
