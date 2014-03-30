@@ -1,6 +1,5 @@
 <?php namespace Hokeo\Vessel;
 
-// use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\URL;
 use Baum\Node;
 
@@ -16,12 +15,12 @@ class Page extends Node {
 
 	public function history()
 	{
-		return $this->hasMany('Hokeo\Vessel\Pagehistory', 'vessel_pagehistories');
+		return $this->hasMany('Hokeo\\Vessel\\Pagehistory', 'vessel_pagehistories');
 	}
 
 	public function user()
 	{
-		return $this->belongsTo('Hokeo\Vessel\User');
+		return $this->belongsTo('Hokeo\\Vessel\\User');
 	}
 
 	// Scopes

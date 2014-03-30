@@ -37,14 +37,6 @@ class VesselServiceProvider extends ServiceProvider {
 		$this->app['vessel.version.full']  = $this->app['vessel.version.short'].'.'.$this->app['vessel.version.patch'];
 		$this->app['vessel.version']       = $this->app['vessel.version.full'];
 
-		$this->app->singleton('Hokeo\\Vessel\\Theme', 'Hokeo\\Vessel\\Theme');
-		$this->app->make('Hokeo\\Vessel\\Theme'); // construct
-
-		// clone Philf/Setting and configure
-		// $this->app['vessel.setting'] = $this->app->make('setting');
-		// $this->app['vessel.setting']->path($this->app['vessel.vessel']->path('/'));
-		// $this->app['vessel.setting']->filename('settings.json');
-
 		include __DIR__.'/../../errors.php'; // errors
 		include __DIR__.'/../../routes.php'; // routes
 		include __DIR__.'/../../filters.php'; // filters
@@ -116,6 +108,10 @@ class VesselServiceProvider extends ServiceProvider {
 				$app['validator'],
 				$app['notification']
 				);
+		});
+
+		$this->app->bindShared('Hokeo\\Vessel\\Theme', function($app) {
+			return new Theme($app['app'], $app['config'], $app['view'], $app['files']);
 		});
 
 		$this->app->make('Hokeo\\Vessel\\Vessel'); // construct

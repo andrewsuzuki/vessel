@@ -1,20 +1,29 @@
 <?php namespace Hokeo\Vessel;
 
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\View;
+use Illuminate\Foundation\Application;
+use Illuminate\View\Environment;
 use Menu\Menu;
 
 class FrontController extends Controller {
 
+	protected $app;
+
+	protected $view;
+
 	protected $pagehelper;
 
-	public function __construct(PageHelper $pagehelper, Menu $menu)
+	protected $menu;
+
+	protected $theme;
+
+	public function __construct(Application $app, Environment $view, PageHelper $pagehelper, Menu $menu, Theme $theme)
 	{
+		$this->app        = $app;
+		$this->view       = $view;
 		$this->pagehelper = $pagehelper;
-		$this->menu = $menu;
+		$this->menu       = $menu;
+		$this->theme      = $theme;
 	}
 
 	/**
@@ -67,24 +76,6 @@ class FrontController extends Controller {
 				->add('#', 'More', $this->menu->items('more')
 					->add('/blog', 'Blog'));
 
-				// $menu->hydrate(function()
-				// {
-				// 	return Menu::where('type', '=', 'topmenu')
-				// 	->orderBy('order', 'asc')
-				// 	->get();
-				// },
-				// function($children, $item)
-				// {
-				// 	if($item->is_seperator)
-				// 	{
-				// 		$children->raw('')->onItem()->addClass('seperator');
-				// 	}
-				// 	else
-				// 	{
-				// 		$children->add($item->name, $item->content, Menu::items($item->name));
-				// 	}
-				// });
-
 				$this->menu->handler('vessel.menu.front')->getItemsAtDepth(0)->map(function($item)
 				{
 					if($item->hasChildren())
@@ -101,24 +92,23 @@ class FrontController extends Controller {
 					}
 				});
 
-
-				Facades\Theme::setElement([
+				$this->theme->setElement([
 					['page-title', function() use ($main) {
 						return $main->title;
 					}],
 
 					['menu', function($call, $name) use ($main) {
-						return \Menu\Menu::handler('vessel.menu.'.$name)->render();
+						return $this->menu->handler('vessel.menu.'.$name)->render();
 					}],
 
 					['content', $this->pagehelper->evalContent($main->id)],
 				]);
 
-				return View::make('vessel-themes::suzuki.template');
+				return $this->view->make('vessel-themes::suzuki.template');
 			}
 		}
 
-		App::abort(404);
+		$this->app->abort(404);
 	}
 
 }

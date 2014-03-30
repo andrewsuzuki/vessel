@@ -1,23 +1,41 @@
 <?php namespace Hokeo\Vessel;
 
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\View;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\App;
-use Krucas\Notification\Facades\Notification;
+use Illuminate\View\Environment;
+use Illuminate\Routing\Redirector;
+use Illuminate\Http\Request;
+use Illuminate\Auth\AuthManager;
+use Krucas\Notification\Notification;
 
 class BackController extends Controller {
 
+	protected $view;
+
+	protected $redirect;
+
+	protected $input;
+
+	protected $auth;
+
+	protected $notification;
+
+	public function __construct(
+		Environment $view,
+		Redirector $redirect,
+		Request $input,
+		AuthManager $auth,
+		Notification $notification)
+	{
+		$this->view         = $view;
+		$this->redirect     = $redirect;
+		$this->input        = $input;
+		$this->auth         = $auth;
+		$this->notification = $notification;
+	}
+
 	public function getHome()
 	{
-		Facades\Plugin::enable('helloworld');
-
-		return View::make('vessel::home');
+		return $this->view->make('vessel::home');
 	}
 
 	public function getDne()
@@ -27,40 +45,39 @@ class BackController extends Controller {
 
 	public function getLogin()
 	{
-		return View::make('vessel::login');
+		return $this->view->make('vessel::login');
 	}
 
 	public function postLogin()
 	{
 		$attempt = array(
-			'password' => Input::get('password'),
+			'password' => $this->input->get('password'),
 			'confirmed'=> true
 		);
 
 		// check if username or email
-		if (strpos(Input::get('usernameemail'), '@') === false)
+		if (strpos($this->input->get('usernameemail'), '@') === false)
 		{
-			$attempt['username'] = Input::get('usernameemail');
+			$attempt['username'] = $this->input->get('usernameemail');
 		}
 		else
 		{
-			$attempt['email'] = Input::get('usernameemail');
+			$attempt['email'] = $this->input->get('usernameemail');
 		}
 
 		// attempt login
-		if (Auth::attempt($attempt, Input::get('remember')))
+		if ($this->auth->attempt($attempt, $this->input->get('remember')))
 		{
-			return Redirect::route('vessel');
+			return $this->redirect->route('vessel');
 		}
 
-		Notification::error('Your credentials were incorrect.');
-		return Redirect::route('vessel.login')->withInput(Input::except('password'));
+		return $this->redirect->route('vessel.login')->withInput($this->input->except('password'));
 	}
 
 	public function getLogout()
 	{
-		Auth::logout();
-		return Redirect::route('vessel');
+		$this->auth->logout();
+		return $this->redirect->route('vessel');
 	}
 
 }

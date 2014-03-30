@@ -1,8 +1,8 @@
 <?php namespace Hokeo\Vessel;
 
-use Illuminate\Foundation\Application as App;
-use Illuminate\Config\Repository as Config;
-use Illuminate\View\Environment as View;
+use Illuminate\Foundation\Application;
+use Illuminate\Config\Repository;
+use Illuminate\View\Environment;
 use Illuminate\Filesystem\Filesystem;
 
 class Theme {
@@ -19,7 +19,7 @@ class Theme {
 
 	protected $elements = array();
 
-	public function __construct(App $app, Config $config, View $view, Filesystem $filesystem)
+	public function __construct(Application $app, Repository $config, Environment $view, Filesystem $filesystem)
 	{
 		$this->app         = $app;
 		$this->config      = $config;
