@@ -4,6 +4,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Config\Repository;
 use Illuminate\View\Environment;
 use Illuminate\Filesystem\Filesystem;
+use Hokeo\Vessel\Setting;
 
 class Theme {
 
@@ -13,22 +14,111 @@ class Theme {
 
 	protected $filesystem;
 
-	protected $theme_path;
+	protected $setting;
+
+	protected $themes_path;
+
+	protected $available = null;
+
+	protected $theme = null;
 
 	protected $themes;
 
 	protected $elements = array();
 
-	public function __construct(Application $app, Repository $config, Environment $view, Filesystem $filesystem)
+	public function __construct(Application $app, Repository $config, Environment $view, Filesystem $filesystem, Setting $setting)
 	{
 		$this->app         = $app;
 		$this->config      = $config;
 		$this->view        = $view;
 		$this->filesystem  = $filesystem;
+		$this->setting     = $setting;
 
-		$this->theme_path  = base_path().'/themes';
+		$this->themes_path  = base_path().'/themes';
 
-		$this->view->addNamespace('vessel-themes', $this->theme_path);
+		if (!$this->load(null, true)) throw new \Exception('No valid themes to load.');
+	}
+
+	/**
+	 * Loads a stored (or any available) theme for use. 
+	 * 
+	 * @param  null|string $name      Name of theme directory, or null to use stored setting (if it exists)
+	 * @param  boolean     $try_first If true, and if a specified/stored theme could not be found, try first available theme
+	 * @return boolean                If a theme was loaded
+	 */
+	public function load($name = null, $try_first = false)
+	{
+		$success = false;
+
+		if (!$name)
+		{
+			$theme = $this->setting->get('theme'); // get theme from settings
+
+			if ($theme && isset($theme['name']) && isset($theme['info']))
+			{
+				$this->theme = $theme;
+				$success = true;
+			}
+		}
+		else
+		{
+			$check = $this->check($name);
+
+			if ($check)
+			{
+				$this->theme = ['name' => $name, 'info' => $check];
+				$success = true;
+			}
+		}
+
+		if ($success)
+		{
+			// success, so set the view namespace vessel-theme to our theme directory
+			$this->view->addNamespace('vessel-theme', $this->themes_path.DIRECTORY_SEPARATOR.$this->theme['name']);
+
+			return true;
+		}
+		else
+		{
+			// since name/loading failed, let's try the first available theme
+			if ($try_first)
+			{
+				$available = $this->getAvailable(); // get available
+
+				// if it's not empty, call recursively with name (and prevent infinite loop)
+				if (!empty($available))
+				{
+					$name = key($available);
+					$load = $this->load($name, false);
+
+					if ($load)
+					{
+						$this->set($name); // save it for next time
+					}
+
+					return $load; // t/f from recursive call
+				}
+			}
+
+			return false;
+		}
+	}
+
+	/**
+	 * Sets/saves a theme choice
+	 * 
+	 * @param string $name Name (directory) of theme
+	 */
+	public function set($name)
+	{
+		$check = $this->check($name);
+
+		if (!$check) return false;
+
+		$this->setting->set('theme.name', $name);
+		$this->setting->set('theme.info', $check);
+
+		return true;
 	}
 
 	/**
@@ -38,31 +128,55 @@ class Theme {
 	 */
 	public function getAvailable()
 	{
-		$themes = scandir($this->theme_path);
+		$themes = $this->filesystem->directories($this->themes_path);
 
-		$formatters = array();
+		$available = array();
 
 		foreach ($themes as $theme)
 		{
-			if (substr($theme, -4) == '.php')
-			{
-				$base = basename($theme, '.php');
-				$class = 'Hokeo\\Vessel\\Formatter\\'.$base;
+			$check = $this->check($theme);
 
-				// check that class exists and implements FormatterInterface
-				if (class_exists($class) && in_array('Hokeo\Vessel\FormatterInterface', class_implements($class)))
-				{
-					$formatters[] = $base;
-
-					$this->app->bind('vessel.formatters.'.$base, function($app) use ($class)
-					{
-						return new $class;
-					});
-				}
-			}
+			if (!$check) continue;
+			$name = basename($theme);
+			$available[$name] = $check;
 		}
 
-		return $formatters;
+		$this->available = $available;
+		return $available;
+	}
+
+	/**
+	 * Check for a valid theme (existence of template.blade.php and theme.php with title and author)
+	 * 
+	 * @param  string $name Name (directory) of theme
+	 * @return mixed        Bool false if theme wasn't valid, or info array returned by its theme.php if valid
+	 */
+	public function check($name)
+	{
+		$name = basename($name);
+
+		$theme = $this->themes_path.DIRECTORY_SEPARATOR.$name;
+
+		if ($this->filesystem->exists($theme))
+		{
+			if ($this->filesystem->exists($theme.DIRECTORY_SEPARATOR.'template.blade.php') && $this->filesystem->exists($theme.DIRECTORY_SEPARATOR.'theme.php'))
+			{
+				$info = $this->filesystem->getRequire($theme.DIRECTORY_SEPARATOR.'theme.php');
+
+				$infocheck = array('title', 'author');
+
+				$failed = false;
+
+				foreach ($infocheck as $check)
+				{
+					if (!isset($info[$check]) || !strlen($info[$check])) $failed = true; break;
+				}
+
+				if ($failed) return false;
+
+				return $info;
+			}
+		}
 	}
 
 	/**
@@ -92,7 +206,7 @@ class Theme {
 	}
 
 	/**
-	 * Sets theme value
+	 * Sets theme element value
 	 * 
 	 * @param mixed $name   Name of element ('content', 'title', etc) OR array of multiple associative 'name's and 'value's
 	 * @param mixed $value  Anything that can be cast to a string, OR a lambda/callback function (will receive args as-is (name, arg2, arg3, etc) from template)

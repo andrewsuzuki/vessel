@@ -104,7 +104,7 @@ class FrontController extends Controller {
 					['content', $this->pagehelper->evalContent($main->id)],
 				]);
 
-				return $this->view->make('vessel-themes::suzuki.template');
+				return $this->view->make('vessel-theme::template');
 			}
 		}
 

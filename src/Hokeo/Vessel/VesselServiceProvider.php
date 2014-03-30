@@ -104,7 +104,7 @@ class VesselServiceProvider extends ServiceProvider {
 		});
 
 		$this->app->bindShared('Hokeo\\Vessel\\Theme', function($app) {
-			return new Theme($app['app'], $app['config'], $app['view'], $app['files']);
+			return new Theme($app['app'], $app['config'], $app['view'], $app['files'], $app['Hokeo\\Vessel\\Setting']);
 		});
 
 
