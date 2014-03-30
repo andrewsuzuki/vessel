@@ -11,11 +11,14 @@ class PageController extends Controller
 
 	protected $formatter;
 
-	public function __construct(View $view, PageHelper $pagehelper, Formatter $formatter)
+	protected $theme;
+
+	public function __construct(View $view, PageHelper $pagehelper, Formatter $formatter, Theme $theme)
 	{
 		$this->view       = $view;
 		$this->pagehelper = $pagehelper;
 		$this->formatter  = $formatter;
+		$this->theme      = $theme;
 	}
 
 	public function getPages()
@@ -29,10 +32,16 @@ class PageController extends Controller
 	{
 		$mode = 'new';
 		$page = new Page;
+
 		$this->view->share('title', 'New Page');
+
 		$this->pagehelper->setPageFormatter($page);
 		$editor = $this->formatter->formatter()->getEditorHtml();
-		return $this->view->make('vessel::pages_edit')->with(compact('page', 'mode', 'editor'));
+
+		$this->theme->load();
+		$sub_templates = $this->theme->getThemeViewsSelect();
+
+		return $this->view->make('vessel::pages_edit')->with(compact('page', 'mode', 'editor', 'sub_templates'));
 	}
 
 	public function postPagesNew()
@@ -46,12 +55,17 @@ class PageController extends Controller
 		$mode = 'edit';
 		$page = Page::find($id); // find page
 		if (!$page) throw new \VesselNotFoundException; // throw error if not found
+
 		$this->view->share('title', 'Edit '.$page->title); // set view title
 		$this->pagehelper->setPageFormatter($page); // set formatter according to page setting (editor)
-		$content = $this->pagehelper->getContent($page->id, true); // grab page content from file
-		$editor = $this->formatter->formatter()->getEditorHtml($content); // get editor html
 
-		return $this->view->make('vessel::pages_edit')->with(compact('page', 'mode', 'editor'));
+		$content       = $this->pagehelper->getContent($page->id, true); // grab page content from file
+		$editor        = $this->formatter->formatter()->getEditorHtml($content); // get editor html
+
+		$this->theme->load();
+		$sub_templates = $this->theme->getThemeViewsSelect();
+
+		return $this->view->make('vessel::pages_edit')->with(compact('page', 'mode', 'editor', 'sub_templates'));
 	}
 
 	public function postPagesEdit($id)

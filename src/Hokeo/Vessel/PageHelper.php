@@ -174,6 +174,7 @@ class PageHelper {
 		$page->slug        = $this->input->get('slug');
 		$page->description = $this->input->get('description');
 		$page->formatter   = $this->input->get('formatter');
+		$page->template    = $this->input->get('template');
 		$page->nest_url    = (bool) $this->input->get('nest_url');
 		$page->visible     = (bool) $this->input->get('visible');
 		$page->in_menu     = (bool) $this->input->get('in_menu');

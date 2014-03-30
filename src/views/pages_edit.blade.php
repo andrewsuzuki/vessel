@@ -74,7 +74,7 @@
 						<div class="form-group">
 							{{ Form::label('template', 'Template', array('class' => 'col-sm-3 control-label')) }}
 							<div class="col-sm-9">
-								{{ Form::select('template', array(), null, array('class' => 'vessel-carry-field form-control input-sm')) }}
+								{{ Form::select('template', $sub_templates, null, array('class' => 'vessel-carry-field form-control input-sm')) }}
 							</div>
 						</div>
 					</div>

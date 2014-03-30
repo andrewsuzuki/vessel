@@ -53,6 +53,7 @@ class Page extends Node {
 			'description' => '',
 			'parent' => 'required|pageParent'.(($edit) ? ':'.$edit->id : ''),
 			'formatter' => 'required|formatter',
+			'template' => 'required|template',
 		];
 	}
 

@@ -9,11 +9,12 @@ Currently being built; not ready for use.
 Todo, roughly in order:
 
 * ~~JS auto-slugs~~
+* ~~Plugins system~~
+* ~~Theme setting~~
+* ~~Page sub-templates~~
 * Menu builder
-* Page sub-templates
 * Page edit history
 * Page drafts
-* Plugins and some hooks/filters
 * Menu api
 * Block types (image, text, advanced-custom-fields-like, table, custom, etc)
 * Block manager

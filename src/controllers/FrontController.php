@@ -40,6 +40,14 @@ class FrontController extends Controller {
 		$main = Page::where('slug', end($hierarchy))->first();
 		reset($hierarchy);
 
+		// load theme, with fallback
+		$theme_good = $this->theme->load(null, true);
+		// if all fails...
+		if (!$theme_good) $this->app->abort(404);
+
+		$this->theme->getThemeViews();
+
+		// check that this page exists and is public
 		if ($main && $main->visible)
 		{
 			$valid = true;
@@ -58,7 +66,7 @@ class FrontController extends Controller {
 					}
 				}
 			}
-			// otherwise, make sure there isn't a nest
+			// otherwise, make sure there ain't even a nest
 			else
 			{
 				if (count($hierarchy) > 1)
@@ -69,6 +77,7 @@ class FrontController extends Controller {
 			
 			if ($valid)
 			{
+				// Create menu
 				$menu = $this->menu->handler('vessel.menu.front', array('class' => 'nav navbar-nav'));
 
 				$menu->add('/', 'Home')
@@ -104,7 +113,11 @@ class FrontController extends Controller {
 					['content', $this->pagehelper->evalContent($main->id)],
 				]);
 
-				return $this->view->make('vessel-theme::template');
+				$view_name = ($main->template && $main->template !== 'none') ? $main->template.'_template' : 'template';
+
+				if (!$this->view->exists('vessel-theme::'.$view_name)) $view_name = 'template'; // revert to default template if it doesn't exist
+
+				return $view = $this->view->make('vessel-theme::'.$view_name);
 			}
 		}
 

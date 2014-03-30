@@ -23,3 +23,13 @@ Validator::extend('formatter', function($attribute, $value, $parameters)
 {
 	return Hokeo\Vessel\Facades\Formatter::exists($value);
 });
+
+// Checks if theme template exists
+Validator::extend('template', function($attribute, $value, $parameters)
+{
+	if ($value == 'none') return true;
+	
+	Hokeo\Vessel\Facades\Theme::load();
+	$templates = Hokeo\Vessel\Facades\Theme::getThemeViews();
+	return isset($templates[$value]);
+});

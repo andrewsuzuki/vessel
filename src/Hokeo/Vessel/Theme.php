@@ -34,9 +34,82 @@ class Theme {
 		$this->filesystem  = $filesystem;
 		$this->setting     = $setting;
 
-		$this->themes_path  = base_path().'/themes';
+		$this->themes_path  = base_path().DIRECTORY_SEPARATOR.'themes';
+	}
 
-		if (!$this->load(null, true)) throw new \Exception('No valid themes to load.');
+	/**
+	 * Get base themes path
+	 * 
+	 * @return string Absolute path to /themes
+	 */
+	public function getBasePath()
+	{
+		return $this->themes_path;
+	}
+
+	/**
+	 * Gets path to a theme if it exists
+	 * @param  string $name Name of theme (directory)
+	 * @return string       Path to theme
+	 */
+	public function getThemePath($name)
+	{
+		if ($this->filesystem->exists($this->themes_path.DIRECTORY_SEPARATOR.$name))
+			return $this->themes_path.DIRECTORY_SEPARATOR.$name;
+	}
+
+	/**
+	 * Get views in dot notation, recursive, from loaded theme directory
+	 * 
+	 * @return array                       Array of view names (key = view, value = display)
+	 */
+	public function getThemeViews()
+	{
+		if ($this->theme)
+		{
+			$directory = new \RecursiveDirectoryIterator($this->getThemePath($this->theme['name']));
+			$flattened = new \RecursiveIteratorIterator($directory);
+
+			// Make sure the path does not contain "/.Trash*" folders and ends with either _template.blade.php or _template.php
+			$files = new \RegexIterator($flattened, '#^(?:[A-Z]:)?(?:/(?!\.Trash)[^/]+)+/[^/]+_template\.(?:blade.php|php)$#Di');
+
+			$return = array();
+
+			foreach ($files as $file)
+			{
+				$view = str_replace(DIRECTORY_SEPARATOR, '.', // replace / with .
+								str_replace(['.blade.php', '.php'], '', // strip extension
+									str_replace($this->getThemePath($this->theme['name']).DIRECTORY_SEPARATOR, '', (string) $file) // abs->rel to theme dir
+								)
+							);
+
+				$view = substr($view, 0, -9); // remove _template
+
+				// make display name (i.e. pages.about turns to Pages > About)
+				$display = implode(' > ', array_map(function($part) {
+					return ucfirst($part);
+				}, explode('.', $view)));
+
+				$return[$view] = $display;
+			}	
+
+			return $return;
+		}
+	}
+
+	/**
+	 * Gets <select> array for theme sub-template (with default)
+	 * 
+	 * @return array
+	 */
+	public function getThemeViewsSelect()
+	{
+		$templates = ($this->theme) ? $this->getThemeViews() : array();
+		$templates = array_reverse($templates);
+		$templates['none'] = '-- Default template --';
+		$templates = array_reverse($templates);
+
+		return $templates;
 	}
 
 	/**
@@ -75,7 +148,6 @@ class Theme {
 		{
 			// success, so set the view namespace vessel-theme to our theme directory
 			$this->view->addNamespace('vessel-theme', $this->themes_path.DIRECTORY_SEPARATOR.$this->theme['name']);
-
 			return true;
 		}
 		else
@@ -176,6 +248,20 @@ class Theme {
 
 				return $info;
 			}
+		}
+	}
+
+	/**
+	 * Checks if view in loaded theme dir exists
+	 * 
+	 * @param  string  $view View (dot notation)
+	 * @return boolean
+	 */
+	public function themeViewExists($view)
+	{
+		if ($this->theme)
+		{
+			return $this->view->exists('vessel-theme::'.$view);
 		}
 	}
 
