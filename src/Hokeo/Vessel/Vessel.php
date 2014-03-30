@@ -19,7 +19,7 @@ class Vessel {
 
 	protected $back_menu_built = false;
 
-	protected $dirs = array('/', '/pages', '/pages/compiled');
+	protected $dirs = array('', '/', '/pages', '/pages/compiled');
 
 	public function __construct(Application $app, HtmlBuilder $html, UrlGenerator $url, Menu $menu)
 	{

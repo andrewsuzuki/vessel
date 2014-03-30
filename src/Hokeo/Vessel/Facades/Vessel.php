@@ -6,6 +6,6 @@ class Vessel extends Facade {
 
 	protected static function getFacadeAccessor()
 	{
-		return 'vessel.vessel';
+		return 'Hokeo\\Vessel\\Vessel';
 	}
 }

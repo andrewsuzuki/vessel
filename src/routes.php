@@ -2,30 +2,6 @@
 
 Route::group(array('prefix' => Config::get('vessel::vessel.uri', 'vessel')), function()
 {
-	Route::get('test', function()
-	{
-		$test = '
-		
-		@if(true == true)
-
-		testy <?php echo 4+5; ?>
-
-		@endif
-
-		';
-		
-		$compiled = \Illuminate\Support\Facades\Blade::compileString($test);
-
-		try
-		{
-			return eval("?>" . $compiled);
-		}
-		catch (\Exception $e)
-		{
-			exit('umm');
-		}
-	});
-
 	Route::group(array('before' => 'vessel_auth'), function()
 	{
 		Route::get('/', array('as' => 'vessel', 'uses' => 'Hokeo\Vessel\BackController@getHome'));

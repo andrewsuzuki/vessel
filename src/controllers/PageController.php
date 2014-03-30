@@ -45,16 +45,10 @@ class PageController extends Controller
 	{
 		$mode = 'edit';
 		$page = Page::find($id); // find page
-		if (!$page)
-		{
-			throw new \VesselNotFoundException;
-		}
+		if (!$page) throw new \VesselNotFoundException; // throw error if not found
 		$this->view->share('title', 'Edit '.$page->title); // set view title
-		var_dump($this->formatter->is_set());
-		$this->pagehelper->setPageFormatter($page);
-		var_dump($this->formatter->is_set());
-		exit;
-		$content = $this->pagehelper->getContent($page->id, true);
+		$this->pagehelper->setPageFormatter($page); // set formatter according to page setting (editor)
+		$content = $this->pagehelper->getContent($page->id, true); // grab page content from file
 		$editor = $this->formatter->formatter()->getEditorHtml($content); // get editor html
 
 		return $this->view->make('vessel::pages_edit')->with(compact('page', 'mode', 'editor'));
