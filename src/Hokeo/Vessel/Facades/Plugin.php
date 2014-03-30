@@ -6,6 +6,6 @@ class Plugin extends Facade {
 
 	protected static function getFacadeAccessor()
 	{
-		return 'vessel.plugin';
+		return 'Hokeo\\Vessel\\Plugin';
 	}
 }

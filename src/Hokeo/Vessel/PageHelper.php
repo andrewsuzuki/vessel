@@ -46,7 +46,7 @@ class PageHelper {
 		$this->validator    = $validator;
 		$this->notification = $notification;
 
-		$this->pages_path = $this->vessel->path();
+		$this->pages_path = $this->vessel->path('/pages');
 	}
 
 	/**
@@ -71,9 +71,7 @@ class PageHelper {
 		// or try set page setting
 		elseif ($page && $page->formatter && $this->formatter->exists($page->formatter))
 		{
-			var_dump($this->formatter->is_set());
 			$this->formatter->set($page->formatter);
-			var_dump($this->formatter->is_set());
 			return 3;
 		}
 		// or try user preference
@@ -117,11 +115,11 @@ class PageHelper {
 	{
 		if (!$get_raw && $this->filesystem->exists($this->pages_path.'/compiled/'.$page_id.'.php'))
 		{
-			return $this->filesystem->read($this->pages_path.'/compiled/'.$page_id.'.php');
+			return $this->filesystem->get($this->pages_path.'/compiled/'.$page_id.'.php');
 		}
 		elseif ($this->filesystem->exists($this->pages_path.'/'.$page_id.'.v'))
 		{
-			return $this->filesystem->read($this->pages_path.'/'.$page_id.'.v');
+			return $this->filesystem->get($this->pages_path.'/'.$page_id.'.v');
 		}
 		else
 		{

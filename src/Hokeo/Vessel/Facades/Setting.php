@@ -6,6 +6,6 @@ class Setting extends Facade {
 
 	protected static function getFacadeAccessor()
 	{
-		return 'vessel.setting';
+		return 'Hokeo\\Vessel\\Setting';
 	}
 }

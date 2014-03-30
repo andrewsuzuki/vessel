@@ -6,6 +6,6 @@ class Formatter extends Facade {
 
 	protected static function getFacadeAccessor()
 	{
-		return 'vessel.formatter';
+		return 'Hokeo\\Vessel\\Formatter';
 	}
 }
