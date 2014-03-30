@@ -1,18 +1,21 @@
 <?php namespace Hokeo\Vessel;
 
-use Illuminate\Support\ClassLoader;
-use Illuminate\Config\Repository as Config;
 use Illuminate\Foundation\Application as App;
+use Illuminate\Config\Repository as Config;
+use Illuminate\Support\ClassLoader;
+use Hokeo\Vessel\Setting;
 
 class Plugin {
 
-	protected $filesystem;
+	protected $app;
+	
+	protected $config;
 
 	protected $classloader;
 
-	protected $config;
+	protected $setting;
 
-	protected $app;
+	protected $filesystem;
 
 	protected $available = null;
 
@@ -22,11 +25,12 @@ class Plugin {
 
 	protected $hooks = array();
 
-	public function __construct(App $app, Config $config, ClassLoader $classloader)
+	public function __construct(App $app, Config $config, ClassLoader $classloader, Setting $setting)
 	{
 		$this->app         = $app;
 		$this->config      = $config;
 		$this->classloader = $classloader;
+		$this->setting     = $setting;
 		$this->plugin_path = base_path().'/plugins';
 		$this->filesystem  = $this->app->make('Hokeo\Vessel\FilesystemInterface', array('path' => $this->plugin_path));
 	}
@@ -46,44 +50,84 @@ class Plugin {
 	 * 
 	 * @return array
 	 */
-	public function getAvailable()
+	public function getAvailable($save = false)
 	{
-		$plugins = $this->filesystem->listContents('/');
+		$vendors = $this->filesystem->listContents('/');
 
 		$available = array();
 
-		foreach ($plugins as $plugin)
+		foreach ($vendors as $vendor)
 		{
-			if ($plugin['type'] == 'dir')
+			if ($vendor['type'] == 'dir')
 			{
-				if ($this->filesystem->has('/'.$plugin['basename'].'/plugin.json'))
-				{
-					try
-					{
-						$json = json_decode($this->filesystem->read('/'.$plugin['basename'].'/plugin.json'), true);
-					}
-					catch (\Exception $e)
-					{
-						break;
-					}
+				$plugins = $this->filesystem->listContents('/'.$vendor['path']);
 
-					if (is_array($json) &&
-						isset($json['name']) && strlen($json['name']) &&
-						isset($json['class']) && strlen($json['class']) &&
-						isset($json['title']) && strlen($json['title']) &&
-						isset($json['author']) && strlen($json['author']) &&
-						$json['name'] == $plugin['basename']
-						)
+				foreach ($plugins as $plugin)
+				{
+					if ($plugin['type'] == 'dir')
 					{
-						$available[$json['name']] = $json;
+						if ($this->filesystem->has('/'.$plugin['path'].'/plugin.php'))
+						{
+							$this->classloader->addDirectories(array($this->plugin_path));
+
+							// include plugin info file
+							$info = @include $this->plugin_path.DIRECTORY_SEPARATOR.$plugin['path'].DIRECTORY_SEPARATOR.'plugin.php';
+
+							// validate plugin info
+							if (is_array($info) &&
+								isset($info['name']) && strlen($info['name']) &&
+								isset($info['pluggable']) && strlen($info['pluggable']) &&
+								isset($info['title']) && strlen($info['title']) &&
+								isset($info['author']) && strlen($info['author']) &&
+								$info['name'] == $plugin['path']
+								)
+							{
+								// load pluggable (plugin)
+								$this->classloader->load($info['pluggable']);
+
+								// validate pluggable
+								if (class_exists($info['pluggable']) && get_parent_class($info['pluggable']) == 'Hokeo\\Vessel\\Pluggable')
+								{
+									// add to available
+									$available[$info['name']] = $info;
+								}
+							}
+						}
 					}
 				}
 			}
 		}
 
 		$this->available = $available;
-
+		if ($save)
+			$this->setting->set('plugins.available', $available);
 		return $available;
+	}
+
+	/**
+	 * Enables all available plugins
+	 */
+	public function enableAll()
+	{
+		// Get available plugins
+		if (is_null($this->available))
+		{
+			try
+			{
+				$this->available = $this->setting->get('plugins.available');
+			}
+			catch (\Exception $e)
+			{
+				$this->getAvailable(true);
+			}
+
+			if (!is_array($this->available)) return;
+		}
+
+		foreach ($this->available as $plugin)
+		{
+			$this->enable($plugin['name']);
+		}
 	}
 
 	/**
@@ -94,34 +138,17 @@ class Plugin {
 	 */
 	public function enable($name)
 	{
-		if (is_null($this->available)) $this->getAvailable(); // if available plugins haven't been retrieved, then get them
-
 		if (isset($this->available[$name]))
 		{
-			$dir = $this->plugin_path.'/'.$name;
-			// autoload this plugin's directory
-			$this->classloader->addDirectories(array($dir));
+			// autoload plugins
+			$this->classloader->addDirectories(array($this->plugin_path));
 
-			if (class_exists($this->available[$name]['class']))
+			// register service provider if it's good
+			if (class_exists($this->available[$name]['pluggable']) && get_parent_class($this->available[$name]['pluggable']) == 'Hokeo\\Vessel\\Pluggable')
 			{
-				// make sure plugin class extends Pluggable
-				if (get_parent_class($this->available[$name]['class']) == 'Hokeo\Vessel\Pluggable')
-				{
-					// register service provider
-					$this->app->register($this->available[$name]['class']);
-
-					// add to enabled array
-					$this->enabled[$name] = $this->available[$name];
-
-					return true;
-				}
+				$this->app->register($this->available[$name]['pluggable']);
 			}
-
-			// whoops, class didn't exist. remove autoloading directory
-			$this->classloader->removeDirectories(array($dir));
 		}
-
-		return false;
 	}
 
 	/**

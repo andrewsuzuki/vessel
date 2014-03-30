@@ -39,9 +39,9 @@ class VesselServiceProvider extends ServiceProvider {
 		$this->app->make('vessel.theme'); // construct
 
 		// clone Philf/Setting and configure
-		$this->app['vessel.setting'] = $this->app->make('setting');
-		$this->app['vessel.setting']->path($this->app['vessel.vessel']->path('/'));
-		$this->app['vessel.setting']->filename('settings.json');
+		// $this->app['vessel.setting'] = $this->app->make('setting');
+		// $this->app['vessel.setting']->path($this->app['vessel.vessel']->path('/'));
+		// $this->app['vessel.setting']->filename('settings.json');
 
 		include __DIR__.'/../../errors.php'; // errors
 		include __DIR__.'/../../routes.php'; // routes
@@ -76,6 +76,7 @@ class VesselServiceProvider extends ServiceProvider {
 
 		// IoC Bindings
 		$this->app->singleton('vessel.vessel',    'Hokeo\\Vessel\\Vessel');
+		$this->app->singleton('vessel.setting',   'Hokeo\\Vessel\\Setting');
 		$this->app->singleton('vessel.plugin',    'Hokeo\\Vessel\\Plugin');
 		$this->app->singleton('vessel.formatter', 'Hokeo\\Vessel\\Formatter');
 		$this->app->singleton('vessel.asset',     'Hokeo\\Vessel\\Asset');
@@ -86,6 +87,9 @@ class VesselServiceProvider extends ServiceProvider {
 		});
 
 		$this->app->make('vessel.vessel'); // construct
+
+		// $this->app['vessel.plugin']->getAvailable(true); // enable all plugins
+		$this->app['vessel.plugin']->enableAll(); // enable all plugins
 
 		$app = $this->app;
 
