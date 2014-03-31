@@ -12,13 +12,13 @@ Todo, roughly in order:
 * ~~Plugins system~~
 * ~~Theme setting~~
 * ~~Page sub-templates~~
+* ~~Page edit history~~
+* ~~Page drafts~~
+* Permissions
 * Menu builder
-* Page edit history
-* Page drafts
 * Menu api
 * Block types (image, text, advanced-custom-fields-like, table, custom, etc)
 * Block manager
-* Permissions
 * User Settings
 * User Password resets
 * User Registration
