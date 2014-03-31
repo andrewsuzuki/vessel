@@ -96,6 +96,7 @@ class VesselServiceProvider extends ServiceProvider {
 				$app['Hokeo\\Vessel\\Formatter'],
 				$app['files'],
 				$app['request'],
+				$app['db'],
 				$app['redirect'],
 				$app['auth'],
 				$app['validator'],

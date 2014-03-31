@@ -1,12 +1,14 @@
 <?php namespace Hokeo\Vessel;
 
-use Baum\Node;
+use Illuminate\Database\Eloquent\Model;
 
-class Pagehistory extends Node {
+class Pagehistory extends Model {
 
 	protected $table = 'vessel_pagehistories';
 
 	protected $softDelete = false;
+
+	public $timestamps = false;
 
 	use DateAccessorTrait;
 
@@ -19,4 +21,9 @@ class Pagehistory extends Node {
 	{
 		return $this->belongsTo('Hokeo\Vessel\User');
 	}
+
+	// Scopes
+
+	public function scopeDraft($query) {return $query->where('is_draft', true); }
+	public function scopeNotDraft($query) {return $query->where('is_draft', false); }
 }

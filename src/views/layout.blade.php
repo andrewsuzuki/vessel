@@ -37,7 +37,12 @@
 		}
 
 		.input-monospaced {
-			font-family: 'Courier New';
+			font-family: 'Courier New', Courier, Monospace;
+		}
+
+		.label-pagehistory {
+			font-size: 55%;
+			vertical-align: 5px;
 		}
 
 	</style>

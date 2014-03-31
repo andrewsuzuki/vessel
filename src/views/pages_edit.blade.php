@@ -86,15 +86,35 @@
 			{{ Form::submit('Save', array('class' => 'btn btn-success mb-15')) }}
 			<a href="#" class="btn btn-info mb-15">Preview</a>
 			@if ($mode == 'edit')
-			<a href="#" class="btn btn-danger mb-15">Delete</a>
+			<a href="{{ URL::route('vessel.pages.delete', array('id' => $page->id)) }}" class="btn btn-danger mb-15">Delete</a>
 			@if ($page->visible)
 			<a href="{{ $page->url() }}" class="btn btn-default mb-15" target="_blank">View</a>
 			@endif
-			<a href="#" class="btn btn-default mb-15">Save As Draft</a>
+			{{ Form::submit('Save As Draft', array('name' => 'save_as_draft', 'class' => 'btn btn-default mb-15')) }}
 			{{ Form::button('Save As New', array('class' => 'btn btn-default mb-15', 'formaction' => URL::route('vessel.pages.new'), 'type' => 'submit', 'name' => 'duplicate', 'value' => 'true')) }}
+			<a href="{{ URL::route('vessel.pages.edit', array('id' => $page->id)) }}" class="btn btn-default mb-15">Reload Current</a>
 			@endif
-		</div>
-	</div>
 
+		</div>
+
+		@if ($mode == 'edit')
+
+		<div class="clearfix mb-15"></div>
+
+		<div class="col-md-6">
+			<h3>Edits</h3>
+
+			{{ View::make('vessel::partials.table_pagehistory')->with(['history' => $edits, 'current' => $pagehistory])->render() }}
+		</div>
+
+		<div class="col-md-6">
+			<h3>Drafts</h3>
+
+			{{ View::make('vessel::partials.table_pagehistory')->with(['history' => $drafts, 'current' => $pagehistory])->render() }}
+		</div>
+
+		@endif
+
+	</div>
 
 @stop

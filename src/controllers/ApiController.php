@@ -8,18 +8,16 @@ class ApiController extends Controller {
 
 	protected $input;
 
-	protected $response;
-
-	public function __construct(Request $input, Response $response)
+	public function __construct(Request $input)
 	{
-		$this->input    = $input;
-		$this->response = $response;
+		$this->input = $input;
+		// Can't use an injected Response for now (doesn't have non-static __call magic)
 	}
 
 	public function flashinput()
 	{
 		$this->input->flash();
-		return $this->response->trip(true);
+		return Response::trip(true);
 	}
 
 }

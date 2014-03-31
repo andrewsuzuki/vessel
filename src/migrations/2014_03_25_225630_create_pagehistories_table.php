@@ -18,6 +18,8 @@ class CreatePagehistoriesTable extends Migration {
 
 			$table->integer('page_id')->unsigned();
 			$table->integer('edit')->nullable();
+
+			$table->boolean('is_draft');
 			
 			$table->string('slug');
 			$table->string('title');
@@ -28,9 +30,14 @@ class CreatePagehistoriesTable extends Migration {
 			$table->integer('parent_id')->nullable();
 			$table->index('parent_id');
 
-			$table->string('formatter')->nullable();
+			$table->boolean('nest_url')->default(true);
+			$table->boolean('visible')->default(true);
+			$table->boolean('in_menu')->default(true);
 
-			$table->text('content')->nullable();
+			$table->string('formatter')->nullable();
+			$table->string('template')->nullable();
+
+			$table->text('content');
 
 			$table->timestamp('created_at');
 		});

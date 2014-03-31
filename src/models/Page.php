@@ -15,7 +15,7 @@ class Page extends Node {
 
 	public function history()
 	{
-		return $this->hasMany('Hokeo\\Vessel\\Pagehistory', 'vessel_pagehistories');
+		return $this->hasMany('Hokeo\\Vessel\\Pagehistory');
 	}
 
 	public function user()
@@ -36,6 +36,23 @@ class Page extends Node {
 
 	public function scopeBaseTemplate($query) {return $query->where('template', null); }
 	public function scopeNotBaseTemplate($query) {return $query->where('template', '!=', null); }
+
+	// Events
+	
+	public static function boot()
+    {
+        parent::boot();
+
+        static::deleted(function($page)
+        {
+        	// delete edits and drafts
+        	$page->history()->delete();
+        	// delete content
+        	Facades\PageHelper::deleteContent($page->id);
+
+        	// hook here
+        });
+    }
 
 	// Methods
 	
