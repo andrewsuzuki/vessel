@@ -1,4 +1,4 @@
-## Vessel
+# Vessel
 
 [![Build Status](https://travis-ci.org/hokeo/vessel.svg?branch=master)](https://travis-ci.org/hokeo/vessel)
 
