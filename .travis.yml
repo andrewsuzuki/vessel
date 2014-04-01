@@ -17,7 +17,8 @@ before_script:
   - cd laravel
   - composer install
   - cd ../
-  - mv hokeo/vessel laravel/workbench/hokeo/vessel
+  - mkdir -p laravel/workbench/hokeo
+  - mv hokeo/vessel laravel/workbench/hokeo
   # composer vessel
   - cd laravel/workbench/hokeo/vessel
   - composer install --dev
