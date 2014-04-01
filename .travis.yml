@@ -11,8 +11,11 @@ before_script:
   - composer self-update
   # make app
   - cd ../../
+  - ls
   - composer create-project laravel/laravel laravel --prefer-dist
+  - cd laravel
   - composer install
+  - cd ../
   - mv hokeo/vessel laravel/workbench
   # composer vessel
   - cd laravel/workbench
