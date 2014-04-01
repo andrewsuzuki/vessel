@@ -14,6 +14,7 @@ Todo, roughly in order:
 * ~~Page sub-templates~~
 * ~~Page edit history~~
 * ~~Page drafts~~
+* Unit tests
 * Permissions
 * Menu builder
 * Menu api
