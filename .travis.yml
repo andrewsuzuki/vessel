@@ -8,6 +8,7 @@ php:
 
 before_script:
   - pwd
+  - composer self-update
   # make app
   - cd ../../
   - composer create-project laravel/laravel laravel --prefer-dist
@@ -15,7 +16,6 @@ before_script:
   - mv hokeo/vessel laravel/workbench
   # composer vessel
   - cd laravel/workbench
-  - composer self-update
   - composer install --prefer-source --no-interaction --dev
   # apache
   - sudo apt-get install apache2
