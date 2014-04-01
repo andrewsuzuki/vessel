@@ -3,6 +3,7 @@
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Auth\UserInterface;
 use Illuminate\Auth\Reminders\RemindableInterface;
+use Zizaco\Entrust\HasRole;
 
 class User extends Model implements UserInterface, RemindableInterface {
 
@@ -11,6 +12,8 @@ class User extends Model implements UserInterface, RemindableInterface {
 	protected $softDelete = false;
 
 	use DateAccessorTrait;
+
+	use HasRole;
 	
 	public static function rules($edit = null)
 	{
