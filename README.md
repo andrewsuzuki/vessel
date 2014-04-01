@@ -1,5 +1,7 @@
 ## Vessel
 
+[![Build Status](https://travis-ci.org/hokeo/vessel.svg?branch=master)](https://travis-ci.org/hokeo/vessel)
+
 Vessel is a simple, yet powerful file-based CMS (content management system). Written in PHP, built on Laravel.
 
 Currently being built; not ready for use.
