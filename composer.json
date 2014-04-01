@@ -1,15 +1,21 @@
 {
     "name": "Vessel",
     "description": "Vessel: simple content management for Laravel 4.",
+    "homepage": "http://vesselcms.com",
     "authors": [
         {
             "name": "Hokeo",
             "homepage": "http://vesselcms.com"
         }
     ],
+    "support": {
+        "email": "support@vesselcms.com",
+        "issues": "https://github.com/hokeo/vessel/issues",
+        "source": "https://github.com/hokeo/vessel"
+    },
     "require": {
         "php": ">=5.3.0",
-        "illuminate/support": "4.1.*",
+        "laravel/framework": "4.1.*",
         "zizaco/entrust": "1.1.*",
         "edvinaskrucas/notification": "2.*",
         "cebe/markdown": "*",
