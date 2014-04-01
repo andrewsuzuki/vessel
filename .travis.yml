@@ -17,9 +17,9 @@ before_script:
   - cd laravel
   - composer install
   - cd ../
-  - mv hokeo/vessel laravel/workbench
+  - mv hokeo/vessel laravel/workbench/hokeo/vessel
   # composer vessel
-  - cd laravel/workbench
+  - cd laravel/workbench/hokeo/vessel
   - composer install --dev
   # apache
   # - sudo apt-get install apache2
