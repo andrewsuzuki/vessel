@@ -22,9 +22,12 @@ Blade::extend(function($view, $compiler)
 /**
  * Echos vr() (see below)
  */
-function v()
+if (!function_exists('v'))
 {
-	echo call_user_func_array('vr', func_get_args());
+	function v()
+	{
+		echo call_user_func_array('vr', func_get_args());
+	}
 }
 
 /**
@@ -32,17 +35,23 @@ function v()
  * 
  * @return string|null
  */
-function vr()
+if (!function_exists('vr'))
 {
-	return call_user_func_array(array('Hokeo\\Vessel\\Facades\\Theme', 'element'), func_get_args());
+	function vr()
+	{
+		return call_user_func_array(array('Hokeo\\Vessel\\Facades\\Theme', 'element'), func_get_args());
+	}
 }
 
 /**
  * Alias or Facades\Plugin::hook()
  */
-function hook()
+if (!function_exists('hook'))
 {
-	return call_user_func_array(array('Hokeo\\Vessel\\Facades\\Plugin', 'hook'), func_get_args());
+	function hook()
+	{
+		return call_user_func_array(array('Hokeo\\Vessel\\Facades\\Plugin', 'hook'), func_get_args());
+	}
 }
 
 /**
@@ -50,7 +59,10 @@ function hook()
  * 
  * @return string|null
  */
-function fire()
+if (!function_exists('fire'))
 {
-	return call_user_func_array(array('Hokeo\\Vessel\\Facades\\Plugin', 'fire'), func_get_args());
+	function fire()
+	{
+		return call_user_func_array(array('Hokeo\\Vessel\\Facades\\Plugin', 'fire'), func_get_args());
+	}
 }

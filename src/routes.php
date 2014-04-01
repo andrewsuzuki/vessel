@@ -25,7 +25,6 @@ Route::group(array('prefix' => Config::get('vessel::vessel.uri', 'vessel')), fun
 	});
 
 	Route::post('api/flashinput', array('as' => 'vessel.api.flashinput', 'uses' => 'Hokeo\Vessel\ApiController@flashinput'));
-	// Route::get('api/test', array('as' => 'vessel.api.test', 'uses' => 'Hokeo\Vessel\ApiController@getDelete'));
 
 	Route::any("{all}", array("as" => "vessel.dne", "uses" => "Hokeo\Vessel\BackController@getDne"))
 	->where("all", ".*");

@@ -3,8 +3,8 @@
     "description": "Vessel: simple content management for Laravel 4.",
     "authors": [
         {
-            "name": "Andrew Suzuki",
-            "homepage": "http://andrewsuzuki.com"
+            "name": "Hokeo",
+            "homepage": "http://vesselcms.com"
         }
     ],
     "require": {
@@ -35,6 +35,11 @@
         "psr-0": {
             "Hokeo\\Vessel\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "classmap": [
+            "tests"
+        ]
     },
     "minimum-stability": "stable"
 }
