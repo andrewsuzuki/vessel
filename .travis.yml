@@ -9,6 +9,6 @@ php:
 
 before_script:
   - composer self-update
-  - composer update --dev
+  - composer install --prefer-source --no-interaction --dev
 
 script: phpunit

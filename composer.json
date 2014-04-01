@@ -24,7 +24,6 @@
     },
     "autoload": {
         "classmap": [
-            "src/commands",
             "src/controllers",
             "src/models",
             "src/library",
