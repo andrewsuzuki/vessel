@@ -8,6 +8,7 @@ php:
 
 before_script:
   - pwd
+  - echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
   - composer self-update
   # make app
   - cd ../../
@@ -19,7 +20,7 @@ before_script:
   - mv hokeo/vessel laravel/workbench
   # composer vessel
   - cd laravel/workbench
-  - composer install --prefer-source --no-interaction --dev
+  - composer install --dev
   # apache
   # - sudo apt-get install apache2
   # - sudo a2enmod actions
