@@ -44,7 +44,7 @@ class TestPagesSeeder extends Seeder {
 					'updated_at' => \Carbon\Carbon::parse('now'),
 				],
 				'parent' => null, // slug of parent, or null
-				'content' => '',
+				'content' => 'Hi there!',
 				'user' => 'andrew', // username
 			],
 
@@ -52,13 +52,30 @@ class TestPagesSeeder extends Seeder {
 
 		foreach ($pages as $page)
 		{
+			if (!isset($page['user']) || !isset($page['content'])) continue;
+
 			$node = \Hokeo\Vessel\Page::create($page['values']);
 
-			if ($page['parent'])
+			if (isset($page['parent']) && $page['parent'])
 			{
 				$parent = \Hokeo\Vessel\Page::where('slug', $page['parent'])->first();
 				if ($parent) $node->makeChildOf($parent);
 			}
+
+			// associate given username with page, or if dne then delete page
+			if ($user = \Hokeo\Vessel\User::where('username', $page['user'])->first())
+			{
+				$node->user()->associate($user);
+			}
+			else
+			{
+				$node->delete();
+				continue;
+			}
+
+			\Hokeo\Vessel\Facades\PageHelper::saveContent($node->id, $node->formatter, $page['content']);
+
+			$node->save();
 		}
 	}
 

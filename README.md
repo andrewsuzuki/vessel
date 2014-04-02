@@ -19,8 +19,8 @@ Todo, roughly in order:
 * ~~Page edit history~~
 * ~~Page drafts~~
 * ~~Set up unit tests~~
-* Permissions
-* Menu builder
+* ~~Set Up Permissions~~
+* ~~Menu builder~~
 * Menu api
 * Block types (image, text, advanced-custom-fields-like, table, custom, etc)
 * Block manager
