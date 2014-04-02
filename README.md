@@ -6,7 +6,39 @@
 
 Vessel is a simple, yet powerful file-based CMS (content management system). Written in PHP, built on Laravel.
 
-Currently being built; not ready for use.
+Currently in the early stages of development. Some things work, others do not. See installation below to try it out.
+
+### Installation
+
+If you're brave or would like to help out, here's how to install a workbench'd Vessel.
+
+1. Create a new [Laravel installation](http://laravel.com/docs/installation). Configure to taste (url + database).
+2. Run the following from your base laravel installation path:
+
+```
+$ mkdir -p workbench/hokeo/vessel
+$ cd workbench/hokeo/vessel
+$ git clone git://github.com/hokeo/vessel.git
+$ composer update
+$ cd ../../../
+$ composer dump-autoload
+$ php artisan migrate --bench=hokeo/vessel
+$ php artisan db:seed --class=Hokeo\\Vessel\\Seeds\\TestVesselSeeder
+$ php artisan asset:publish --bench=hokeo/vessel
+$ php artisan dump-autoload
+```
+
+3. If you want to fiddle with different config variables from your app, run:
+
+```
+php artisan config:publish --path=workbench/hokeo/vessel/src/config/config.php hokeo/vessel
+```
+
+For testing, just run `phpunit` from workbench/hokeo/vessel. Some bootstrapping hackery will ensue, for now.
+
+Feel free to post any issues or comments on github.
+
+Thanks for trying it out!
 
 ### Roadmap
 
