@@ -113,14 +113,50 @@ class VesselServiceProvider extends ServiceProvider {
 			return new Theme($app['app'], $app['config'], $app['view'], $app['files'], $app['Hokeo\\Vessel\\Setting']);
 		});
 
-
 		$this->app->make('Hokeo\\Vessel\\Vessel'); // construct
 
 		$this->app['Hokeo\\Vessel\\Plugin']->enableAll(); // enable all plugins
 
-		$app = $this->app;
+		$this->bindControllers();
+	}
 
-		$this->app->before(function() use ($app) {
+	/**
+	 * Binds controllers to IoC
+	 * 
+	 * @return void
+	 */
+	protected function bindControllers()
+	{
+		$this->app->bind('Hokeo\\Vessel\\FrontController', function($app) {
+			return new FrontController(
+				$app['app'],
+				$app['view'],
+				$app['menu'],
+				$app['Hokeo\\Vessel\\PageHelper'],
+				$app['Hokeo\\Vessel\\Theme']
+				);
+		});
+
+		$this->app->bind('Hokeo\\Vessel\\BackController', function($app) {
+			return new BackController(
+				$app['view'],
+				$app['request'],
+				$app['redirect'],
+				$app['auth'],
+				$app['notification']
+				);
+		});
+
+		$this->app->bind('Hokeo\\Vessel\\PageController', function($app) {
+			return new PageController(
+				$app['view'],
+				$app['request'],
+				$app['redirect'],
+				$app['Hokeo\\Vessel\\PageHelper'],
+				$app['Hokeo\\Vessel\\Formatter'],
+				$app['Hokeo\\Vessel\\Theme'],
+				$app['notification']
+				);
 		});
 	}
 

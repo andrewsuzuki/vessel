@@ -104,7 +104,7 @@ class PageController extends Controller
 		$this->view->share('title', 'Edit '.$page->title.(($pagehistory) ? ' <span class="label label-pagehistory label-'.(($pagehistory->is_draft) ? 'primary">Draft ' : 'info">Edit ').$pagehistory->edit.'</span>' : '')); // set view title
 		$this->pagehelper->setPageFormatter($page); // set formatter according to page setting (editor)
 
-		$content = ($pagehistory) ? $pagehistory->content : $this->pagehelper->getContent($page->id, true);
+		$content = ($pagehistory) ? $pagehistory->content : $page->content;
 
 		$editor  = $this->formatter->formatter()->getEditorHtml($content); // get editor html
 

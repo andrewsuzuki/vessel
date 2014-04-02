@@ -42,6 +42,7 @@ class CreatePagesTable extends Migration {
 			$table->string('template')->nullable();
 
 			$table->text('content');
+			$table->text('content_made');
 
 			$table->timestamps();
 		});

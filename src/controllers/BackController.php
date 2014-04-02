@@ -2,8 +2,8 @@
 
 use Illuminate\Routing\Controller;
 use Illuminate\View\Environment;
-use Illuminate\Routing\Redirector;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Redirector;
 use Illuminate\Auth\AuthManager;
 use Krucas\Notification\Notification;
 
@@ -11,9 +11,9 @@ class BackController extends Controller {
 
 	protected $view;
 
-	protected $redirect;
-
 	protected $input;
+
+	protected $redirect;
 
 	protected $auth;
 
@@ -21,14 +21,14 @@ class BackController extends Controller {
 
 	public function __construct(
 		Environment $view,
-		Redirector $redirect,
 		Request $input,
+		Redirector $redirect,
 		AuthManager $auth,
 		Notification $notification)
 	{
 		$this->view         = $view;
-		$this->redirect     = $redirect;
 		$this->input        = $input;
+		$this->redirect     = $redirect;
 		$this->auth         = $auth;
 		$this->notification = $notification;
 	}
@@ -68,15 +68,18 @@ class BackController extends Controller {
 		// attempt login
 		if ($this->auth->attempt($attempt, $this->input->get('remember')))
 		{
-			return $this->redirect->route('vessel');
+			$this->notification->success('You have been logged in successfully.');
+			return $this->redirect->intended('vessel');
 		}
 
+		$this->notification->error('Your credentials were incorrect.');
 		return $this->redirect->route('vessel.login')->withInput($this->input->except('password'));
 	}
 
 	public function getLogout()
 	{
 		$this->auth->logout();
+		$this->notification->success('You have been logged out successfully.');
 		return $this->redirect->route('vessel');
 	}
 

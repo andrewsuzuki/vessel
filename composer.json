@@ -27,7 +27,8 @@
     },
     "require-dev": {
         "phpunit/phpunit": "4.0.*",
-        "mockery/mockery": "dev-master"
+        "mockery/mockery": "dev-master",
+        "ccampbell/chromephp": "dev-master"
     },
     "repositories": [
         {

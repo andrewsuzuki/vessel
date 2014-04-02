@@ -40,6 +40,20 @@ saving:
 	2. save raw in storage/content/pages
 	3. compile if it's a compiled format (like md)
 
+## Some paths
+
+Page save:
+
+if new
+
+	create new page node
+	create new pagehistorynode, duplicate of page, edit = 0 (original), including raw content
+
+Block save:
+
+	create/get block node
+	save raw content
+
 ## Plugins
 
 each plugin is a vendor/package directory in main plugins folder, must contain plugin.json with meta data

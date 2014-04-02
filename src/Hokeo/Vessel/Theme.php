@@ -26,6 +26,8 @@ class Theme {
 
 	protected $elements = array();
 
+	protected $current_element = null;
+
 	public function __construct(Application $app, Repository $config, Environment $view, Filesystem $filesystem, Setting $setting)
 	{
 		$this->app         = $app;
@@ -274,9 +276,11 @@ class Theme {
 	public function element($name)
 	{
 		// Check if this element's name has been set
-		if (isset($this->elements[$name]))
+		if (isset($this->elements[$name]) && $this->current_element !== $name)
 		{
-			// Check if the value is a lambda
+			$this->current_element = $name; // set current element to this (preventing recursion)
+			
+			// Check if the value is callable
 			if (is_callable($this->elements[$name]))
 			{
 				return call_user_func_array($this->elements[$name], func_get_args());

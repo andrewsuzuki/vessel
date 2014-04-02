@@ -65,6 +65,7 @@
 				{{ $mainmenu }}
 				
 				<ul class="nav navbar-nav navbar-right">
+					<li><a href="#">View Site</a></li>
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ Auth::user()->username }} <b class="caret"></b></a>
 						<ul class="dropdown-menu">

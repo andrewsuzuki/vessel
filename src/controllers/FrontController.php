@@ -11,18 +11,18 @@ class FrontController extends Controller {
 
 	protected $view;
 
-	protected $pagehelper;
-
 	protected $menu;
+
+	protected $pagehelper;
 
 	protected $theme;
 
-	public function __construct(Application $app, Environment $view, PageHelper $pagehelper, Menu $menu, Theme $theme)
+	public function __construct(Application $app, Environment $view, Menu $menu, PageHelper $pagehelper, Theme $theme)
 	{
 		$this->app        = $app;
 		$this->view       = $view;
-		$this->pagehelper = $pagehelper;
 		$this->menu       = $menu;
+		$this->pagehelper = $pagehelper;
 		$this->theme      = $theme;
 	}
 
@@ -110,7 +110,12 @@ class FrontController extends Controller {
 						return $this->menu->handler('vessel.menu.'.$name)->render();
 					}],
 
-					['content', $this->pagehelper->evalContent($main->id)],
+				]);
+
+				$this->theme->setElement([
+					['content', function() use ($main) {
+						return $this->pagehelper->getDisplayContent($main);
+					}],
 				]);
 
 				$view_name = ($main->template && $main->template !== 'none') ? $main->template.'_template' : 'template';

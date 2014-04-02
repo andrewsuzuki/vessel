@@ -95,53 +95,9 @@ class PageHelper {
 		// hook here?
 	}
 
-	/**
-	 * Evaluate (execute) PHP code of page's current content
-	 * 
-	 * @param  integer $page_id ID of page
-	 * @return string           Evaluated content
-	 */
-	public function evalContent($page_id)
+	public function getDisplayContent($page)
 	{
-		ob_start();
-
-		try
-		{
-			eval('?>'.$this->getContent($page_id, false));
-		}
-		catch (Exception $e)
-		{
-			ob_end_clean();
-			throw $e;
-		}
-
-		$result = ob_get_contents();
-		ob_end_clean();
-
-		return $result;
-	}
-
-	/**
-	 * Gets page content from file
-	 * 
-	 * @param  integer  $page_id ID of page
-	 * @param  boolean $get_raw  If true, will retrieve raw content. If false, will retrieve compiled content (if compiled)
-	 * @return mixed             String content if success, or bool false if fail
-	 */
-	public function getContent($page_id, $get_raw = false)
-	{
-		if (!$get_raw && $this->filesystem->exists($this->pages_path.DIRECTORY_SEPARATOR.'compiled'.DIRECTORY_SEPARATOR.$page_id.'.php'))
-		{
-			return $this->filesystem->get($this->pages_path.DIRECTORY_SEPARATOR.'compiled'.DIRECTORY_SEPARATOR.$page_id.'.php');
-		}
-		elseif ($this->filesystem->exists($this->pages_path.DIRECTORY_SEPARATOR.$page_id.'.v'))
-		{
-			return $this->filesystem->get($this->pages_path.DIRECTORY_SEPARATOR.$page_id.'.v');
-		}
-		else
-		{
-			return false;
-		}
+		return $this->vessel->returnEval($page->content_made);
 	}
 
 	/**
@@ -151,10 +107,10 @@ class PageHelper {
 	 * @param  string  $formatter Name of formatter (compiler)
 	 * @param  string  $content   Content of page
 	 */
-	public function saveContent($page_id, $formatter, $content)
+	public function makeContent($formatter, $content)
 	{
-		// save raw content
-		$this->filesystem->put($this->pages_path.'/'.$page_id.'.v', $content);
+		// encode php tags as entities
+		$compiled = str_replace(['<?', '?>'], ['&lt;?', '?&gt'], $content);
 
 		// save formatted and compiled content
 		if ($this->formatter->exists($formatter))
@@ -164,29 +120,11 @@ class PageHelper {
 			$formatter = $this->formatter->formatter();
 
 			// render content and compile resulting blade template
-			$formatted = $formatter->render($content);
+			$formatted = $formatter->render($compiled);
 			$compiled = $this->formatter->compileBlade($formatted);
+		}
 
-			// k, now save compiled content
-			$this->filesystem->put($this->pages_path.'/compiled/'.$page_id.'.php', $compiled);
-		}
-	}
-
-	/**
-	 * Deletes page's content files
-	 * 
-	 * @param  integer $page_id ID of page
-	 */
-	public function deleteContent($page_id)
-	{
-		if ($this->filesystem->exists($this->pages_path.DIRECTORY_SEPARATOR.'compiled'.DIRECTORY_SEPARATOR.$page_id.'.php'))
-		{
-			$this->filesystem->delete($this->pages_path.DIRECTORY_SEPARATOR.'compiled'.DIRECTORY_SEPARATOR.$page_id.'.php');
-		}
-		if ($this->filesystem->exists($this->pages_path.DIRECTORY_SEPARATOR.$page_id.'.php'))
-		{
-			$this->filesystem->delete($this->pages_path.DIRECTORY_SEPARATOR.$page_id.'.php');
-		}
+		return $compiled;
 	}
 
 	/**
@@ -234,6 +172,7 @@ class PageHelper {
 			$edithistory->title       = $page->title;
 			$edithistory->slug        = $page->slug;
 			$edithistory->description = $page->description;
+			$edithistory->content = $page->content;
 			$edithistory->formatter   = $page->formatter;
 			$edithistory->template    = $page->template;
 			$edithistory->nest_url    = $page->nest_url;
@@ -248,8 +187,6 @@ class PageHelper {
 
 			$edithistory->user()->associate($page->user);
 
-			$edithistory->content = $this->getContent($page->id, true);
-
 			$edithistory->save();
 		}
 
@@ -260,6 +197,7 @@ class PageHelper {
 		$setter->title       = $this->input->get('title');
 		$setter->slug        = $this->input->get('slug');
 		$setter->description = $this->input->get('description');
+		$setter->content     = $this->input->get('content');
 		$setter->formatter   = $this->input->get('formatter');
 		$setter->template    = $this->input->get('template');
 		$setter->nest_url    = (bool) $this->input->get('nest_url');
@@ -273,15 +211,17 @@ class PageHelper {
 		{
 			$setter->is_draft   = true;
 			$setter->created_at = \Carbon\Carbon::now();
-			$setter->content    = $this->input->get('content');
 			$setter->edit       = ($last_edit = $this->db->table($setter->getTable())->max('edit')) ? $last_edit + 1 : 1;
-			$setter->page()->associate($page);
+
+			$setter->page()->associate($page); // associate draft with page
+		}
+		else
+		{
+			// make (format + compile) content
+			$setter->content_made = $this->makeContent($page->formatter, $this->input->get('content'));
 		}
 
 		$setter->save();
-
-		// if it's not a draft, then save as file and compile
-		if (!$draft) $this->saveContent($page->id, $page->formatter, $this->input->get('content'));
 
 		// if a parent page was specified, make child of that parent
 		if ($this->input->get('parent') !== 'none')

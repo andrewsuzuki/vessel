@@ -42,9 +42,9 @@ class TestPagesSeeder extends Seeder {
 					'template' => null,
 					'created_at' => \Carbon\Carbon::parse('now - 5 hours'),
 					'updated_at' => \Carbon\Carbon::parse('now'),
+					'content' => 'Hi there!',
 				],
 				'parent' => null, // slug of parent, or null
-				'content' => 'Hi there!',
 				'user' => 'andrew', // username
 			],
 
@@ -52,7 +52,7 @@ class TestPagesSeeder extends Seeder {
 
 		foreach ($pages as $page)
 		{
-			if (!isset($page['user']) || !isset($page['content'])) continue;
+			if (!isset($page['user'])) continue;
 
 			$node = \Hokeo\Vessel\Page::create($page['values']);
 
@@ -72,8 +72,6 @@ class TestPagesSeeder extends Seeder {
 				$node->delete();
 				continue;
 			}
-
-			\Hokeo\Vessel\Facades\PageHelper::saveContent($node->id, $node->formatter, $page['content']);
 
 			$node->save();
 		}

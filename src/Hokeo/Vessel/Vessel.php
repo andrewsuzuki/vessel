@@ -19,7 +19,7 @@ class Vessel {
 
 	protected $back_menu_built = false;
 
-	protected $dirs = array('', '/', '/pages', '/pages/compiled');
+	protected $dirs = array('', '/');
 
 	public function __construct(Application $app, HtmlBuilder $html, UrlGenerator $url, Menu $menu)
 	{
@@ -70,6 +70,32 @@ class Vessel {
 		{
 			return $this->storage_path.$path;
 		}
+	}
+
+	/**
+	 * Evaluate (execute) PHP code in string
+	 * 
+	 * @param  string $content String, possibly containing PHP
+	 * @return string          Evaluated content
+	 */
+	public function returnEval($content)
+	{
+		ob_start();
+
+		try
+		{
+			eval('?>'.$content);
+		}
+		catch (Exception $e)
+		{
+			ob_end_clean();
+			throw $e;
+		}
+
+		$result = ob_get_contents();
+		ob_end_clean();
+
+		return $result;
 	}
 
 	public function backMenu()
