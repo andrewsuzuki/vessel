@@ -68,6 +68,11 @@ class VesselServiceProvider extends ServiceProvider {
 			$this->app->register($provider);
 		}
 
+		// set some dependency config values
+		
+		$this->app['config']->set('entrust::role', '\\Hokeo\\Vessel\\Role');
+		$this->app['config']->set('entrust::permission', '\\Hokeo\\Vessel\\Permission');
+
 		// IoC Bindings
 				
 		$this->app->bindShared('Hokeo\\Vessel\\Vessel', function($app) {

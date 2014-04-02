@@ -16,7 +16,8 @@
     "require": {
         "php": ">=5.3.0",
         "laravel/framework": "4.1.*",
-        "zizaco/entrust": "1.1.*",
+        "laravelbook/ardent": "dev-master",
+        "zizaco/entrust": "dev-master",
         "edvinaskrucas/notification": "2.*",
         "cebe/markdown": "*",
         "baum/baum": "~1.0",

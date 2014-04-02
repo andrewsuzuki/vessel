@@ -4,7 +4,7 @@ use Zizaco\Entrust\EntrustRole;
 
 class Role extends EntrustRole {
 
-	protected $table = 'vessel_roles';
+	protected $table = 'roles';
 
 	protected $softDelete = false;
 
