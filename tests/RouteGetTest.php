@@ -13,8 +13,6 @@ class RouteGetTest extends \Illuminate\Foundation\Testing\TestCase {
 		parent::setUp();
 
 		$this->vessel_route_prefix = $this->app['config']->get('vessel::vessel.uri', 'vessel');
-
-		// $this->app->register('Hokeo\Vessel\VesselServiceProvider');
 	}
 
     // Helpers
