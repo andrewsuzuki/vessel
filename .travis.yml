@@ -18,6 +18,7 @@ before_script:
   # configure apache virtual hosts
   - sudo cp -f tests/travis-ci-apache /etc/apache2/sites-available/default
   # sudo sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-available/default
+  - sudo a2ensite default
   - sudo service apache2 restart
   # make database
   - mysql -e 'create database vessel_testing;'
@@ -36,19 +37,5 @@ before_script:
   - cd laravel/workbench/hokeo/vessel
   - composer install --dev
   - touch tests/is_travis_test
-  # apache
-  # - sudo apt-get install apache2
-  # - sudo a2enmod actions
-  # - sudo a2enmod rewrite
-  # - echo "export PATH=/home/vagrant/.phpenv/bin:$PATH" | sudo tee -a /etc/apache2/envvars > /dev/null
-  # - echo "$(curl -fsSL https://gist.githubusercontent.com/andrewsuzuki/0e7feac7f22e964bfb0f/raw/74f4fec92c064c4f683fef28a6098caf0f038de7/gistfile1.txt)" | sudo tee /etc/apache2/conf.d/phpconfig > /dev/null
-  # - echo "$(curl -fsSL https://gist.githubusercontent.com/andrewsuzuki/1c50cb3d1c48ac6809f3/raw/84855658606c1d95f9b79b1ae341a97363d3b65f/gistfile1.txt)" | sed -e "s,PATH,`pwd`/web,g" | sudo tee /etc/apache2/sites-available/default > /dev/null
-  # - sudo service apache2 restart
-  # # mysql -u root -e "CREATE USER 'myproject'@'localhost' IDENTIFIED BY 'mypass'"
-  # # mysql -u root -e "GRANT ALL PRIVILEGES ON *.* TO 'myproject'@'localhost' WITH GRANT OPTION;"
-  # - bin/vendors install
-  # # app/console doctrine:database:create
-  # # app/console doctrine:schema:update --force
-  # # app/console doctrine:fixtures:load
 
 script: phpunit

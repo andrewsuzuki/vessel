@@ -5,6 +5,7 @@ $nudir = dirname(dirname(dirname($cwd)));
 print 'Changing to '.$nudir."\n";
 chdir($nudir);
 
+print "Writing database configuration for testing environment...\n";
 
 if (!is_dir($nudir.'/app/config/testing'))
 {
@@ -29,6 +30,8 @@ print "Running artisan database commands for testing...\n";
 if (!IS_VESSEL_TRAVIS_TEST) passthru('php artisan migrate:reset --env=testing');
 passthru('php artisan migrate --bench=hokeo/vessel --env=testing');
 passthru('php artisan db:seed --class=Hokeo\\\Vessel\\\Seeds\\\TestVesselSeeder --env=testing');
+passthru('php artisan asset:publish --bench=hokeo/vessel --env=testing');
+passthru('php artisan dump-autoload');
 
 print 'Changing back to '.$cwd."\n";
 chdir($cwd);

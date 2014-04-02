@@ -57,6 +57,11 @@ class RouteGetTest extends \Illuminate\Foundation\Testing\TestCase {
 		$this->doRouteTest('pages/new');
 	}
 
+	public function testTest()
+	{
+		$this->assertTrue(true);
+	}
+
 	// public function testGetPagesEdit()
 	// {
 	// 	$this->doRouteTest('pages/edit');
