@@ -29,7 +29,7 @@ class VesselServiceProvider extends ServiceProvider {
 		// Constant for easy determination of Laravel 4.1.x vs. 4.0.x
 		$this->app['vessel.laravel.4.1'] = version_compare(\Illuminate\Foundation\Application::VERSION, '4.1') > -1;
 
-		// Version
+		// Semantic versioning components
 		$this->app['vessel.version.major'] = '0';
 		$this->app['vessel.version.minor'] = '5';
 		$this->app['vessel.version.patch'] = '0';
@@ -152,10 +152,10 @@ class VesselServiceProvider extends ServiceProvider {
 				$app['view'],
 				$app['request'],
 				$app['redirect'],
+				$app['notification'],
 				$app['Hokeo\\Vessel\\PageHelper'],
 				$app['Hokeo\\Vessel\\Formatter'],
-				$app['Hokeo\\Vessel\\Theme'],
-				$app['notification']
+				$app['Hokeo\\Vessel\\Theme']
 				);
 		});
 	}

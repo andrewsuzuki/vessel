@@ -16,20 +16,20 @@ class PageController extends Controller
 
 	protected $pagehelper;
 
+	protected $notification;
+
 	protected $formatter;
 
 	protected $theme;
-
-	protected $notification;
 
 	public function __construct(
 		Environment $view,
 		Request $input,
 		Redirector $redirect,
+		Notification $notification,
 		PageHelper $pagehelper,
 		Formatter $formatter,
-		Theme $theme,
-		Notification $notification)
+		Theme $theme)
 	{
 		$this->view         = $view;
 		$this->input        = $input;

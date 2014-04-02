@@ -23,6 +23,30 @@ else
 	file_put_contents($nudir.'/app/config/testing/database.php', "<?php return array('connections' => array('mysql' => array('database' => 'vessel_testing', 'username' => 'root', 'password' => 'root')));");
 }
 
+// add service provider
+
+$app_file = $nudir.'/app/config/app.php';
+
+if (file_exists($app_file))
+{
+	$app_file_contents = file_get_contents($app_file);
+
+	if ($app_file_contents)
+	{
+		$app_file_addition = "'Hokeo\Vessel\VesselServiceProvider',";
+
+		if (strpos($app_file_contents, $app_file_addition) === false)
+		{
+			print "Adding Hokeo\Vessel\VesselServiceProvider to app/config/app.php...\n";
+
+			file_put_contents($app_file, str_replace(
+				"'Illuminate\Workbench\WorkbenchServiceProvider',",
+				"'Illuminate\Workbench\WorkbenchServiceProvider', ".$app_file_addition,
+			$app_file_contents));
+		}
+	}
+}
+
 // clear test db and seed
 
 print "Running artisan database commands for testing...\n";
