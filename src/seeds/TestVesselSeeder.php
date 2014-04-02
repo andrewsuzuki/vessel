@@ -11,7 +11,7 @@ class TestVesselSeeder extends Seeder {
 	 */
 	public function run()
 	{
-		Eloquent::unguard();
+		\Eloquent::unguard();
 
 		$seeds = scandir(__DIR__);
 

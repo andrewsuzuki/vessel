@@ -8,6 +8,7 @@ php:
 
 before_script:
   - pwd
+  - mysql -e 'create database vessel_testing;'
   - echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
   - composer self-update
   # make app
@@ -22,6 +23,7 @@ before_script:
   # composer vessel
   - cd laravel/workbench/hokeo/vessel
   - composer install --dev
+  - touch tests/is_travis_test
   # apache
   # - sudo apt-get install apache2
   # - sudo a2enmod actions

@@ -40,8 +40,8 @@ class TestPagesSeeder extends Seeder {
 					'in_menu' => true,
 					'formatter' => 'Markdown',
 					'template' => null,
-					'created_at' => Carbon\Carbon::parse('now - 5 hours'),
-					'updated_at' => Carbon\Carbon::parse('now'),
+					'created_at' => \Carbon\Carbon::parse('now - 5 hours'),
+					'updated_at' => \Carbon\Carbon::parse('now'),
 				],
 				'parent' => null, // slug of parent, or null
 				'content' => '',
