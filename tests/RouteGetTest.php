@@ -13,10 +13,6 @@ class RouteGetTest extends \Illuminate\Foundation\Testing\TestCase {
 		parent::setUp();
 
 		$this->vessel_route_prefix = $this->app['config']->get('vessel::vessel.uri', 'vessel');
-
-		// $this->app['config']->set('database.connections.mysql.database', 'vessel_testing');
-		// $this->app['config']->set('database.connections.mysql.username', 'root');
-		// $this->app['config']->set('database.connections.mysql.password', 'root');
 	}
 
     // Helpers

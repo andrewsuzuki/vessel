@@ -26,7 +26,7 @@ else
 
 print "Running artisan database commands for testing...\n";
 
-passthru('php artisan migrate:reset --env=testing');
+if (!IS_VESSEL_TRAVIS_TEST) passthru('php artisan migrate:reset --env=testing');
 passthru('php artisan migrate --bench=hokeo/vessel --env=testing');
 passthru('php artisan db:seed --class=Hokeo\\\Vessel\\\Seeds\\\TestVesselSeeder --env=testing');
 
