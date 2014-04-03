@@ -102,7 +102,7 @@
 		<div class="clearfix mb-15"></div>
 
 		<div class="col-md-6">
-			<h3>Edits</h3>
+			<h3>Past Edits</h3>
 
 			{{ View::make('vessel::partials.table_pagehistory')->with(['history' => $edits, 'current' => $pagehistory])->render() }}
 		</div>

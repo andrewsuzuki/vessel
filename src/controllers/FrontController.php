@@ -116,7 +116,7 @@ class FrontController extends Controller {
 
 				$this->theme->setElement([
 					['content', function() use ($main) {
-						return $this->pagehelper->getDisplayContent($main);
+						return $this->vessel->returnEval($main->content_made);
 					}],
 				]);
 

@@ -98,6 +98,8 @@
 					{{ $notifications }}
 				</div>
 
+				{{ var_dump(Session::all()) }}
+
 				{{ fire('back.page-top') }}
 
 				{{ isset($title) ? '<h2 id="vessel-page-title" class="heading-top">'.$title.'</h2>' : '' }}

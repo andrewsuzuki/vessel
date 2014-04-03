@@ -104,7 +104,6 @@ class VesselServiceProvider extends ServiceProvider {
 			return new PageHelper(
 				$app['Hokeo\\Vessel\\Vessel'],
 				$app['Hokeo\\Vessel\\Formatter'],
-				$app['files'],
 				$app['request'],
 				$app['db'],
 				$app['redirect'],

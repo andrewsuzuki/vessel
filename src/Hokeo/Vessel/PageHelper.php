@@ -1,6 +1,5 @@
 <?php namespace Hokeo\Vessel;
 
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\Request;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Routing\Redirector;
@@ -13,8 +12,6 @@ class PageHelper {
 	protected $vessel;
 
 	protected $formatter;
-
-	protected $filesystem;
 
 	protected $input;
 
@@ -37,7 +34,6 @@ class PageHelper {
 	public function __construct(
 		Vessel $vessel,
 		Formatter $formatter,
-		Filesystem $filesystem,
 		Request $input,
 		DatabaseManager $db,
 		Redirector $redirect,
@@ -49,7 +45,6 @@ class PageHelper {
 	{
 		$this->vessel       = $vessel;
 		$this->formatter    = $formatter;
-		$this->filesystem   = $filesystem;
 		$this->input        = $input;
 		$this->db           = $db;
 		$this->redirect     = $redirect;
@@ -103,15 +98,9 @@ class PageHelper {
 		// hook here?
 	}
 
-	public function getDisplayContent($page)
-	{
-		return $this->vessel->returnEval($page->content_made);
-	}
-
 	/**
-	 * Saves page content as file and compiles
+	 * Formats and compiles blade in content
 	 * 
-	 * @param  integer $page_id   ID of page
 	 * @param  string  $formatter Name of formatter (compiler)
 	 * @param  string  $content   Content of page
 	 */
