@@ -62,7 +62,7 @@ class Page extends Node {
 	 * @param  object|null $edit If editing, pass in the updating page model
 	 * @return array             Rules for validator
 	 */
-	public static function rules($edit = null)
+	public function rules($edit = null)
 	{
 		return [
 			'title' => 'required',

@@ -22,6 +22,10 @@ class PageController extends Controller
 
 	protected $theme;
 
+	protected $page;
+
+	protected $pagehistory;
+
 	public function __construct(
 		Environment $view,
 		Request $input,
@@ -29,20 +33,24 @@ class PageController extends Controller
 		Notification $notification,
 		PageHelper $pagehelper,
 		Formatter $formatter,
-		Theme $theme)
+		Theme $theme,
+		Page $page,
+		Pagehistory $pagehistory)
 	{
 		$this->view         = $view;
 		$this->input        = $input;
 		$this->redirect     = $redirect;
+		$this->notification = $notification;
 		$this->pagehelper   = $pagehelper;
 		$this->formatter    = $formatter;
 		$this->theme        = $theme;
-		$this->notification = $notification;
+		$this->page         = $page;
+		$this->pagehistory  = $pagehistory;
 	}
 
 	public function getPages()
 	{
-		$pages = Page::with('user')->get();
+		$pages = $this->page->with('user')->get();
 		$this->view->share('title', 'Pages');
 		return $this->view->make('vessel::pages')->with(compact('pages'));
 	}
@@ -50,7 +58,7 @@ class PageController extends Controller
 	public function getPagesNew()
 	{
 		$mode = 'new';
-		$page = new Page;
+		$page = $this->page->newInstance();
 
 		$this->view->share('title', 'New Page');
 
@@ -65,14 +73,14 @@ class PageController extends Controller
 
 	public function postPagesNew()
 	{
-		$page = new Page;
+		$page = $this->page->newInstance();
 		return $this->pagehelper->savePage($page, 'new');
 	}
 
 	public function getPagesEdit($id)
 	{
 		$mode = 'edit';
-		$page = Page::with('history')->find($id); // find page
+		$page = $this->page->with('history')->find($id); // find page
 		if (!$page) throw new \VesselNotFoundException; // throw error if not found
 
 		$edits  = $page->history()->notDraft()->orderBy('edit', 'desc')->get();
@@ -116,14 +124,14 @@ class PageController extends Controller
 
 	public function postPagesEdit($id)
 	{
-		$page = Page::findOrFail($id);
+		$page = $this->page->findOrFail($id);
 		$is_draft = $this->input->has('save_as_draft');
 		return $this->pagehelper->savePage($page, 'edit', $is_draft);
 	}
 
 	public function getPagesDelete($id)
 	{
-		$page = Page::find($id);
+		$page = $this->page->find($id);
 
 		if ($page)
 		{
@@ -137,7 +145,7 @@ class PageController extends Controller
 
 	public function getPageHistoryDelete($id)
 	{
-		$pagehistory = Pagehistory::find($id);
+		$pagehistory = $this->pagehistory->find($id);
 
 		if ($pagehistory)
 		{
@@ -159,7 +167,7 @@ class PageController extends Controller
 
 	public function getPageHistoryDeleteAll($id)
 	{
-		$page = Page::find($id);
+		$page = $this->page->find($id);
 
 		if ($page)
 		{

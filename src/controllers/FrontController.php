@@ -16,13 +16,16 @@ class FrontController extends Controller {
 
 	protected $theme;
 
-	public function __construct(Application $app, Environment $view, Menu $menu, PageHelper $pagehelper, Theme $theme)
+	protected $page; // model
+
+	public function __construct(Application $app, Environment $view, Menu $menu, PageHelper $pagehelper, Theme $theme, Page $page)
 	{
 		$this->app        = $app;
 		$this->view       = $view;
 		$this->menu       = $menu;
 		$this->pagehelper = $pagehelper;
 		$this->theme      = $theme;
+		$this->page       = $page;
 	}
 
 	/**
@@ -36,7 +39,7 @@ class FrontController extends Controller {
 		$hierarchy = explode('/', $all);
 
 		// get last page slug's page
-		$main = Page::where('slug', end($hierarchy))->first();
+		$main = $this->page->where('slug', end($hierarchy))->first();
 		reset($hierarchy);
 
 		// load theme, with fallback

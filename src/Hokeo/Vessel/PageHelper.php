@@ -28,6 +28,10 @@ class PageHelper {
 
 	protected $notification;
 
+	protected $page; // model
+
+	protected $pagehistory; // model
+
 	protected $pages_path;
 
 	public function __construct(
@@ -39,7 +43,9 @@ class PageHelper {
 		Redirector $redirect,
 		AuthManager $auth,
 		Factory $validator,
-		Notification $notification)
+		Notification $notification,
+		Page $page,
+		Pagehistory $pagehistory)
 	{
 		$this->vessel       = $vessel;
 		$this->formatter    = $formatter;
@@ -50,6 +56,8 @@ class PageHelper {
 		$this->auth         = $auth;
 		$this->validator    = $validator;
 		$this->notification = $notification;
+		$this->page         = $page;
+		$this->pagehistory  = $pagehistory;
 
 		$this->pages_path = $this->vessel->path('/pages');
 	}
@@ -146,11 +154,11 @@ class PageHelper {
 				return $this->redirect->back()->with('force_edit', 'true')->withInput();
 			}
 
-			$rules = Page::rules($page); // validation rules for editing
+			$rules = $this->page->rules($page); // validation rules for editing
 		}
 		else
 		{
-			$rules = Page::rules(); // validation rules for new
+			$rules = $this->page->rules(); // validation rules for new
 		}
 
 		// validate input
@@ -167,7 +175,7 @@ class PageHelper {
 		// if we're editing and not saving a draft, then save an edit history first
 		if ($mode == 'edit' && !$draft)
 		{
-			$edithistory              = new Pagehistory;
+			$edithistory              = $this->pagehistory->newInstance();
 
 			$edithistory->title       = $page->title;
 			$edithistory->slug        = $page->slug;
@@ -191,7 +199,7 @@ class PageHelper {
 		}
 
 		// determine setter (new draft or page)
-		$setter = ($draft) ? new Pagehistory : $page;
+		$setter = ($draft) ? $this->pagehistory->newInstance() : $page;
 
 		// set fields
 		$setter->title       = $this->input->get('title');
@@ -229,7 +237,7 @@ class PageHelper {
 			if ($draft)
 				$setter->parent_id = $this->input->get('parent');
 			else
-				$setter->makeChildOf(Page::find($this->input->get('parent')));
+				$setter->makeChildOf($this->page->find($this->input->get('parent')));
 		}
 		// otherwise make it a root page (if it isn't already)
 		elseif (!$page->isRoot())

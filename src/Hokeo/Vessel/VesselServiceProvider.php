@@ -73,6 +73,8 @@ class VesselServiceProvider extends ServiceProvider {
 		$this->app['config']->set('entrust::permission', '\\Hokeo\\Vessel\\Permission');
 
 		// IoC Bindings
+		
+		$this->bindModels();
 
 		$this->app->bindShared('Hokeo\\Vessel\\Vessel', function($app) {
 			return new Vessel($app['app']);
@@ -95,7 +97,7 @@ class VesselServiceProvider extends ServiceProvider {
 		});
 
 		$this->app->bindShared('Hokeo\\Vessel\\Asset', function($app) {
-			return new Asset();
+			return new Asset;
 		});
 
 		$this->app->bindShared('Hokeo\\Vessel\\PageHelper', function($app) {
@@ -108,7 +110,9 @@ class VesselServiceProvider extends ServiceProvider {
 				$app['redirect'],
 				$app['auth'],
 				$app['validator'],
-				$app['notification']
+				$app['notification'],
+				$app['Hokeo\\Vessel\\Page'],
+				$app['Hokeo\\Vessel\\Pagehistory']
 				);
 		});
 
@@ -130,14 +134,14 @@ class VesselServiceProvider extends ServiceProvider {
 	 */
 	protected function bindControllers()
 	{
-
 		$this->app->bind('Hokeo\\Vessel\\FrontController', function($app) {
 			return new FrontController(
 				$app['app'],
 				$app['view'],
 				$app['Hokeo\\Vessel\\Menu'],
 				$app['Hokeo\\Vessel\\PageHelper'],
-				$app['Hokeo\\Vessel\\Theme']
+				$app['Hokeo\\Vessel\\Theme'],
+				$app['Hokeo\\Vessel\\Page']
 				);
 		});
 
@@ -159,9 +163,36 @@ class VesselServiceProvider extends ServiceProvider {
 				$app['notification'],
 				$app['Hokeo\\Vessel\\PageHelper'],
 				$app['Hokeo\\Vessel\\Formatter'],
-				$app['Hokeo\\Vessel\\Theme']
+				$app['Hokeo\\Vessel\\Theme'],
+				$app['Hokeo\\Vessel\\Page'],
+				$app['Hokeo\\Vessel\\Pagehistory']
 				);
 		});
+	}
+
+	/**
+	 * Binds models to IoC
+	 * 
+	 * @return type description
+	 */
+	protected function bindModels()
+	{
+		$models = array(
+			'User',
+			'Permission',
+			'Role',
+			'Page',
+			'Pagehistory',
+			'Block',
+			);
+
+		foreach ($models as $model)
+		{
+			$this->app->bind('Hokeo\\Vessel\\'.$model, function() use ($model) {
+				$model = 'Hokeo\\Vessel\\'.$model;
+				return new $model;
+			});
+		}
 	}
 
 	/**
