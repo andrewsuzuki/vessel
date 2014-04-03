@@ -193,9 +193,9 @@ class Plugin {
 	/**
 	 * Creates hook
 	 * 
-	 * @param  string  $hook     Name of hook
-	 * @param  callable  $callback Callback function or method (use standard php array(class, method))
-	 * @param  integer $priority Priority of hook; not guaranteed if other plugins are installed
+	 * @param  string   $hook     Name of hook
+	 * @param  callable $callback Callback function or method (use standard php array(class, method))
+	 * @param  integer  $priority Priority of hook; not guaranteed if other plugins are installed (higher is sooner)
 	 */
 	public function hook($hook, $callback, $priority = 0)
 	{

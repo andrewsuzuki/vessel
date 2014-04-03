@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Html\HtmlBuilder;
-use Menu\Menu;
 use Illuminate\Support\ClassLoader;
 
 class VesselServiceProvider extends ServiceProvider {
@@ -74,9 +73,9 @@ class VesselServiceProvider extends ServiceProvider {
 		$this->app['config']->set('entrust::permission', '\\Hokeo\\Vessel\\Permission');
 
 		// IoC Bindings
-				
+
 		$this->app->bindShared('Hokeo\\Vessel\\Vessel', function($app) {
-			return new Vessel($app['app'], new HtmlBuilder, $app['url'], new Menu);
+			return new Vessel($app['app']);
 		});
 
 		$this->app->bindShared('Hokeo\\Vessel\\Setting', function($app) {
@@ -85,6 +84,10 @@ class VesselServiceProvider extends ServiceProvider {
 
 		$this->app->bindShared('Hokeo\\Vessel\\Plugin', function($app) {
 			return new Plugin($app['app'], $app['config'], new ClassLoader, $app['files'], $app['Hokeo\\Vessel\\Setting']);
+		});
+		
+		$this->app->bindShared('Hokeo\\Vessel\\Menu', function($app) {
+			return new Menu($app['html'], $app['url'], $app['Hokeo\\Vessel\\Plugin']);
 		});
 
 		$this->app->bindShared('Hokeo\\Vessel\\Formatter', function($app) {
@@ -115,9 +118,9 @@ class VesselServiceProvider extends ServiceProvider {
 
 		$this->app->make('Hokeo\\Vessel\\Vessel'); // construct
 
-		$this->app['Hokeo\\Vessel\\Plugin']->enableAll(); // enable all plugins
-
 		$this->bindControllers();
+
+		$this->app['Hokeo\\Vessel\\Plugin']->enableAll(); // enable all plugins
 	}
 
 	/**
@@ -127,11 +130,12 @@ class VesselServiceProvider extends ServiceProvider {
 	 */
 	protected function bindControllers()
 	{
+
 		$this->app->bind('Hokeo\\Vessel\\FrontController', function($app) {
 			return new FrontController(
 				$app['app'],
 				$app['view'],
-				$app['menu'],
+				$app['Hokeo\\Vessel\\Menu'],
 				$app['Hokeo\\Vessel\\PageHelper'],
 				$app['Hokeo\\Vessel\\Theme']
 				);

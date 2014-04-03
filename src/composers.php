@@ -12,8 +12,8 @@ View::creator('vessel::layout', function($view)
 	$css = Hokeo\Vessel\Facades\Asset::make('css');
 	$js = Hokeo\Vessel\Facades\Asset::make('js');
 
-	\Hokeo\Vessel\Facades\Vessel::backMenu();
-	$mainmenu = \Menu\Menu::handler('vessel.menu.main')->render();
+	\Hokeo\Vessel\Facades\Menu::backMenu();
+	$mainmenu = \Hokeo\Vessel\Facades\Menu::handler('vessel.back.menu.main')->render();
 
 	$notifications = Krucas\Notification\Facades\Notification::showAll();
 

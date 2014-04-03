@@ -3,7 +3,6 @@
 use Illuminate\Routing\Controller;
 use Illuminate\Foundation\Application;
 use Illuminate\View\Environment;
-use Menu\Menu;
 
 class FrontController extends Controller {
 
