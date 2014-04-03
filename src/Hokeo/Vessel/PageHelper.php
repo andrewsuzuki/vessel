@@ -11,7 +11,7 @@ class PageHelper {
 
 	protected $vessel;
 
-	protected $formatter;
+	protected $fm;
 
 	protected $input;
 
@@ -33,7 +33,7 @@ class PageHelper {
 
 	public function __construct(
 		Vessel $vessel,
-		Formatter $formatter,
+		FormatterManager $fm,
 		Request $input,
 		DatabaseManager $db,
 		Redirector $redirect,
@@ -44,7 +44,7 @@ class PageHelper {
 		Pagehistory $pagehistory)
 	{
 		$this->vessel       = $vessel;
-		$this->formatter    = $formatter;
+		$this->fm           = $fm;
 		$this->input        = $input;
 		$this->db           = $db;
 		$this->redirect     = $redirect;
@@ -65,33 +65,33 @@ class PageHelper {
 	public function setPageFormatter($page)
 	{
 		// try for a set formatter input
-		if ($this->input->get('formatter') && $this->formatter->exists($this->input->get('formatter')))
+		if ($this->input->get('formatter') && $this->fm->exists($this->input->get('formatter')))
 		{
-			$this->formatter->set($this->input->get('formatter'));
+			$this->fm->set($this->input->get('formatter'));
 			return 1;
 		}
 		// or try old input
-		elseif ($this->input->old('formatter') && $this->formatter->exists($this->input->old('formatter')))
+		elseif ($this->input->old('formatter') && $this->fm->exists($this->input->old('formatter')))
 		{
-			$this->formatter->set($this->input->old('formatter'));
+			$this->fm->set($this->input->old('formatter'));
 			return 2;
 		}
 		// or try set page setting
-		elseif ($page && $page->formatter && $this->formatter->exists($page->formatter))
+		elseif ($page && $page->formatter && $this->fm->exists($page->formatter))
 		{
-			$this->formatter->set($page->formatter);
+			$this->fm->set($page->formatter);
 			return 3;
 		}
 		// or try user preference
-		elseif ($this->auth->user()->preferred_formatter && $this->formatter->exists($this->auth->user()->preferred_formatter))
+		elseif ($this->auth->user()->preferred_formatter && $this->fm->exists($this->auth->user()->preferred_formatter))
 		{
-			$this->formatter->set($this->auth->user()->preferred_formatter);
+			$this->fm->set($this->auth->user()->preferred_formatter);
 			return 4;
 		}
 		// whoops, let's revert to Markdown
 		else
 		{
-			$this->formatter->set('Markdown');
+			$this->fm->set('Markdown');
 			return 5;
 		}
 
@@ -110,15 +110,15 @@ class PageHelper {
 		$compiled = str_replace(['<?', '?>'], ['&lt;?', '?&gt'], $content);
 
 		// save formatted and compiled content
-		if ($this->formatter->exists($formatter))
+		if ($this->fm->exists($formatter))
 		{
 			// set and get formatter
-			$this->formatter->set($formatter);
-			$formatter = $this->formatter->formatter();
+			$this->fm->set($formatter);
+			$formatter = $this->fm->formatter();
 
 			// render content and compile resulting blade template
 			$formatted = $formatter->render($compiled);
-			$compiled = $this->formatter->compileBlade($formatted);
+			$compiled = $this->fm->compileBlade($formatted);
 		}
 
 		return $compiled;
@@ -161,6 +161,17 @@ class PageHelper {
 			return $this->redirect->back()->withInput();
 		}
 
+		// process content
+		$formatter = $this->fm->get($this->input->get('formatter'));
+		$processed = $formatter->fmProcess();
+
+		// verify processing returns array with two elements
+		if (!is_array($processed) || count($processed) !== 2)
+		{
+			// error with processing, redirect back
+			return $this->redirect->back()->withInput();
+		}
+
 		// if we're editing and not saving a draft, then save an edit history first
 		if ($mode == 'edit' && !$draft)
 		{
@@ -169,7 +180,8 @@ class PageHelper {
 			$edithistory->title       = $page->title;
 			$edithistory->slug        = $page->slug;
 			$edithistory->description = $page->description;
-			$edithistory->content = $page->content;
+			$edithistory->raw         = $page->raw;
+			$edithistory->made        = $page->made;
 			$edithistory->formatter   = $page->formatter;
 			$edithistory->template    = $page->template;
 			$edithistory->nest_url    = $page->nest_url;
@@ -194,12 +206,14 @@ class PageHelper {
 		$setter->title       = $this->input->get('title');
 		$setter->slug        = $this->input->get('slug');
 		$setter->description = $this->input->get('description');
-		$setter->content     = $this->input->get('content');
 		$setter->formatter   = $this->input->get('formatter');
 		$setter->template    = $this->input->get('template');
 		$setter->nest_url    = (bool) $this->input->get('nest_url');
 		$setter->visible     = (bool) $this->input->get('visible');
 		$setter->in_menu     = (bool) $this->input->get('in_menu');
+
+		$setter->raw         = $processed[0];
+		$setter->made        = $processed[1];
 
 		// associate saver (user)
 		$setter->user()->associate($this->auth->user());
@@ -211,11 +225,6 @@ class PageHelper {
 			$setter->edit       = ($last_edit = $this->db->table($setter->getTable())->max('edit')) ? $last_edit + 1 : 1;
 
 			$setter->page()->associate($page); // associate draft with page
-		}
-		else
-		{
-			// make (format + compile) content
-			$setter->content_made = $this->makeContent($page->formatter, $this->input->get('content'));
 		}
 
 		$setter->save();

@@ -2,9 +2,12 @@
 
 interface FormatterInterface
 {
-	public function getName();
-	public function useAssets();
-	public function getEditorHtml($content = null);
-	public function isCompiled();
-	public function render($string);
+	public function fmName();
+	public function fmFor();
+
+	public function fmInterface($raw, $made);
+	public function fmProcess();
+
+	public function fmSetup();
+	public function fmUse($raw, $made);
 }

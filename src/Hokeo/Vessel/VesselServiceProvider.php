@@ -92,8 +92,8 @@ class VesselServiceProvider extends ServiceProvider {
 			return new Menu($app['html'], $app['url'], $app['Hokeo\\Vessel\\Plugin']);
 		});
 
-		$this->app->bindShared('Hokeo\\Vessel\\Formatter', function($app) {
-			return new Formatter($app['app'], $app['blade.compiler']);
+		$this->app->bindShared('Hokeo\\Vessel\\FormatterManager', function($app) {
+			return new FormatterManager($app['app'], $app['blade.compiler']);
 		});
 
 		$this->app->bindShared('Hokeo\\Vessel\\Asset', function($app) {
@@ -103,7 +103,7 @@ class VesselServiceProvider extends ServiceProvider {
 		$this->app->bindShared('Hokeo\\Vessel\\PageHelper', function($app) {
 			return new PageHelper(
 				$app['Hokeo\\Vessel\\Vessel'],
-				$app['Hokeo\\Vessel\\Formatter'],
+				$app['Hokeo\\Vessel\\FormatterManager'],
 				$app['request'],
 				$app['db'],
 				$app['redirect'],
@@ -137,8 +137,10 @@ class VesselServiceProvider extends ServiceProvider {
 			return new FrontController(
 				$app['app'],
 				$app['view'],
+				$app['Hokeo\\Vessel\\Vessel'],
 				$app['Hokeo\\Vessel\\Menu'],
 				$app['Hokeo\\Vessel\\PageHelper'],
+				$app['Hokeo\\Vessel\\FormatterManager'],
 				$app['Hokeo\\Vessel\\Theme'],
 				$app['Hokeo\\Vessel\\Page']
 				);
@@ -158,10 +160,11 @@ class VesselServiceProvider extends ServiceProvider {
 			return new PageController(
 				$app['view'],
 				$app['request'],
+				$app['auth'],
 				$app['redirect'],
 				$app['notification'],
 				$app['Hokeo\\Vessel\\PageHelper'],
-				$app['Hokeo\\Vessel\\Formatter'],
+				$app['Hokeo\\Vessel\\FormatterManager'],
 				$app['Hokeo\\Vessel\\Theme'],
 				$app['Hokeo\\Vessel\\Page'],
 				$app['Hokeo\\Vessel\\Pagehistory']
@@ -205,7 +208,7 @@ class VesselServiceProvider extends ServiceProvider {
 			'Hokeo\\Vessel\\Vessel',
 			'Hokeo\\Vessel\\Setting',
 			'Hokeo\\Vessel\\Plugin',
-			'Hokeo\\Vessel\\Formatter',
+			'Hokeo\\Vessel\\FormatterManager',
 			'Hokeo\\Vessel\\Asset',
 			'Hokeo\\Vessel\\PageHelper',
 			'Hokeo\\Vessel\\Theme',

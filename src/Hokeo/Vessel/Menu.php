@@ -38,7 +38,7 @@ class Menu extends VMenu {
 			$menu = $this->handler('vessel.back.menu.main', array('class' => 'nav navbar-nav'));
 			$menu->add($this->url->route('vessel'), 'Home')
 			->add($this->url->route('vessel.pages'), 'Pages')
-			->add('#', 'Blocks')
+			->add($this->url->route('vessel.blocks'), 'Blocks')
 			->add('#', 'Media')
 			->add('#', 'Users')
 			->add('#', 'Settings');

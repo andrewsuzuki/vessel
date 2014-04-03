@@ -2,30 +2,78 @@
 
 namespace Hokeo\Vessel\Formatter;
 
+use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
 use Hokeo\Vessel\FormatterInterface;
+use Hokeo\Vessel\Facades\Vessel;
 use Hokeo\Vessel\Facades\Asset;
+use Hokeo\Vessel\Facades\FormatterManager;
 
 class Markdown extends \cebe\markdown\Markdown implements FormatterInterface
 {
-	public function getName() {	return 'Markdown'; }
+	/**
+	 * Return name of formatter
+	 * 
+	 * @return string
+	 */
+	public function fmName()
+	{
+		return 'Markdown';
+	}
 
-	public function isCompiled() { return true; }
+	/**
+	 * Gets formattable content types
+	 * 
+	 * @return array
+	 */
+	public function fmFor()
+	{
+		return array('page', 'block');
+	}
 
-	public function useAssets()
+	/**
+	 * Returns editor interface html
+	 * 
+	 * @return string
+	 */
+	public function fmInterface($raw, $made)
+	{
+		return View::make('vessel::editor.Markdown.editor')->with(array('content' => $raw))->render();
+	}
+
+	/**
+	 * Process editor interface submission
+	 * 
+	 * @return array Raw content, and null (for made=raw)
+	 */
+	public function fmProcess()
+	{
+		$raw  = Input::get('content');
+		$made = FormatterManager::compileBlade($this->parse($raw));
+		return array($raw, $made);
+	}
+
+	/**
+	 * Sets up formatter for editing interface
+	 * 
+	 * @return void
+	 */
+	public function fmSetup()
 	{
 		Asset::js(asset('packages/hokeo/vessel/editor/Markdown/EpicEditor/js/epiceditor.min.js'), 'epic-editor');
 		Asset::js(asset('packages/hokeo/vessel/editor/Markdown/EpicEditor/js/epiceditor-init.js'), 'epic-editor-init');
 	}
 
-	public function getEditorHtml($content = null)
+	/**
+	 * Uses formatter (front end)
+	 * 
+	 * @param  string $raw  Raw saved content
+	 * @param  string $made Made saved content
+	 * @return string       Content to display
+	 */
+	public function fmUse($raw, $made)
 	{
-		return View::make('vessel::editor.Markdown.editor')->with(compact('content'))->render();
-	}
-
-	public function render($string)
-	{
-		return $this->parse($string);
+		return Vessel::returnEval($made);
 	}
 
 	// CEBE/MARKDOWN CODE BLOCK EXTENSION (code pre (```) blocks and code as-is (~~~) blocks)

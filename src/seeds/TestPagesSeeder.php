@@ -10,24 +10,6 @@ class TestPagesSeeder extends Seeder {
 		DB::table('vessel_pages')->delete();
 		
 		$pages = array(
-			// [
-			// 	'values' => [
-			// 		'edit' => null, // edit # or null
-			// 		'slug' => '',
-			// 		'title' => '',
-			// 		'description' => '',
-			// 		'nest_url' => true,
-			// 		'visible' => true,
-			// 		'in_menu' => true,
-			// 		'formatter' => 'Markdown',
-			// 		'template' => null,
-			// 		'created_at' => Carbon\Carbon::parse('now'),
-			// 		'updated_at' => Carbon\Carbon::parse('now'),
-			// 	],
-			// 	'parent' => null, // slug of parent, or null
-			// 	'content' => '',
-			// 	'user' => 'andrew', // username
-			// ],
 			
 			[
 				'values' => [
@@ -42,7 +24,8 @@ class TestPagesSeeder extends Seeder {
 					'template' => null,
 					'created_at' => \Carbon\Carbon::parse('now - 5 hours'),
 					'updated_at' => \Carbon\Carbon::parse('now'),
-					'content' => 'Hi there!',
+					'raw' => 'Hi there!',
+					'made' => 'Hi there!',
 				],
 				'parent' => null, // slug of parent, or null
 				'user' => 'andrew', // username

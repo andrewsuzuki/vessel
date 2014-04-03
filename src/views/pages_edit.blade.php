@@ -19,13 +19,13 @@
 				</div>
 				<div class="col-md-2 col-sm-3">
 					<div class="form-group">
-						{{ Form::select('formatter', \Hokeo\Vessel\Facades\Formatter::selectArray(), \Hokeo\Vessel\Facades\Formatter::formatter()->getName(), array('class' => 'vessel-carry-field vessel-select-formatter form-control input-lg')) }}
+						{{ Form::select('formatter', $formatters_select_array, $formatter_current, array('class' => 'vessel-carry-field vessel-select-formatter form-control input-lg')) }}
 					</div>
 				</div>
 			</div>
 
 			<div class="form-group">
-				{{ $editor or '' }}
+				{{ $interface or '' }}
 			</div>
 			
 			<div class="form-horizontal">

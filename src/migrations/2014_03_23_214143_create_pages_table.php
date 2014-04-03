@@ -41,8 +41,8 @@ class CreatePagesTable extends Migration {
 			$table->string('formatter')->nullable();
 			$table->string('template')->nullable();
 
-			$table->text('content');
-			$table->text('content_made');
+			$table->text('raw')->nullable();
+			$table->text('made')->nullable();
 
 			$table->timestamps();
 		});

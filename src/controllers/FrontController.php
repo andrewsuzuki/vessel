@@ -10,20 +10,26 @@ class FrontController extends Controller {
 
 	protected $view;
 
+	protected $vessel;
+
 	protected $menu;
 
 	protected $pagehelper;
+
+	protected $fm;
 
 	protected $theme;
 
 	protected $page; // model
 
-	public function __construct(Application $app, Environment $view, Menu $menu, PageHelper $pagehelper, Theme $theme, Page $page)
+	public function __construct(Application $app, Environment $view, Vessel $vessel, Menu $menu, PageHelper $pagehelper, FormatterManager $fm, Theme $theme, Page $page)
 	{
 		$this->app        = $app;
 		$this->view       = $view;
+		$this->vessel     = $vessel;
 		$this->menu       = $menu;
 		$this->pagehelper = $pagehelper;
+		$this->fm         = $fm;
 		$this->theme      = $theme;
 		$this->page       = $page;
 	}
@@ -79,52 +85,57 @@ class FrontController extends Controller {
 			
 			if ($valid)
 			{
-				// Create menu
-				$menu = $this->menu->handler('vessel.menu.front', array('class' => 'nav navbar-nav'));
-
-				$menu->add('/', 'Home')
-				->add('/about', 'About')
-				->add('#', 'More', $this->menu->items('more')
-					->add('/blog', 'Blog'));
-
-				$this->menu->handler('vessel.menu.front')->getItemsAtDepth(0)->map(function($item)
+				if ($this->fm->registered($main->formatter))
 				{
-					if($item->hasChildren())
+					// Create menu
+					$menu = $this->menu->handler('vessel.menu.front', array('class' => 'nav navbar-nav'));
+
+					$menu->add('/', 'Home')
+					->add('/about', 'About')
+					->add('#', 'More', $this->menu->items('more')
+						->add('/blog', 'Blog'));
+
+					$this->menu->handler('vessel.menu.front')->getItemsAtDepth(0)->map(function($item)
 					{
-						$item->addClass('dropdown');
+						if($item->hasChildren())
+						{
+							$item->addClass('dropdown');
 
-						$item->getChildren()
-						->addClass('dropdown-menu');
+							$item->getChildren()
+							->addClass('dropdown-menu');
 
-						$item->getContent()
-						->addClass('dropdown-toggle')
-						->dataToggle('dropdown')
-						->nest(' <b class="caret"></b>');
-					}
-				});
+							$item->getContent()
+							->addClass('dropdown-toggle')
+							->dataToggle('dropdown')
+							->nest(' <b class="caret"></b>');
+						}
+					});
 
-				$this->theme->setElement([
-					['page-title', function() use ($main) {
-						return $main->title;
-					}],
+					$this->theme->setElement([
+						['page-title', function() use ($main) {
+							return $main->title;
+						}],
 
-					['menu', function($call, $name) use ($main) {
-						return $this->menu->handler('vessel.menu.'.$name)->render();
-					}],
+						['menu', function($call, $name) use ($main) {
+							return $this->menu->handler('vessel.menu.'.$name)->render();
+						}],
 
-				]);
+					]);
 
-				$this->theme->setElement([
-					['content', function() use ($main) {
-						return $this->vessel->returnEval($main->content_made);
-					}],
-				]);
+					$formatter = $this->fm->get($main->formatter);
 
-				$view_name = ($main->template && $main->template !== 'none') ? $main->template.'_template' : 'template';
+					$this->theme->setElement([
+						['content', function() use ($main, $formatter) {
+							return $formatter->fmUse($main->raw, $main->made);
+						}],
+					]);
 
-				if (!$this->view->exists('vessel-theme::'.$view_name)) $view_name = 'template'; // revert to default template if it doesn't exist
+					$view_name = ($main->template && $main->template !== 'none') ? $main->template.'_template' : 'template';
 
-				return $view = $this->view->make('vessel-theme::'.$view_name);
+					if (!$this->view->exists('vessel-theme::'.$view_name)) $view_name = 'template'; // revert to default template if it doesn't exist
+
+					return $view = $this->view->make('vessel-theme::'.$view_name);
+				}
 			}
 		}
 

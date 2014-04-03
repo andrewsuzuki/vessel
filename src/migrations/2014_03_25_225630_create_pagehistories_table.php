@@ -37,7 +37,8 @@ class CreatePagehistoriesTable extends Migration {
 			$table->string('formatter')->nullable();
 			$table->string('template')->nullable();
 
-			$table->text('content');
+			$table->text('raw')->nullable();
+			$table->text('made')->nullable();
 
 			$table->timestamp('created_at');
 		});

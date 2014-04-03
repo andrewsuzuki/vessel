@@ -2,30 +2,75 @@
 
 namespace Hokeo\Vessel\Formatter;
 
+use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
 use Hokeo\Vessel\FormatterInterface;
+use Hokeo\Vessel\Facades\Vessel;
+use Hokeo\Vessel\Facades\FormatterManager;
 
 class Plain implements FormatterInterface
 {
-	public function getName()
+	/**
+	 * Return name of formatter
+	 * 
+	 * @return string
+	 */
+	public function fmName()
 	{
 		return 'Plain';
 	}
 
-	public function useAssets() {}
-	
-	public function getEditorHtml($content = null)
+	/**
+	 * Gets formattable content types
+	 * 
+	 * @return array
+	 */
+	public function fmFor()
 	{
-		return View::make('vessel::editor.Plain.editor')->with(compact('content'))->render();
+		return array('page', 'block');
 	}
 
-	public function isCompiled()
+	/**
+	 * Returns editor interface html
+	 * 
+	 * @return string
+	 */
+	public function fmInterface($raw, $made)
 	{
-		return false;
+		return View::make('vessel::editor.Plain.editor')->with(array('content' => $raw))->render();
 	}
 
-	public function render($string)
+	/**
+	 * Process editor interface submission
+	 * 
+	 * @return array Raw content, and null (for made=raw)
+	 */
+	public function fmProcess()
 	{
-		return $string;
+		$raw = Input::get('content');
+		$made = FormatterManager::compileBlade($raw);
+		return array($raw, $made);
+	}
+
+	/**
+	 * Sets up formatter for editing interface
+	 * 
+	 * @return void
+	 */
+	public function fmSetup()
+	{
+		// 
+	}
+
+	/**
+	 * Uses formatter (front end)
+	 * 
+	 * @param  string $raw  Raw saved content
+	 * @param  string $made Made saved content
+	 * @return string       Content to display
+	 */
+	public function fmUse($raw, $made)
+	{
+		return Vessel::returnEval($made);
 	}
 }

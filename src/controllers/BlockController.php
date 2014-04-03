@@ -22,6 +22,8 @@ class BlockController extends Controller
 
 	protected $notification;
 
+	protected $block; // model
+
 	public function __construct(
 		Environment $view,
 		Request $input,
@@ -29,20 +31,22 @@ class BlockController extends Controller
 		BlockHelper $blockhelper,
 		Formatter $formatter,
 		Theme $theme,
-		Notification $notification)
+		Notification $notification,
+		Block $block)
 	{
 		$this->view         = $view;
 		$this->input        = $input;
 		$this->redirect     = $redirect;
-		$this->blockhelper   = $blockhelper;
+		$this->blockhelper  = $blockhelper;
 		$this->formatter    = $formatter;
 		$this->theme        = $theme;
 		$this->notification = $notification;
+		$this->block        = $block;
 	}
 
 	public function getBlocks()
 	{
-		$blocks = Block::with('user')->get();
+		$blocks = $this->block->with('user')->get();
 		$this->view->share('title', 'Blocks');
 		return $this->view->make('vessel::blocks')->with(compact('blocks'));
 	}
@@ -50,7 +54,7 @@ class BlockController extends Controller
 	public function getBlockNew()
 	{
 		$mode = 'new';
-		$block = new Block;
+		$block = $this->block->newInstance();
 
 		$this->view->share('title', 'New Block');
 
@@ -65,14 +69,14 @@ class BlockController extends Controller
 
 	public function postBlockNew()
 	{
-		$block = new Block;
+		$block = $this->block->newInstance();
 		return $this->blockhelper->saveblock($block, 'new');
 	}
 
 	public function getBlockEdit($id)
 	{
 		$mode = 'edit';
-		$block = Block::find($id); // find block
+		$block = $this->block->find($id); // find block
 		if (!$block) throw new \VesselNotFoundException; // throw error if not found
 
 		$this->view->share('title', 'Edit '.$block->title); // set view title
@@ -90,14 +94,14 @@ class BlockController extends Controller
 
 	public function postBlockEdit($id)
 	{
-		$block = Block::findOrFail($id);
+		$block = $this->block->findOrFail($id);
 		$is_draft = $this->input->has('save_as_draft');
 		return $this->blockhelper->saveBlock($block, 'edit', $is_draft);
 	}
 
 	public function getBlockDelete($id)
 	{
-		$block = Block::find($id);
+		$block = $this->block->find($id);
 
 		if ($block)
 		{

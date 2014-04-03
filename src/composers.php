@@ -8,7 +8,6 @@
 
 View::creator('vessel::layout', function($view)
 {
-	\Hokeo\Vessel\Facades\Formatter::useAssets();
 	$css = Hokeo\Vessel\Facades\Asset::make('css');
 	$js = Hokeo\Vessel\Facades\Asset::make('js');
 

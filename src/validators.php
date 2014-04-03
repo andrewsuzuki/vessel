@@ -21,7 +21,7 @@ Validator::extend('pageParent', function($attribute, $value, $parameters)
 // Checks if formatter exists
 Validator::extend('formatter', function($attribute, $value, $parameters)
 {
-	return Hokeo\Vessel\Facades\Formatter::exists($value);
+	return Hokeo\Vessel\Facades\FormatterManager::registered($value);
 });
 
 // Checks if theme template exists

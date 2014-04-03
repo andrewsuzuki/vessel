@@ -2,10 +2,10 @@
 
 use Illuminate\Support\Facades\Facade;
 
-class Formatter extends Facade {
+class FormatterManager extends Facade {
 
 	protected static function getFacadeAccessor()
 	{
-		return 'Hokeo\\Vessel\\Formatter';
+		return 'Hokeo\\Vessel\\FormatterManager';
 	}
 }

@@ -33,7 +33,7 @@
 
 				<div class="panel panel-default">
 					<div class="panel-heading">
-						<h3 class="panel-title">Vessel</h3>
+						<h3 class="panel-title"><a href="http://vesselcms.com" target="_blank">Vessel</a></h3>
 					</div>
 					<div class="panel-body">
 						{{ Form::open(array('route' => array('vessel.login')), array('role' => 'form')) }}

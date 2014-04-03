@@ -3,6 +3,7 @@
 use Illuminate\Routing\Controller;
 use Illuminate\View\Environment;
 use Illuminate\Http\Request;
+use Illuminate\Auth\AuthManager;
 use Illuminate\Routing\Redirector;
 use Krucas\Notification\Notification;
 
@@ -12,13 +13,15 @@ class PageController extends Controller
 
 	protected $input;
 
+	protected $auth;
+
 	protected $redirect;
 
 	protected $pagehelper;
 
 	protected $notification;
 
-	protected $formatter;
+	protected $fm;
 
 	protected $theme;
 
@@ -29,20 +32,22 @@ class PageController extends Controller
 	public function __construct(
 		Environment $view,
 		Request $input,
+		AuthManager $auth,
 		Redirector $redirect,
 		Notification $notification,
 		PageHelper $pagehelper,
-		Formatter $formatter,
+		FormatterManager $fm,
 		Theme $theme,
 		Page $page,
 		Pagehistory $pagehistory)
 	{
 		$this->view         = $view;
 		$this->input        = $input;
+		$this->auth         = $auth;
 		$this->redirect     = $redirect;
 		$this->notification = $notification;
 		$this->pagehelper   = $pagehelper;
-		$this->formatter    = $formatter;
+		$this->fm           = $fm;
 		$this->theme        = $theme;
 		$this->page         = $page;
 		$this->pagehistory  = $pagehistory;
@@ -62,13 +67,13 @@ class PageController extends Controller
 
 		$this->view->share('title', 'New Page');
 
-		$this->pagehelper->setPageFormatter($page);
-		$editor = $this->formatter->formatter()->getEditorHtml();
+		$formatter = $this->fm->tryEach($this->input->get('formatter'), $this->input->old('formatter'), $this->auth->user()->preferred_formatter);
+		$interface = $formatter->fmInterface($page->raw, $page->made);
 
 		$this->theme->load();
 		$sub_templates = $this->theme->getThemeViewsSelect();
 
-		return $this->view->make('vessel::pages_edit')->with(compact('page', 'mode', 'editor', 'sub_templates'));
+		return $this->view->make('vessel::pages_edit')->with(compact('page', 'mode', 'interface', 'sub_templates'));
 	}
 
 	public function postPagesNew()
@@ -110,16 +115,38 @@ class PageController extends Controller
 		}
 
 		$this->view->share('title', 'Edit '.$page->title.(($pagehistory) ? ' <span class="label label-pagehistory label-'.(($pagehistory->is_draft) ? 'primary">Draft ' : 'info">Edit ').$pagehistory->edit.'</span>' : '')); // set view title
-		$this->pagehelper->setPageFormatter($page); // set formatter according to page setting (editor)
 
-		$content = ($pagehistory) ? $pagehistory->content : $page->content;
+		$formatter = $this->fm->tryEach(
+			$this->input->get('formatter'),
+			$this->input->old('formatter'),
+			$page->formatter,
+			$this->auth->user()->preferred_formatter
+			);
 
-		$editor  = $this->formatter->formatter()->getEditorHtml($content); // get editor html
+		$raw = ($pagehistory) ? $pagehistory->raw : $page->raw;
+		$made = ($pagehistory) ? $pagehistory->made : $page->made;
+
+		$interface = $formatter->fmInterface($raw, $made);
+
+		$formatter->fmSetup();
+
+		$formatters_select_array = $this->fm->filterForSelect('page');
+		$formatter_current = get_class($formatter);
 
 		$this->theme->load();
 		$sub_templates = $this->theme->getThemeViewsSelect();
 
-		return $this->view->make('vessel::pages_edit')->with(compact('page', 'pagehistory', 'edits', 'drafts', 'mode', 'editor', 'sub_templates'));
+		return $this->view->make('vessel::pages_edit')->with(compact(
+			'page',
+			'pagehistory',
+			'edits',
+			'drafts',
+			'mode',
+			'interface',
+			'formatters_select_array',
+			'formatter_current',
+			'sub_templates'
+			));
 	}
 
 	public function postPagesEdit($id)
