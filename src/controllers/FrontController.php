@@ -16,22 +16,34 @@ class FrontController extends Controller {
 
 	protected $pagehelper;
 
+	protected $blockhelper;
+
 	protected $fm;
 
 	protected $theme;
 
 	protected $page; // model
 
-	public function __construct(Application $app, Environment $view, Vessel $vessel, Menu $menu, PageHelper $pagehelper, FormatterManager $fm, Theme $theme, Page $page)
+	public function __construct(
+		Application $app,
+		Environment $view,
+		Vessel $vessel,
+		Menu $menu,
+		PageHelper $pagehelper,
+		BlockHelper $blockhelper,
+		FormatterManager $fm,
+		Theme $theme,
+		Page $page)
 	{
-		$this->app        = $app;
-		$this->view       = $view;
-		$this->vessel     = $vessel;
-		$this->menu       = $menu;
-		$this->pagehelper = $pagehelper;
-		$this->fm         = $fm;
-		$this->theme      = $theme;
-		$this->page       = $page;
+		$this->app         = $app;
+		$this->view        = $view;
+		$this->vessel      = $vessel;
+		$this->menu        = $menu;
+		$this->pagehelper  = $pagehelper;
+		$this->blockhelper = $blockhelper;
+		$this->fm          = $fm;
+		$this->theme       = $theme;
+		$this->page        = $page;
 	}
 
 	/**
@@ -118,6 +130,10 @@ class FrontController extends Controller {
 
 						['menu', function($call, $name) use ($main) {
 							return $this->menu->handler('vessel.menu.'.$name)->render();
+						}],
+
+						['block', function($call, $slug) {
+							return $this->blockhelper->display($slug);
 						}],
 
 					]);

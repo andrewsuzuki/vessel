@@ -3,6 +3,7 @@
 use Illuminate\Routing\Controller;
 use Illuminate\View\Environment;
 use Illuminate\Http\Request;
+use Illuminate\Auth\AuthManager;
 use Illuminate\Routing\Redirector;
 use Krucas\Notification\Notification;
 
@@ -12,35 +13,39 @@ class BlockController extends Controller
 
 	protected $input;
 
+	protected $auth;
+
 	protected $redirect;
+
+	protected $notification;
 
 	protected $blockhelper;
 
-	protected $formatter;
+	protected $fm;
 
 	protected $theme;
-
-	protected $notification;
 
 	protected $block; // model
 
 	public function __construct(
 		Environment $view,
 		Request $input,
+		AuthManager $auth,
 		Redirector $redirect,
-		BlockHelper $blockhelper,
-		Formatter $formatter,
-		Theme $theme,
 		Notification $notification,
+		BlockHelper $blockhelper,
+		FormatterManager $fm,
+		Theme $theme,
 		Block $block)
 	{
 		$this->view         = $view;
 		$this->input        = $input;
+		$this->auth         = $auth;
 		$this->redirect     = $redirect;
-		$this->blockhelper  = $blockhelper;
-		$this->formatter    = $formatter;
-		$this->theme        = $theme;
 		$this->notification = $notification;
+		$this->blockhelper  = $blockhelper;
+		$this->fm           = $fm;
+		$this->theme        = $theme;
 		$this->block        = $block;
 	}
 
@@ -58,13 +63,20 @@ class BlockController extends Controller
 
 		$this->view->share('title', 'New Block');
 
-		$this->blockhelper->setBlockFormatter($block);
-		$editor = $this->formatter->formatter()->getEditorHtml();
+		$formatter = $this->fm->tryEach(
+			$this->input->get('formatter'),
+			$this->input->old('formatter'),
+			$this->auth->user()->preferred_formatter
+			);
 
-		$this->theme->load();
-		$sub_templates = $this->theme->getThemeViewsSelect();
+		$interface = $formatter->fmInterface('', '');
 
-		return $this->view->make('vessel::block')->with(compact('block', 'mode', 'editor', 'sub_templates'));
+		$formatter->fmSetup();
+
+		$formatters_select_array = $this->fm->filterForSelect('block');
+		$formatter_current = get_class($formatter);
+
+		return $this->view->make('vessel::block')->with(compact('block', 'mode', 'interface', 'formatters_select_array', 'formatter_current'));
 	}
 
 	public function postBlockNew()
@@ -79,17 +91,23 @@ class BlockController extends Controller
 		$block = $this->block->find($id); // find block
 		if (!$block) throw new \VesselNotFoundException; // throw error if not found
 
-		$this->view->share('title', 'Edit '.$block->title); // set view title
-		$this->blockhelper->setblockFormatter($block); // set formatter according to block setting (editor)
+		$this->view->share('title', 'Edit Block '.$block->title);
 
-		$content = $this->blockhelper->getContent($block->id, true);
+		$formatter = $this->fm->tryEach(
+			$this->input->get('formatter'),
+			$this->input->old('formatter'),
+			$block->formatter,
+			$this->auth->user()->preferred_formatter
+			);
 
-		$editor  = $this->formatter->formatter()->getEditorHtml($content); // get editor html
+		$interface = $formatter->fmInterface($block->raw, $block->made);
 
-		$this->theme->load();
-		$sub_templates = $this->theme->getThemeViewsSelect();
+		$formatter->fmSetup();
 
-		return $this->view->make('vessel::block')->with(compact('block', 'edits', 'drafts', 'mode', 'editor', 'sub_templates'));
+		$formatters_select_array = $this->fm->filterForSelect('block');
+		$formatter_current = get_class($formatter);
+
+		return $this->view->make('vessel::block')->with(compact('block', 'mode', 'interface', 'formatters_select_array', 'formatter_current'));
 	}
 
 	public function postBlockEdit($id)

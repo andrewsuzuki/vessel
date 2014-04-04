@@ -16,8 +16,6 @@ class CreateBlocksTable extends Migration {
 		{
 			$table->increments('id');
 			
-			$table->integer('edit')->nullable();
-
 			$table->string('slug');
 			$table->string('title');
 			$table->text('description');
@@ -27,9 +25,9 @@ class CreateBlocksTable extends Migration {
 			$table->boolean('active')->default(true);
 
 			$table->string('formatter')->nullable();
-			$table->string('template')->nullable();
 
-			$table->text('content');
+			$table->text('raw');
+			$table->text('made');
 
 			$table->timestamps();
 		});

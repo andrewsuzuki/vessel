@@ -140,32 +140,39 @@ function refreshAutoslugs() {
 	});
 }
 
+function refreshFormatter(fields) {
+	var inputs = {};
+
+	fields.each(function() {
+		if (this.nodeName == 'INPUT' || this.nodeName == 'TEXTAREA' || this.nodeName == 'SELECT') {
+			name = $(this).attr('name');
+			if (name) {
+				if (!inputs.hasOwnProperty(name)) {
+					inputs[name] = $(this).val();
+				}
+			}
+		}
+	});
+
+	showAlert('Reloading...', 'info');
+
+	trip({
+		endpoint: '/vessel/api/flashinput',
+		data: inputs,
+		success: function(response) {
+			location.reload();
+		}
+	});
+}
+
 $(document).ready(function() {
 
 	$(document).on('change', '.vessel-page-edit-form .vessel-select-formatter', function() {
+		refreshFormatter($('.vessel-page-edit-form .vessel-carry-field'));
+	});
 
-		var inputs = {};
-
-		$('.vessel-page-edit-form .vessel-carry-field').each(function() {
-			if (this.nodeName == 'INPUT' || this.nodeName == 'TEXTAREA' || this.nodeName == 'SELECT') {
-				name = $(this).attr('name');
-				if (name) {
-					if (!inputs.hasOwnProperty(name)) {
-						inputs[name] = $(this).val();
-					}
-				}
-			}
-		});
-
-		showAlert('Reloading...', 'info');
-
-		trip({
-			endpoint: '/vessel/api/flashinput',
-			data: inputs,
-			success: function(response) {
-				location.reload();
-			}
-		});
+	$(document).on('change', '.vessel-block-edit-form .vessel-select-formatter', function() {
+		refreshFormatter($('.vessel-block-edit-form .vessel-carry-field'));
 	});
 
 	// autoslugs

@@ -67,13 +67,30 @@ class PageController extends Controller
 
 		$this->view->share('title', 'New Page');
 
-		$formatter = $this->fm->tryEach($this->input->get('formatter'), $this->input->old('formatter'), $this->auth->user()->preferred_formatter);
-		$interface = $formatter->fmInterface($page->raw, $page->made);
+		$formatter = $this->fm->tryEach(
+			$this->input->get('formatter'),
+			$this->input->old('formatter'),
+			$this->auth->user()->preferred_formatter
+			);
+
+		$interface = $formatter->fmInterface('', '');
+
+		$formatter->fmSetup();
+
+		$formatters_select_array = $this->fm->filterForSelect('page');
+		$formatter_current = get_class($formatter);
 
 		$this->theme->load();
 		$sub_templates = $this->theme->getThemeViewsSelect();
 
-		return $this->view->make('vessel::pages_edit')->with(compact('page', 'mode', 'interface', 'sub_templates'));
+		return $this->view->make('vessel::pages_edit')->with(compact(
+			'page',
+			'mode',
+			'interface',
+			'formatters_select_array',
+			'formatter_current',
+			'sub_templates'
+			));
 	}
 
 	public function postPagesNew()

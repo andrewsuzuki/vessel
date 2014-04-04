@@ -9,10 +9,6 @@ use Krucas\Notification\Notification;
 
 class PageHelper {
 
-	protected $vessel;
-
-	protected $fm;
-
 	protected $input;
 
 	protected $db;
@@ -25,6 +21,8 @@ class PageHelper {
 
 	protected $notification;
 
+	protected $fm;
+
 	protected $page; // model
 
 	protected $pagehistory; // model
@@ -32,18 +30,16 @@ class PageHelper {
 	protected $pages_path;
 
 	public function __construct(
-		Vessel $vessel,
-		FormatterManager $fm,
 		Request $input,
 		DatabaseManager $db,
 		Redirector $redirect,
 		AuthManager $auth,
 		Factory $validator,
 		Notification $notification,
+		FormatterManager $fm,
 		Page $page,
 		Pagehistory $pagehistory)
 	{
-		$this->vessel       = $vessel;
 		$this->fm           = $fm;
 		$this->input        = $input;
 		$this->db           = $db;
@@ -53,49 +49,6 @@ class PageHelper {
 		$this->notification = $notification;
 		$this->page         = $page;
 		$this->pagehistory  = $pagehistory;
-
-		$this->pages_path = $this->vessel->path('/pages');
-	}
-
-	/**
-	 * Sets formatter (editor) for editing this page
-	 * 
-	 * @param object $page
-	 */
-	public function setPageFormatter($page)
-	{
-		// try for a set formatter input
-		if ($this->input->get('formatter') && $this->fm->exists($this->input->get('formatter')))
-		{
-			$this->fm->set($this->input->get('formatter'));
-			return 1;
-		}
-		// or try old input
-		elseif ($this->input->old('formatter') && $this->fm->exists($this->input->old('formatter')))
-		{
-			$this->fm->set($this->input->old('formatter'));
-			return 2;
-		}
-		// or try set page setting
-		elseif ($page && $page->formatter && $this->fm->exists($page->formatter))
-		{
-			$this->fm->set($page->formatter);
-			return 3;
-		}
-		// or try user preference
-		elseif ($this->auth->user()->preferred_formatter && $this->fm->exists($this->auth->user()->preferred_formatter))
-		{
-			$this->fm->set($this->auth->user()->preferred_formatter);
-			return 4;
-		}
-		// whoops, let's revert to Markdown
-		else
-		{
-			$this->fm->set('Markdown');
-			return 5;
-		}
-
-		// hook here?
 	}
 
 	/**
@@ -162,7 +115,19 @@ class PageHelper {
 		}
 
 		// process content
-		$formatter = $this->fm->get($this->input->get('formatter'));
+		
+		// get formatter
+		try
+		{
+			$formatter = $this->fm->get($this->input->get('formatter'), 'page');
+		}
+		catch (\Exception $e)
+		{
+			// redirect back with error and input
+			$this->notification->error($e->getMessage());
+			return $this->redirect->back()->withInput();
+		}
+
 		$processed = $formatter->fmProcess();
 
 		// verify processing returns array with two elements

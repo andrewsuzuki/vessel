@@ -52,7 +52,6 @@ class Block extends Model {
 			'slug' => 'required|alpha_dash|unique:vessel_blocks,slug'.(($edit) ? ','.$edit->id : ''),
 			'description' => '',
 			'formatter' => 'required|formatter',
-			'template' => 'required|template',
 		];
 	}
 }

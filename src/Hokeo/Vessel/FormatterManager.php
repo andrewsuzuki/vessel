@@ -109,17 +109,18 @@ class FormatterManager {
 	 * Gets registered formatter by class name
 	 * 
 	 * @param  string $class
+	 * @param  mixed  $type     Null to bypass, or string to only get if it is of specified type ('page', 'block', etc)
 	 * @return object Formatter (implementing FormatterInterface)
 	 */
-	public function get($class)
+	public function get($class, $type = null)
 	{
-		if ($this->registered($class))
+		if ($this->registered($class) && (!$type || in_array($type, $this->formatters[$class]['for'])))
 		{
 			return $this->app->make($class);
 		}
 		else
 		{
-			throw new \Exception('Formatter does not exist or is not valid.');
+			throw new \Exception('Formatter does not exist, is not of the correct type, or is not valid.');
 		}
 	}
 
