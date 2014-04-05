@@ -23,6 +23,9 @@ Route::group(array('prefix' => Config::get('vessel::vessel.uri', 'vessel')), fun
 		Route::get('blocks/edit/{id}', array('as' => 'vessel.blocks.edit', 'uses' => 'Hokeo\\Vessel\\BlockController@getBlockEdit'));
 		Route::post('blocks/edit/{id}', array('as' => 'vessel.blocks.edit', 'uses' => 'Hokeo\\Vessel\\BlockController@postBlockEdit'));
 		Route::get('blocks/delete/{id}', array('as' => 'vessel.blocks.delete', 'uses' => 'Hokeo\\Vessel\\BlockController@getBlockDelete'));
+
+		Route::get('me', array('as' => 'vessel.me', 'uses' => 'Hokeo\\Vessel\\UserController@getMe'));
+		Route::post('me', array('as' => 'vessel.me', 'uses' => 'Hokeo\\Vessel\\UserController@postMe'));
 	});
 
 	Route::group(array('before' => 'vessel_guest'), function()

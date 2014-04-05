@@ -69,7 +69,7 @@
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ Auth::user()->username }} <b class="caret"></b></a>
 						<ul class="dropdown-menu">
-							<li><a href="#">User Settings</a></li>
+							<li>{{ link_to_route('vessel.me', 'User Settings') }}</li>
 							<li>{{ link_to_route('vessel.logout', 'Logout') }}</li>
 						</ul>
 					</li>

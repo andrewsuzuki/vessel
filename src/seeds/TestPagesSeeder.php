@@ -20,7 +20,7 @@ class TestPagesSeeder extends Seeder {
 					'nest_url' => true,
 					'visible' => true,
 					'in_menu' => true,
-					'formatter' => 'Markdown',
+					'formatter' => 'Hokeo\\Vessel\\Formatter\\Markdown',
 					'template' => null,
 					'created_at' => \Carbon\Carbon::parse('now - 5 hours'),
 					'updated_at' => \Carbon\Carbon::parse('now'),

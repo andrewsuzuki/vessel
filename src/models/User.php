@@ -15,12 +15,21 @@ class User extends Model implements UserInterface, RemindableInterface {
 
 	use HasRole;
 	
-	public static function rules($edit = null)
+	public static function rules($mode = 'user')
 	{
-		return [
-			'title' => 'required',
-			'slug' => 'required|alpha_dash|unique:vessel_pages,slug'.(($edit) ? ','.$edit->id : '')
-		];
+		if ($mode == 'admin') // user admin
+		{
+			// todo
+		}
+		else // user settings
+		{
+			return [
+				'email' => 'required|email',
+				'first_name' => '',
+				'last_name' => '',
+				'password' => 'min:6|confirmed',
+			];
+		}
 	}
 
 	/**

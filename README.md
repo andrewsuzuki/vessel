@@ -50,17 +50,18 @@ Todo, roughly in order:
 * ~~Page drafts~~
 * ~~Set up unit tests~~
 * ~~Set Up Permissions~~
+* ~~Block manager~~
 * Menu builder
 * Menu api
-* ~~Block manager~~
-* User Settings
+* ~~User Settings~~
 * User Password resets
 * User Registration
 * User Management
 * Cool formatters (redactor/wysiwyg, image, text, advanced-custom-fields-like, table, custom, etc)
 * Media management
+* Installer
 * Docs
-* Packagist
+* Packagist submission
 
 ### License
 

@@ -219,6 +219,19 @@ class VesselServiceProvider extends ServiceProvider {
 				$app['Hokeo\\Vessel\\Block']
 				);
 		});
+
+		$this->app->bind('Hokeo\\Vessel\\UserController', function($app) {
+			return new UserController(
+				$app['view'],
+				$app['request'],
+				$app['auth'],
+				$app['validator'],
+				$app['hash'],
+				$app['redirect'],
+				$app['notification'],
+				$app['Hokeo\\Vessel\\User']
+				);
+		});
 	}
 
 	/**
