@@ -9,14 +9,17 @@ class FormatterManager {
 
 	protected $blade;
 
+	protected $plugin;
+
 	protected $formatters = array();
 
 	protected $native = array('Plain', 'Html', 'Markdown');
 
-	public function __construct(Application $app, BladeCompiler $blade)
+	public function __construct(Application $app, BladeCompiler $blade, Plugin $plugin)
 	{
-		$this->app   = $app;
-		$this->blade = $blade;
+		$this->app    = $app;
+		$this->blade  = $blade;
+		$this->plugin = $plugin;
 
 		foreach ($this->native as $formatter)
 		{
@@ -152,6 +155,18 @@ class FormatterManager {
 
 		// revert to plain
 		return $this->get('Hokeo\\Vessel\\Formatter\\Plain');
+	}
+
+	// HELPERS
+	
+	/**
+	 * Converts PHP tags in string to entities
+	 * 
+	 * @return string String with <? and ?> converted to lt/gt entities
+	 */
+	public function phpEntities($string)
+	{
+		return str_replace(['<?', '?>'], ['&lt;?', '?&gt'], $string);
 	}
 
 	/**

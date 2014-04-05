@@ -48,7 +48,7 @@ class Plain implements FormatterInterface
 	public function fmProcess()
 	{
 		$raw = Input::get('content');
-		$made = FormatterManager::compileBlade($raw);
+		$made = FormatterManager::compileBlade(FormatterManager::phpEntities($raw));
 		return array($raw, $made);
 	}
 

@@ -27,6 +27,8 @@ class PageHelper {
 
 	protected $pagehistory; // model
 
+	protected $plugin;
+
 	protected $pages_path;
 
 	public function __construct(
@@ -38,7 +40,8 @@ class PageHelper {
 		Notification $notification,
 		FormatterManager $fm,
 		Page $page,
-		Pagehistory $pagehistory)
+		Pagehistory $pagehistory,
+		Plugin $plugin)
 	{
 		$this->fm           = $fm;
 		$this->input        = $input;
@@ -49,32 +52,7 @@ class PageHelper {
 		$this->notification = $notification;
 		$this->page         = $page;
 		$this->pagehistory  = $pagehistory;
-	}
-
-	/**
-	 * Formats and compiles blade in content
-	 * 
-	 * @param  string  $formatter Name of formatter (compiler)
-	 * @param  string  $content   Content of page
-	 */
-	public function makeContent($formatter, $content)
-	{
-		// encode php tags as entities
-		$compiled = str_replace(['<?', '?>'], ['&lt;?', '?&gt'], $content);
-
-		// save formatted and compiled content
-		if ($this->fm->exists($formatter))
-		{
-			// set and get formatter
-			$this->fm->set($formatter);
-			$formatter = $this->fm->formatter();
-
-			// render content and compile resulting blade template
-			$formatted = $formatter->render($compiled);
-			$compiled = $this->fm->compileBlade($formatted);
-		}
-
-		return $compiled;
+		$this->plugin       = $plugin;
 	}
 
 	/**
@@ -89,17 +67,19 @@ class PageHelper {
 	{
 		if ($mode == 'edit')
 		{
+			$backparams = array('id' => $page->id);
 			// if saving an edit, give a warning if it's been edited elsewhere since
 			if ($this->input->get('updated_at') != (string) $page->updated_at && !$this->input->get('force_edit'))
 			{
 				$this->notification->warning('This page has been updated elsewhere since you started editing. Click save again to force this edit.');
-				return $this->redirect->back()->with('force_edit', 'true')->withInput();
+				return $this->redirect->route('vessel.pages.'.$mode, $backparams)->with('force_edit', 'true')->withInput();
 			}
 
 			$rules = $this->page->rules($page); // validation rules for editing
 		}
 		else
 		{
+			$backparams = array();
 			$rules = $this->page->rules(); // validation rules for new
 		}
 
@@ -111,7 +91,7 @@ class PageHelper {
 		{
 			// redirect back with error and input
 			$this->notification->error($validator->messages()->first());
-			return $this->redirect->back()->withInput();
+			return $this->redirect->route('vessel.pages.'.$mode, $backparams)->withInput();
 		}
 
 		// process content
@@ -125,7 +105,7 @@ class PageHelper {
 		{
 			// redirect back with error and input
 			$this->notification->error($e->getMessage());
-			return $this->redirect->back()->withInput();
+			return $this->redirect->route('vessel.pages.'.$mode, $backparams)->withInput();
 		}
 
 		$processed = $formatter->fmProcess();
@@ -134,7 +114,7 @@ class PageHelper {
 		if (!is_array($processed) || count($processed) !== 2)
 		{
 			// error with processing, redirect back
-			return $this->redirect->back()->withInput();
+			return $this->redirect->route('vessel.pages.'.$mode, $backparams)->withInput();
 		}
 
 		// if we're editing and not saving a draft, then save an edit history first
@@ -219,11 +199,9 @@ class PageHelper {
 		else
 			$this->notification->success('Page was created successfully.');
 
-		$params = array('id' => $page->id);
-
 		// let's show them the draft with the history param
 		if ($draft) $params['history'] = $setter->id;
 
-		return $this->redirect->route('vessel.pages.edit', $params);
+		return $this->redirect->route('vessel.pages.edit', array('id' => $page->id));
 	}
 }

@@ -220,17 +220,17 @@ class Plugin {
 	 * 
 	 * @param  string  $hook      Name of hook
 	 * @param  array   $data      Array of data to pass to hook callback
-	 * @param  boolean $is_filter If this is a filter (data will be cascaded from one hook to the next, then returned)
+	 * @param  boolean $is_filter If this is a filter (then data will be cascaded from one hook to the next, then returned)
 	 * @return array|string       Filtered data array if is_filter, or string of string hook returns if !is_filter (action)
 	 */
-	public function fire($hook, $data = array(), $is_filter = false)
+	public function fire($hook, $data = array(), $is_filter = false, $return_only = false)
 	{
 		$data_count = count($data); // for later verification of filter response
 
 		$action_strings = array();
 
 		// validate fire
-		if ($this->hookIsSet($hook) && is_array($data) && is_bool($is_filter))
+		if ($this->hookIsSet($hook) && is_array($data))
 		{
 			$this->sortHook($hook); // sort hooks by priority
 
@@ -253,7 +253,7 @@ class Plugin {
 		}
 
 		if ($is_filter)
-			return $data;
+			return (is_int($return_only) && isset($data[$return_only])) ? $data[$return_only] : $data;
 		else
 			return implode('', $action_strings);
 	}

@@ -43,6 +43,7 @@ class VesselServiceProvider extends ServiceProvider {
 		include __DIR__.'/../../validators.php'; // validators
 		include __DIR__.'/../../events.php'; // events
 		include __DIR__.'/../../composers.php'; // composer and creators
+		include __DIR__.'/../../observers.php'; // model observers
 		include __DIR__.'/../../misc.php'; // blade extensions, helper functions, etc
 	}
 
@@ -85,15 +86,29 @@ class VesselServiceProvider extends ServiceProvider {
 		});
 
 		$this->app->bindShared('Hokeo\\Vessel\\Plugin', function($app) {
-			return new Plugin($app['app'], $app['config'], new ClassLoader, $app['files'], $app['Hokeo\\Vessel\\Setting']);
+			return new Plugin(
+				$app['app'],
+				$app['config'],
+				new ClassLoader,
+				$app['files'],
+				$app['Hokeo\\Vessel\\Setting']
+				);
 		});
-		
+
 		$this->app->bindShared('Hokeo\\Vessel\\Menu', function($app) {
-			return new Menu($app['html'], $app['url'], $app['Hokeo\\Vessel\\Plugin']);
+			return new Menu(
+				$app['html'],
+				$app['url'],
+				$app['Hokeo\\Vessel\\Plugin']
+				);
 		});
 
 		$this->app->bindShared('Hokeo\\Vessel\\FormatterManager', function($app) {
-			return new FormatterManager($app['app'], $app['blade.compiler']);
+			return new FormatterManager(
+				$app['app'],
+				$app['blade.compiler'],
+				$app['Hokeo\\Vessel\\Plugin']
+				);
 		});
 
 		$this->app->bindShared('Hokeo\\Vessel\\Asset', function($app) {
@@ -110,7 +125,8 @@ class VesselServiceProvider extends ServiceProvider {
 				$app['notification'],
 				$app['Hokeo\\Vessel\\FormatterManager'],
 				$app['Hokeo\\Vessel\\Page'],
-				$app['Hokeo\\Vessel\\Pagehistory']
+				$app['Hokeo\\Vessel\\Pagehistory'],
+				$app['Hokeo\\Vessel\\Plugin']
 				);
 		});
 
@@ -122,12 +138,19 @@ class VesselServiceProvider extends ServiceProvider {
 				$app['validator'],
 				$app['notification'],
 				$app['Hokeo\\Vessel\\FormatterManager'],
-				$app['Hokeo\\Vessel\\Block']
+				$app['Hokeo\\Vessel\\Block'],
+				$app['Hokeo\\Vessel\\Plugin']
 				);
 		});
 
 		$this->app->bindShared('Hokeo\\Vessel\\Theme', function($app) {
-			return new Theme($app['app'], $app['config'], $app['view'], $app['files'], $app['Hokeo\\Vessel\\Setting']);
+			return new Theme($app['app'],
+				$app['config'],
+				$app['view'],
+				$app['files'],
+				$app['Hokeo\\Vessel\\Setting'],
+				$app['Hokeo\\Vessel\\Plugin']
+				);
 		});
 
 		$this->app->make('Hokeo\\Vessel\\Vessel'); // construct

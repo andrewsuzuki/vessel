@@ -19,5 +19,4 @@ class ApiController extends Controller {
 		$this->input->flash();
 		return Response::trip(true);
 	}
-
 }

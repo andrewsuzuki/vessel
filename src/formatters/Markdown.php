@@ -49,7 +49,7 @@ class Markdown extends \cebe\markdown\Markdown implements FormatterInterface
 	public function fmProcess()
 	{
 		$raw  = Input::get('content');
-		$made = FormatterManager::compileBlade($this->parse($raw));
+		$made = FormatterManager::compileBlade($this->parse(FormatterManager::phpEntities($raw)));
 		return array($raw, $made);
 	}
 
