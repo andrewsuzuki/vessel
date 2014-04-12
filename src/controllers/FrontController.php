@@ -10,8 +10,6 @@ class FrontController extends Controller {
 
 	protected $view;
 
-	protected $vessel;
-
 	protected $menu;
 
 	protected $pagehelper;
@@ -27,7 +25,6 @@ class FrontController extends Controller {
 	public function __construct(
 		Application $app,
 		Environment $view,
-		Vessel $vessel,
 		Menu $menu,
 		PageHelper $pagehelper,
 		BlockHelper $blockhelper,
@@ -37,7 +34,6 @@ class FrontController extends Controller {
 	{
 		$this->app         = $app;
 		$this->view        = $view;
-		$this->vessel      = $vessel;
 		$this->menu        = $menu;
 		$this->pagehelper  = $pagehelper;
 		$this->blockhelper = $blockhelper;

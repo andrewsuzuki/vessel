@@ -1,23 +1,22 @@
 <?php namespace Hokeo\Vessel;
 
 use Illuminate\Foundation\Application;
-use Illuminate\Html\HtmlBuilder;
-use Illuminate\Routing\UrlGenerator;
+use Illuminate\Filesystem\Filesystem;
 
 class Vessel {
 
 	protected $app;
 
-	protected $storage_path;
+	protected $filesystem;
 
-	protected $dirs = array('', '/');
+	protected $dirs = array('plugins', 'themes');
 
-	public function __construct(Application $app)
+	public function __construct(Application $app, Filesystem $filesystem)
 	{
-		$this->app  = $app;
+		$this->app        = $app;
+		$this->filesystem = $filesystem;
 
-		$this->storage_path = storage_path().'/vessel';
-		$this->checkStoragePath();
+		$this->checkDirs();
 	}
 
 	/**
@@ -33,30 +32,16 @@ class Vessel {
 	}
 
 	/**
-	 * Checks if all vessel storage directories exist, and makes them if not.
+	 * Checks if all required vessel directories exist, and makes them if not.
 	 */
-	public function checkStoragePath()
+	public function checkDirs()
 	{
-		foreach ($this->dirs as $path)
+		foreach ($this->dirs as $dir)
 		{
-			if (!is_dir($this->storage_path.$path))
+			if (!$this->filesystem->isDirectory(base_path().'/'.$dir))
 			{
-				mkdir($this->storage_path.$path, 0777, true);
+				$this->filesystem->makeDirectory(base_path().'/'.$dir, 0777, true);
 			}
-		}
-	}
-
-	/**
-	 * Get absolute path to path relative to app/storage/vessel
-	 * 
-	 * @param  string $path
-	 * @return string
-	 */
-	public function path($path = '')
-	{
-		if (in_array($path, $this->dirs))
-		{
-			return $this->storage_path.$path;
 		}
 	}
 

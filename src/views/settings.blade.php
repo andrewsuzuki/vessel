@@ -12,33 +12,9 @@
 				<div class="row">
 					<div class="col-md-7 col-sm-8">
 						<div class="form-group">
-							{{ Form::label('email', 'Email', array('class' => 'col-sm-4 control-label')) }}
+							{{ Form::label('title', 'Title', array('class' => 'col-sm-4 control-label')) }}
 							<div class="col-sm-8">
-								{{ Form::text('email', null, array('class' => 'form-control input-sm')) }}
-							</div>
-						</div>
-						<div class="form-group">
-							{{ Form::label('first_name', 'First name', array('class' => 'col-sm-4 control-label')) }}
-							<div class="col-sm-8">
-								{{ Form::text('first_name', null, array('class' => 'form-control input-sm')) }}
-							</div>
-						</div>
-						<div class="form-group">
-							{{ Form::label('last_name', 'Last name', array('class' => 'col-sm-4 control-label')) }}
-							<div class="col-sm-8">
-								{{ Form::text('last_name', null, array('class' => 'form-control input-sm')) }}
-							</div>
-						</div>
-						<div class="form-group">
-							{{ Form::label('password', 'Password', array('class' => 'col-sm-4 control-label')) }}
-							<div class="col-sm-8">
-								{{ Form::password('password', array('class' => 'form-control input-sm')) }}
-							</div>
-						</div>
-						<div class="form-group">
-							{{ Form::label('password_confirmation', 'Password (Confirm)', array('class' => 'col-sm-4 control-label')) }}
-							<div class="col-sm-8">
-								{{ Form::password('password_confirmation', array('class' => 'form-control input-sm')) }}
+								{{ Form::text('title', null, array('class' => 'form-control input-sm')) }}
 							</div>
 						</div>
 					</div>

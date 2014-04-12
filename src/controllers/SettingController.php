@@ -3,11 +3,10 @@
 use Illuminate\Routing\Controller;
 use Illuminate\View\Environment;
 use Illuminate\Http\Request;
-use Illuminate\Auth\AuthManager;
 use Illuminate\Validation\Factory;
-use Illuminate\Hashing\HasherInterface;
 use Illuminate\Routing\Redirector;
 use Krucas\Notification\Notification;
+use Andrewsuzuki\Perm\Perm;
 
 class SettingController extends Controller {
 
@@ -19,32 +18,24 @@ class SettingController extends Controller {
 
 	protected $validator;
 
-	protected $hash;
-
 	protected $redirect;
 
 	protected $notification;
 
-	protected $user; // model
-
 	public function __construct(
 		Environment $view,
 		Request $input,
-		AuthManager $auth,
 		Factory $validator,
-		HasherInterface $hash,
 		Redirector $redirect,
 		Notification $notification,
-		User $user)
+		Perm $perm)
 	{
 		$this->view         = $view;
 		$this->input        = $input;
-		$this->auth         = $auth;
 		$this->validator    = $validator;
-		$this->hash         = $hash;
 		$this->redirect     = $redirect;
 		$this->notification = $notification;
-		$this->user         = $user;
+		$this->perm         = $perm;
 	}
 
 	/**
@@ -56,7 +47,8 @@ class SettingController extends Controller {
 	{
 		$this->view->share('title', 'Site Settings');
 
-		$settings = new \StdClass();
+		// load persistent site settings and cast to object (emulates model for Form)
+		$settings = (object) $this->perm->load('vessel.site')->getAll();
 
 		return $this->view->make('vessel::settings')->with(compact('settings'));
 	}
@@ -68,10 +60,11 @@ class SettingController extends Controller {
 	 */
 	public function postSettings()
 	{
-		// get current authenticated user
-		$user = $this->auth->user();
+		// validation rules
+		$rules = array(
+			'title' => 'required',
+		);
 
-		$rules = $this->user->rules('user'); // get validation rules (for user settings editing)
 		$validator = $this->validator->make($this->input->all(), $rules); // validate input
 
 		if ($validator->fails())
@@ -81,19 +74,14 @@ class SettingController extends Controller {
 			return $this->redirect->back()->withInput();
 		}
 
-		// save settings
-		
-		$user->email      = $this->input->get('email');
-		$user->first_name = $this->input->get('first_name');
-		$user->last_name  = $this->input->get('last_name');
+		// load, modify, save persistent site settings using perm
+		$settings = $this->perm->load('vessel.site');
+		$settings->set(array(
+			'title' => $this->input->get('title'),
+		));
+		$settings->save();
 
-		// if a new password was entered, save it
-		if ($this->input->get('password'))
-			$user->password = $this->hash->make($this->input->get('password'));
-
-		$user->save();
-		
-		$this->notification->success('Your settings were updated successfully.');
-		return $this->redirect->route('vessel.me');
+		$this->notification->success('Site settings were updated successfully.');
+		return $this->redirect->route('vessel.settings');
 	}
 }

@@ -81,7 +81,7 @@ class VesselServiceProvider extends ServiceProvider {
 		$this->bindModels();
 
 		$this->app->bindShared('Hokeo\\Vessel\\Vessel', function($app) {
-			return new Vessel($app['app']);
+			return new Vessel($app['app'], $app['files']);
 		});
 
 		$this->app->bindShared('Hokeo\\Vessel\\Plugin', function($app) {
@@ -170,7 +170,6 @@ class VesselServiceProvider extends ServiceProvider {
 			return new FrontController(
 				$app['app'],
 				$app['view'],
-				$app['Hokeo\\Vessel\\Vessel'],
 				$app['Hokeo\\Vessel\\Menu'],
 				$app['Hokeo\\Vessel\\PageHelper'],
 				$app['Hokeo\\Vessel\\BlockHelper'],
@@ -229,6 +228,17 @@ class VesselServiceProvider extends ServiceProvider {
 				$app['redirect'],
 				$app['notification'],
 				$app['Hokeo\\Vessel\\User']
+				);
+		});
+
+		$this->app->bind('Hokeo\\Vessel\\SettingController', function($app) {
+			return new SettingController(
+				$app['view'],
+				$app['request'],
+				$app['validator'],
+				$app['redirect'],
+				$app['notification'],
+				$app['Andrewsuzuki\\Perm\\Perm']
 				);
 		});
 	}
