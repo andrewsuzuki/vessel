@@ -4,7 +4,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Config\Repository;
 use Illuminate\Support\ClassLoader;
 use Illuminate\Filesystem\Filesystem;
-use Hokeo\Vessel\Setting;
+use Andrewsuzuki\Perm\Perm;
 
 class Plugin {
 
@@ -16,7 +16,7 @@ class Plugin {
 
 	protected $filesystem;
 
-	protected $setting;
+	protected $perm;
 
 	protected $available = null;
 
@@ -26,13 +26,13 @@ class Plugin {
 
 	protected $hooks = array();
 
-	public function __construct(Application $app, Repository $config, ClassLoader $classloader, Filesystem $filesystem, Setting $setting)
+	public function __construct(Application $app, Repository $config, ClassLoader $classloader, Filesystem $filesystem, Perm $perm)
 	{
 		$this->app          = $app;
 		$this->config       = $config;
 		$this->classloader  = $classloader;
 		$this->filesystem   = $filesystem;
-		$this->setting      = $setting;
+		$this->perm         = $perm;
 		$this->plugins_path = base_path().'/plugins';
 		$this->filesystem   = $filesystem;
 	}
@@ -96,7 +96,7 @@ class Plugin {
 
 		$this->available = $available;
 		if ($save)
-			$this->setting->set('plugins.available', $available);
+			$this->perm->load('vessel.plugins')->set('available', $available)->save();
 		return $available;
 	}
 
@@ -110,7 +110,8 @@ class Plugin {
 		{
 			try
 			{
-				$this->available = $this->setting->get('plugins.available');
+				$this->available = $this->perm->load('vessel.plugins')->get('available');
+				if (!$this->available) throw new \Exception;
 			}
 			catch (\Exception $e)
 			{

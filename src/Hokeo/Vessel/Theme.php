@@ -4,7 +4,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Config\Repository;
 use Illuminate\View\Environment;
 use Illuminate\Filesystem\Filesystem;
-use Hokeo\Vessel\Setting;
+use Andrewsuzuki\Perm\Perm;
 
 class Theme {
 
@@ -14,7 +14,7 @@ class Theme {
 
 	protected $filesystem;
 
-	protected $setting;
+	protected $perm;
 
 	protected $themes_path;
 
@@ -28,13 +28,13 @@ class Theme {
 
 	protected $current_element = null;
 
-	public function __construct(Application $app, Repository $config, Environment $view, Filesystem $filesystem, Setting $setting)
+	public function __construct(Application $app, Repository $config, Environment $view, Filesystem $filesystem, Perm $perm)
 	{
 		$this->app         = $app;
 		$this->config      = $config;
 		$this->view        = $view;
 		$this->filesystem  = $filesystem;
-		$this->setting     = $setting;
+		$this->perm        = $perm;
 
 		$this->themes_path  = base_path().DIRECTORY_SEPARATOR.'themes';
 	}
@@ -127,7 +127,7 @@ class Theme {
 
 		if (!$name)
 		{
-			$theme = $this->setting->get('theme'); // get theme from settings
+			$theme = $this->perm->load('vessel.config')->get('theme'); // get set theme from settings
 
 			if ($theme && isset($theme['name']) && isset($theme['info']))
 			{
@@ -189,8 +189,7 @@ class Theme {
 
 		if (!$check) return false;
 
-		$this->setting->set('theme.name', $name);
-		$this->setting->set('theme.info', $check);
+		$this->perm->load('vessel.config')->set(array('theme.name' => $name, 'theme.info' => $check));
 
 		return true;
 	}

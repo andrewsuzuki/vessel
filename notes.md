@@ -1,125 +1,24 @@
 # Vessel Notes
 
-## Controllers with notes
-
-### FrontController
-
-	Handles visitors accessing non-administration pages and files.
-
-	**getPage** - gets page: examines uri, determines requesting page, checks db for existence, gets page content from file, inserts page content into theme, makes view with meta (from db)
-
-### BackController
-
-	Gets vessel admin
-
-	(previously HomeController)
-
-### ApiController
-
-	Handles json ajax requests from ember (?) on client side of vessel admin.
-
-## Page Setup
-
-Record of page saved in db
-History of edits (with fields and raw content) saved in relation to page record
-Current content stored raw (as user typed it) in storage/content/pages
-Current content stored compiled (if markdown: markdown -> html) in storage/content/pages/compiled
-
-request:
-	1. get record from db
-	2. 	a) if it's a compiled format (like md), check storage/content/pages/compiled
-			if not there, then check ../, then compile and use
-		b) if it's not a comp. format, check storage/content/pages and use
-	
-	If not found in db, or not in storage/content/pages/compiled or ../, return 404.
-
-saving:
-	1. if editing and fields or content changed:
-		insert new history row with relation to page, with old fields, updated_at timestamp AS created_at, user_id, and raw content
-			if raw content isn't changing, set as NULL
-	2. save raw in storage/content/pages
-	3. compile if it's a compiled format (like md)
-
-## Some paths
-
-Page save:
-
-if new
-
-	create new page node
-	create new pagehistorynode, duplicate of page, edit = 0 (original), including raw content
-
-Block save:
-
-	create/get block node
-	save raw content
-
-## Plugins
-
-each plugin is a vendor/package directory in main plugins folder, must contain plugin.json with meta data
-must have a class that implements PluggableInterface, including an enable() and disable() function 
-
-## Routes with notes
-
-pages
-{
-	table with select box, title (linked to page), parent, edit/delete button
-}
-
-	new page
-	{
-		slug
-		title
-		description
-		content
-		parent page
-		sub-template
-		
-		preview (popup)
-		save
-		save draft
-		save as (duplicator)
-		delete
-
-		edit history table, with title, "compare" popup with diffs from previous version of choice, user, date, force delete
-	}
-
-	edit page
-	{
-		""""""
-	}
-
-blocks
-
-## API
-
-/api
-{
-	GET /pages
-	POST /pages/create
-	PUT /pages/edit
-
-	GET /blocks
-	POST /blocks/create
-	PUT /blocks/edit
-	
-	GET /media
-	GET /media/image
-	POST /media/image
-	GET /media/file
-	POST /media/file
-
-	GET /settings
-	POST /settings
-}
+Some misc notes...
 
 ## Permissions
 
-Create page
-Edit page (++ whitelist/or/blacklist for specific pages)
-Delete page
-Create block
-Edit block
-Delete block
-Manage users and permissions
-Edit site settings
+pages_manage      = Manage pages
+	pages_view    = View pages
+	pages_create  = Create page
+	pages_edit    = Edit page (++ whitelist/or/blacklist for specific pages)
+	pages_delete  = Delete page
+blocks_manage     = Manage blocks
+	blocks_view   = View blocks
+	blocks_create = Create block
+	blocks_edit   = Edit block
+	blocks_delete = Delete block
+users_manage      = Manage users and permissions
+	users_view    = View users
+	users_create  = Create User
+	users_edit    = Edit user
+	users_delete  = Delete user
+media_manage      = Upload, delete, rename, etc media
+	media_upload  = Upload media (images/files)
+settings_edit     = Edit site settings

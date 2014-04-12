@@ -1,5 +1,5 @@
 {
-    "name": "Vessel",
+    "name": "hokeo/vessel",
     "description": "Vessel: simple content management for Laravel 4.",
     "homepage": "http://vesselcms.com",
     "authors": [
@@ -22,8 +22,8 @@
         "cebe/markdown": "*",
         "baum/baum": "~1.0",
         "intervention/image": "dev-master",
-        "philf/setting": "dev-master",
-        "vespakoen/menu": "dev-master"
+        "vespakoen/menu": "dev-master",
+        "andrewsuzuki/perm": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "4.0.*",

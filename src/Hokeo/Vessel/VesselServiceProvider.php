@@ -54,12 +54,15 @@ class VesselServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
+		// set config package hint
+		$this->app['config']->package('hokeo/vessel', __DIR__.'/../../config');
+
 		// Register dependencies
 		$dependent_provides = [
-			'Krucas\Notification\NotificationServiceProvider',
-			'Philf\Setting\SettingServiceProvider',
-			'Zizaco\Entrust\EntrustServiceProvider',
-			'Menu\MenuServiceProvider',
+			'Krucas\\Notification\\NotificationServiceProvider',
+			'Zizaco\\Entrust\\EntrustServiceProvider',
+			'Menu\\MenuServiceProvider',
+			'Andrewsuzuki\\Perm\\PermServiceProvider'
 		];
 
 		foreach ($dependent_provides as $provider)
@@ -81,17 +84,13 @@ class VesselServiceProvider extends ServiceProvider {
 			return new Vessel($app['app']);
 		});
 
-		$this->app->bindShared('Hokeo\\Vessel\\Setting', function($app) {
-			return new Setting($app['Hokeo\\Vessel\\Vessel']);
-		});
-
 		$this->app->bindShared('Hokeo\\Vessel\\Plugin', function($app) {
 			return new Plugin(
 				$app['app'],
 				$app['config'],
 				new ClassLoader,
 				$app['files'],
-				$app['Hokeo\\Vessel\\Setting']
+				$app['Andrewsuzuki\\Perm\\Perm']
 				);
 		});
 
@@ -148,7 +147,7 @@ class VesselServiceProvider extends ServiceProvider {
 				$app['config'],
 				$app['view'],
 				$app['files'],
-				$app['Hokeo\\Vessel\\Setting'],
+				$app['Andrewsuzuki\\Perm\\Perm'],
 				$app['Hokeo\\Vessel\\Plugin']
 				);
 		});
@@ -268,7 +267,6 @@ class VesselServiceProvider extends ServiceProvider {
 	{
 		return [
 			'Hokeo\\Vessel\\Vessel',
-			'Hokeo\\Vessel\\Setting',
 			'Hokeo\\Vessel\\Plugin',
 			'Hokeo\\Vessel\\FormatterManager',
 			'Hokeo\\Vessel\\Asset',

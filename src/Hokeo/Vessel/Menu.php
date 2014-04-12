@@ -41,7 +41,7 @@ class Menu extends VMenu {
 			->add($this->url->route('vessel.blocks'), 'Blocks')
 			->add('#', 'Media')
 			->add('#', 'Users')
-			->add('#', 'Settings');
+			->add($this->url->route('vessel.settings'), 'Settings');
 
 			$menu = $this->plugin->fire('back.menu.main', [$menu], true);
 

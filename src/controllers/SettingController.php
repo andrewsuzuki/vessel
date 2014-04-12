@@ -9,7 +9,7 @@ use Illuminate\Hashing\HasherInterface;
 use Illuminate\Routing\Redirector;
 use Krucas\Notification\Notification;
 
-class UserController extends Controller {
+class SettingController extends Controller {
 
 	protected $view;
 
@@ -48,25 +48,25 @@ class UserController extends Controller {
 	}
 
 	/**
-	 * Get user's settings page
+	 * Get settings page
 	 * 
 	 * @return response
 	 */
-	public function getMe()
+	public function getSettings()
 	{
-		$user = $this->auth->user();
+		$this->view->share('title', 'Site Settings');
 
-		$this->view->share('title', 'User Settings');
+		$settings = new \StdClass();
 
-		return $this->view->make('vessel::user_settings')->with(compact('user'));
+		return $this->view->make('vessel::settings')->with(compact('settings'));
 	}
 
 	/**
-	 * Handle user setting saving
+	 * Handle settings saving
 	 * 
 	 * @return response
 	 */
-	public function postMe()
+	public function postSettings()
 	{
 		// get current authenticated user
 		$user = $this->auth->user();

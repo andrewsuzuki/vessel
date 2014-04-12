@@ -6,11 +6,17 @@
 		
 		<div class="col-lg-12">
 			
-			{{ Form::model($settings, array('route' => array('vessel.settings'), 'role' => 'form')) }}
+			{{ Form::model($user, array('route' => array('vessel.me'), 'role' => 'form')) }}
 			
 			<div class="form-horizontal">
 				<div class="row">
 					<div class="col-md-7 col-sm-8">
+						<div class="form-group">
+							{{ Form::label('username', 'Username', array('class' => 'col-sm-4 control-label')) }}
+							<div class="col-sm-8">
+								<p class="form-control-static">{{ $user->username }}</p>
+							</div>
+						</div>
 						<div class="form-group">
 							{{ Form::label('email', 'Email', array('class' => 'col-sm-4 control-label')) }}
 							<div class="col-sm-8">

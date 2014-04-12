@@ -6,7 +6,19 @@
 
 Vessel is a simple, yet powerful file-based CMS (content management system). Written in PHP, built on Laravel.
 
-Currently in the early stages of development. Some things work, others do not. See Installation below to try it out.
+Currently in the early stages of development. See Roadmap below, or see Installation below to dive in.
+
+### Goals
+
+Vessel aims to be:
+
+* Easy to set up and integrate. It should provide a low barrier to entry for CMS templating. The process for a newcomer to hook an HTML document into content management should be simple, and should not require knowledge of a server side language to get a site up and running. Powerful functionalities from the Laravel Blade templating language are available for use, such as [template extension](http://laravel.com/docs/templates#blade-templating).
+
+* Be straightforward. The backend interface, styled with Twitter Bootstrap, should be easy enough for most users, including clients, to use.
+
+* Be extensible. A number of wordpress-style hooks (actions and filters) should be made available for plugins. Plugins can leverage the power of Composer, and the Laravel framework.
+
+* Be documented extensively, for templaters, plugin developers, and clients.
 
 ### Installation
 
@@ -34,7 +46,7 @@ $ php artisan dump-autoload
 php artisan config:publish --path=workbench/hokeo/vessel/src/config/config.php hokeo/vessel
 ```
 
-For testing, just run `phpunit` from workbench/hokeo/vessel. Some bootstrapping hackery will ensue, for now.
+For testing, run `phpunit` from workbench/hokeo/vessel. Some bootstrapping hackery will ensue, for now.
 
 Feel free to post any issues or comments here on github.
 
@@ -53,6 +65,7 @@ Todo, roughly in order:
 * ~~Block manager~~
 * Menu builder
 * Menu api
+* Site settings
 * ~~User Settings~~
 * User Password resets
 * User Registration
