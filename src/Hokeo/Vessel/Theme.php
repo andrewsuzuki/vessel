@@ -214,7 +214,6 @@ class Theme {
 			$available[$name] = $check;
 		}
 
-		$this->available = $available;
 		return $available;
 	}
 

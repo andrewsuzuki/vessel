@@ -14,13 +14,15 @@ class SettingController extends Controller {
 
 	protected $input;
 
-	protected $auth;
-
 	protected $validator;
 
 	protected $redirect;
 
 	protected $notification;
+
+	protected $perm;
+
+	protected $theme;
 
 	public function __construct(
 		Environment $view,
@@ -28,7 +30,8 @@ class SettingController extends Controller {
 		Factory $validator,
 		Redirector $redirect,
 		Notification $notification,
-		Perm $perm)
+		Perm $perm,
+		Theme $theme)
 	{
 		$this->view         = $view;
 		$this->input        = $input;
@@ -36,6 +39,7 @@ class SettingController extends Controller {
 		$this->redirect     = $redirect;
 		$this->notification = $notification;
 		$this->perm         = $perm;
+		$this->theme        = $theme;
 	}
 
 	/**
@@ -48,9 +52,16 @@ class SettingController extends Controller {
 		$this->view->share('title', 'Site Settings');
 
 		// load persistent site settings and cast to object (emulates model for Form)
-		$settings = (object) $this->perm->load('vessel.site')->getAll();
+		$settings = (object) $this->perm->load('vessel.site')->all();
 
-		return $this->view->make('vessel::settings')->with(compact('settings'));
+		$timezones = \DateTimeZone::listIdentifiers();
+		$timezone_select_array = array_combine($timezones, array_map(function($timezone) {
+			return str_replace(['_', '/'], [' ', ' / '], $timezone);
+		}, $timezones));
+
+		$themes = $this->theme->getAvailable();
+
+		return $this->view->make('vessel::settings')->with(compact('settings', 'timezone_select_array', 'themes'));
 	}
 
 	/**
@@ -62,7 +73,14 @@ class SettingController extends Controller {
 	{
 		// validation rules
 		$rules = array(
-			'title' => 'required',
+			'title'              => 'required',
+			'title_format'       => 'required',
+			'description'        => '',
+			'description_format' => '',
+			'url'                => 'required|url',
+			'theme'              => 'required|theme',
+			'timezone'           => 'required|timezone',
+			// 'language'        => 'required|language',
 		);
 
 		$validator = $this->validator->make($this->input->all(), $rules); // validate input
@@ -77,7 +95,13 @@ class SettingController extends Controller {
 		// load, modify, save persistent site settings using perm
 		$settings = $this->perm->load('vessel.site');
 		$settings->set(array(
-			'title' => $this->input->get('title'),
+			'title'              => $this->input->get('title'),
+			'title_format'       => $this->input->get('title_format'),
+			'description'        => $this->input->get('description'),
+			'description_format' => $this->input->get('description_format'),
+			'url'                => $this->input->get('url'),
+			'theme'              => $this->input->get('theme'),
+			'timezone'           => $this->input->get('timezone'),
 		));
 		$settings->save();
 

@@ -47,13 +47,16 @@
 								{{ Form::password('password_confirmation', array('class' => 'form-control input-sm')) }}
 							</div>
 						</div>
+						<div class="form-group">
+							<div class="col-sm-4"></div>
+							<div class="col-sm-8">
+								<div class="clearfix mb-15"></div>
+								{{ Form::submit('Save', array('class' => 'btn btn-success mb-15')) }}
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
-
-			<div class="clearfix mb-15"></div>
-
-			{{ Form::submit('Save', array('class' => 'btn btn-success mb-15')) }}
 		</div>
 
 	</div>

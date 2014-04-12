@@ -145,7 +145,7 @@ function refreshFormatter(fields) {
 
 	fields.each(function() {
 		if (this.nodeName == 'INPUT' || this.nodeName == 'TEXTAREA' || this.nodeName == 'SELECT') {
-			name = $(this).attr('name');
+			var name = $(this).attr('name');
 			if (name) {
 				if (!inputs.hasOwnProperty(name)) {
 					inputs[name] = $(this).val();
@@ -165,6 +165,26 @@ function refreshFormatter(fields) {
 	});
 }
 
+function loadSetTheme() {
+	var field = $('input[type=hidden][name=theme]').first();
+	if (field.length) {
+		var name = field.val();
+		if (name) {
+			setThemeChoice(name);
+		}
+	}
+}
+
+function setThemeChoice(name) {
+	var field = $('input[type=hidden][name=theme]').first();
+	if (name && field.length) {
+		$('.vessel-theme-choice').removeClass('panel-default panel-success vessel-chosen-theme');
+		panel = $('.vessel-choose-theme[data-themename='+name+']').first().closest('.vessel-theme-choice');
+		panel.addClass('panel-success vessel-chosen-theme');
+		field.val(name);
+	}
+}
+
 $(document).ready(function() {
 
 	$(document).on('change', '.vessel-page-edit-form .vessel-select-formatter', function() {
@@ -175,7 +195,15 @@ $(document).ready(function() {
 		refreshFormatter($('.vessel-block-edit-form .vessel-carry-field'));
 	});
 
+	$(document).on('click', '.vessel-choose-theme', function(e) {
+		e.preventDefault();
+		var name = $(this).data('themename');
+		setThemeChoice(name);
+	});
+
 	// autoslugs
-	
 	refreshAutoslugs();
+
+	// grab set theme value and choose it
+	loadSetTheme();
 });

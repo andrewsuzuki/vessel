@@ -31,5 +31,18 @@ Validator::extend('template', function($attribute, $value, $parameters)
 	
 	Hokeo\Vessel\Facades\Theme::load();
 	$templates = Hokeo\Vessel\Facades\Theme::getThemeViews();
-	return isset($templates[$value]);
+	return array_key_exists($value, $templates);
+});
+
+// Checks if theme exists
+Validator::extend('theme', function($attribute, $value, $parameters)
+{	
+	$themes = Hokeo\Vessel\Facades\Theme::getAvailable();
+	return array_key_exists($value, $themes);
+});
+
+// Checks if timezone name is valid
+Validator::extend('timezone', function($attribute, $value, $parameters)
+{
+	return in_array($value, \DateTimeZone::listIdentifiers());
 });
