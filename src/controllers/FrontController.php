@@ -2,11 +2,14 @@
 
 use Illuminate\Routing\Controller;
 use Illuminate\Foundation\Application;
+use Illuminate\Config\Repository;
 use Illuminate\View\Environment;
 
 class FrontController extends Controller {
 
 	protected $app;
+
+	protected $config;
 
 	protected $view;
 
@@ -24,6 +27,7 @@ class FrontController extends Controller {
 
 	public function __construct(
 		Application $app,
+		Repository $config,
 		Environment $view,
 		Menu $menu,
 		PageHelper $pagehelper,
@@ -33,6 +37,7 @@ class FrontController extends Controller {
 		Page $page)
 	{
 		$this->app         = $app;
+		$this->config      = $config;
 		$this->view        = $view;
 		$this->menu        = $menu;
 		$this->pagehelper  = $pagehelper;
@@ -56,8 +61,8 @@ class FrontController extends Controller {
 		$main = $this->page->where('slug', end($hierarchy))->first();
 		reset($hierarchy);
 
-		// load theme, with fallback
-		$theme_good = $this->theme->load(null, true);
+		// load theme with name from settings, with no fallbacks
+		$theme_good = $this->theme->load($this->config->get('vset::site.theme'), false);
 		// if all fails...
 		if (!$theme_good) $this->app->abort(404);
 
@@ -120,8 +125,28 @@ class FrontController extends Controller {
 					});
 
 					$this->theme->setElement([
+
+						['site-title', function() {
+							return $this->config->get('vset::site.title', '');
+						}],
+
 						['page-title', function() use ($main) {
 							return $main->title;
+						}],
+
+						['description', function($call) use ($main) {
+							if ($main->description)
+								return $main->description;
+							else
+								return $this->config->get('vset::site.description', '');
+						}],
+
+						['site-desc', function() {
+							return $this->config->get('vset::site.description', '');
+						}],
+
+						['page-desc', function() use ($main) {
+							return $main->description;
 						}],
 
 						['menu', function($call, $name) use ($main) {

@@ -72,16 +72,22 @@ class VesselServiceProvider extends ServiceProvider {
 		}
 
 		// set some dependency config values
-		
 		$this->app['config']->set('entrust::role', '\\Hokeo\\Vessel\\Role');
 		$this->app['config']->set('entrust::permission', '\\Hokeo\\Vessel\\Permission');
+
+		// add namespace for vessel settings (perm)
+		$this->app['config']->addNamespace('vset', app_path('config/vessel'));
 
 		// IoC Bindings
 		
 		$this->bindModels();
 
 		$this->app->bindShared('Hokeo\\Vessel\\Vessel', function($app) {
-			return new Vessel($app['app'], $app['files']);
+			return new Vessel(
+				$app['app'],
+				$app['config'],
+				$app['files']
+				);
 		});
 
 		$this->app->bindShared('Hokeo\\Vessel\\Plugin', function($app) {
@@ -152,9 +158,9 @@ class VesselServiceProvider extends ServiceProvider {
 				);
 		});
 
-		$this->app->make('Hokeo\\Vessel\\Vessel'); // construct
-
 		$this->bindControllers();
+
+		$this->app->make('Hokeo\\Vessel\\Vessel'); // construct
 
 		$this->app['Hokeo\\Vessel\\Plugin']->enableAll(); // enable all plugins
 	}
@@ -169,6 +175,7 @@ class VesselServiceProvider extends ServiceProvider {
 		$this->app->bind('Hokeo\\Vessel\\FrontController', function($app) {
 			return new FrontController(
 				$app['app'],
+				$app['config'],
 				$app['view'],
 				$app['Hokeo\\Vessel\\Menu'],
 				$app['Hokeo\\Vessel\\PageHelper'],

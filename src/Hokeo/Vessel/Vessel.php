@@ -1,22 +1,27 @@
 <?php namespace Hokeo\Vessel;
 
 use Illuminate\Foundation\Application;
+use Illuminate\Config\Repository;
 use Illuminate\Filesystem\Filesystem;
 
 class Vessel {
 
 	protected $app;
 
+	protected $config;
+
 	protected $filesystem;
 
 	protected $dirs = array('plugins', 'themes');
 
-	public function __construct(Application $app, Filesystem $filesystem)
+	public function __construct(Application $app, Repository $config, Filesystem $filesystem)
 	{
 		$this->app        = $app;
+		$this->config     = $config;
 		$this->filesystem = $filesystem;
 
 		$this->checkDirs();
+		$this->setTimezone();
 	}
 
 	/**
@@ -43,6 +48,17 @@ class Vessel {
 				$this->filesystem->makeDirectory(base_path().'/'.$dir, 0777, true);
 			}
 		}
+	}
+
+	/**
+	 * Sets laravel timezone based on site setting
+	 * 
+	 * @return type description
+	 */
+	public function setTimezone()
+	{
+		if (($timezone = $this->config->get('vset::site.timezone')))
+			$this->config->set('app.timezone', $timezone);
 	}
 
 	/**

@@ -74,9 +74,7 @@ class SettingController extends Controller {
 		// validation rules
 		$rules = array(
 			'title'              => 'required',
-			'title_format'       => 'required',
 			'description'        => '',
-			'description_format' => '',
 			'url'                => 'required|url',
 			'theme'              => 'required|theme',
 			'timezone'           => 'required|timezone',
@@ -96,9 +94,7 @@ class SettingController extends Controller {
 		$settings = $this->perm->load('vessel.site');
 		$settings->set(array(
 			'title'              => $this->input->get('title'),
-			'title_format'       => $this->input->get('title_format'),
 			'description'        => $this->input->get('description'),
-			'description_format' => $this->input->get('description_format'),
 			'url'                => $this->input->get('url'),
 			'theme'              => $this->input->get('theme'),
 			'timezone'           => $this->input->get('timezone'),

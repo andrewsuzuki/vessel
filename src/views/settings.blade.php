@@ -18,21 +18,9 @@
 							</div>
 						</div>
 						<div class="form-group">
-							{{ Form::label('title_format', 'Title Format', array('class' => 'col-sm-4 control-label')) }}
-							<div class="col-sm-8">
-								{{ Form::text('title_format', null, array('class' => 'form-control input-sm')) }}
-							</div>
-						</div>
-						<div class="form-group">
-							{{ Form::label('description', 'Meta Description', array('class' => 'col-sm-4 control-label')) }}
+							{{ Form::label('description', 'Default Description', array('class' => 'col-sm-4 control-label')) }}
 							<div class="col-sm-8">
 								{{ Form::textarea('description', null, array('class' => 'form-control input-sm', 'rows' => '2')) }}
-							</div>
-						</div>
-						<div class="form-group">
-							{{ Form::label('description_format', 'Meta Description Format', array('class' => 'col-sm-4 control-label')) }}
-							<div class="col-sm-8">
-								{{ Form::text('description_format', null, array('class' => 'form-control input-sm')) }}
 							</div>
 						</div>
 						<div class="form-group">
@@ -74,7 +62,7 @@
 							<div class="panel-body">
 								{{ isset($theme['thumbnail']) ? '<p><img src="'.$theme['thumbnail'].'" alt="" class="img-responsive" /></p>' : '' }}
 								{{ isset($theme['description']) ? '<p>'.$theme['description'].'</p>' : '' }}
-								{{ isset($theme['author']) ? '<p><strong>Author:</strong> '.(isset($theme['author_url']) ? '<a href="'.$theme['author_url'].'">'.$theme['author'].'</a>' : $theme['author']).' '.(isset($theme['author_email']) ? '(<a href="mailto:'.$theme['author_email'].'">email</a>)' : '').'</p>' : '' }}
+								{{ isset($theme['author']) ? '<p><strong>Author:</strong> '.(isset($theme['author_url']) ? '<a href="'.$theme['author_url'].'" target="_blank">'.$theme['author'].'</a>' : $theme['author']).' '.(isset($theme['author_email']) ? '(<a href="mailto:'.$theme['author_email'].'">email</a>)' : '').'</p>' : '' }}
 								{{ isset($theme['url']) ? '<p><strong>Theme URL:</strong> <a href="'.$theme['url'].'" target="_blank">'.$theme['url'].'</a></p>' : '' }}
 
 								<a href="#" class="btn btn-primary vessel-choose-theme" data-themename="{{ $name }}" role="button">Choose</a>
