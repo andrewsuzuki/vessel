@@ -89,7 +89,7 @@ class BlockController extends Controller
 	{
 		$mode = 'edit';
 		$block = $this->block->find($id); // find block
-		if (!$block) throw new \VesselNotFoundException; // throw error if not found
+		if (!$block) throw new \VesselBackNotFoundException; // throw error if not found
 
 		$this->view->share('title', 'Edit Block '.$block->title);
 
@@ -128,6 +128,6 @@ class BlockController extends Controller
 			return $this->redirect->route('vessel.blocks');
 		}
 
-		throw new \VesselNotFoundException;
+		throw new \VesselBackNotFoundException;
 	}
 }

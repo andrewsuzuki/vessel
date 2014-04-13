@@ -78,6 +78,9 @@ class VesselServiceProvider extends ServiceProvider {
 		// add namespace for vessel settings (perm)
 		$this->app['config']->addNamespace('vset', app_path('config/vessel'));
 
+		// register error handlers
+		$this->registerErrorHandlers();
+
 		// IoC Bindings
 		
 		$this->bindModels();
@@ -163,6 +166,15 @@ class VesselServiceProvider extends ServiceProvider {
 		$this->app->make('Hokeo\\Vessel\\Vessel'); // construct
 
 		$this->app['Hokeo\\Vessel\\Plugin']->enableAll(); // enable all plugins
+
+		// route matched event
+		$this->app['router']->matched(function($route, $request) {
+			// determine if we're in front or back based on route name, and set VESSEL_FRONT boolean
+			if (!defined('VESSEL_FRONT'))
+			{
+				define('VESSEL_FRONT', (($this->app['request']->is($this->app['config']->get('vessel::vessel.uri', 'vessel').'/*')) ? false : true));
+			}
+		});
 	}
 
 	/**
@@ -254,7 +266,7 @@ class VesselServiceProvider extends ServiceProvider {
 	/**
 	 * Binds models to IoC
 	 * 
-	 * @return type description
+	 * @return void
 	 */
 	protected function bindModels()
 	{
@@ -274,6 +286,57 @@ class VesselServiceProvider extends ServiceProvider {
 				return new $model;
 			});
 		}
+	}
+
+	/**
+	 * Register error handlers
+	 * 
+	 * @return response
+	 */
+	protected function registerErrorHandlers()
+	{
+		if ($this->app['config']->get('app.debug')) return; // if debugging is on, handle as normal (debug)
+
+		$exception_handler = function() {
+			if (defined('VESSEL_FRONT'))
+			{
+				$this->app['view']->share('title', 'Error');
+				// get admin 404 if it's on the back and we're logged in, otherwise get theme 404
+				$view = (VESSEL_FRONT || !$this->app['auth']->check()) ? 'vessel-theme::unknown' : 'vessel::errors.unknown';
+				if ($this->app['view']->exists($view)) return $this->app['view']->make($view); // if view exists, make+return
+			}
+
+			return 'An unknown error occurred.'; // fallback
+		};
+
+		$notfound_handler = function() {
+			if (defined('VESSEL_FRONT'))
+			{
+				$this->app['view']->share('title', '404 Not Found');
+				// get admin 404 if it's on the back and we're logged in, otherwise get theme 404
+				$view = (VESSEL_FRONT || !$this->app['auth']->check()) ? 'vessel-theme::404' : 'vessel::errors.404';
+				// if view exists, make+return
+				if ($this->app['view']->exists($view)) return $this->app['view']->make($view);
+			}
+
+			return '404 Not Found.'; // fallback
+		};
+
+		$this->app->fatal($exception_handler);
+
+		$this->app->error(function(\Exception $e) use ($exception_handler) {
+			return $exception_handler();
+		});
+
+		$this->app->error(function(\VesselFrontNotFoundException $e) use ($notfound_handler) {
+			return $notfound_handler();
+		});
+
+		$this->app->error(function(\VesselBackNotFoundException $e) use ($notfound_handler) {
+			return $notfound_handler();
+		});
+		
+		$this->app->missing($notfound_handler);
 	}
 
 	/**

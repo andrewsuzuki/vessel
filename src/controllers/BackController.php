@@ -38,11 +38,6 @@ class BackController extends Controller {
 		return $this->view->make('vessel::home');
 	}
 
-	public function getDne()
-	{
-		throw new \VesselNotFoundException;
-	}
-
 	public function getLogin()
 	{
 		return $this->view->make('vessel::login');

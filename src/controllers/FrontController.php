@@ -176,7 +176,7 @@ class FrontController extends Controller {
 			}
 		}
 
-		$this->app->abort(404);
+		throw new \VesselFrontNotFoundException;
 	}
 
 }

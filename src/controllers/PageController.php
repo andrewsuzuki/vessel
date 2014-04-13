@@ -103,7 +103,7 @@ class PageController extends Controller
 	{
 		$mode = 'edit';
 		$page = $this->page->with('history')->find($id); // find page
-		if (!$page) throw new \VesselNotFoundException; // throw error if not found
+		if (!$page) throw new \VesselBackNotFoundException; // throw error if not found
 
 		$edits  = $page->history()->notDraft()->orderBy('edit', 'desc')->get();
 		$drafts = $page->history()->draft()->orderBy('edit', 'desc')->get();
@@ -127,7 +127,7 @@ class PageController extends Controller
 			}
 			else
 			{
-				throw new \VesselNotFoundException;
+				throw new \VesselBackNotFoundException;
 			}
 		}
 
@@ -184,7 +184,7 @@ class PageController extends Controller
 			return $this->redirect->route('vessel.pages');
 		}
 
-		throw new \VesselNotFoundException;
+		throw new \VesselBackNotFoundException;
 	}
 
 	public function getPageHistoryDelete($id)
@@ -205,7 +205,7 @@ class PageController extends Controller
 			return $this->redirect->route('vessel.pages.edit', array('id' => $page->id));
 		}
 		
-		throw new \VesselNotFoundException;
+		throw new \VesselBackNotFoundException;
 	}
 
 
@@ -227,6 +227,6 @@ class PageController extends Controller
 			}
 		}
 
-		throw new \VesselNotFoundException;
+		throw new \VesselBackNotFoundException;
 	}
 }

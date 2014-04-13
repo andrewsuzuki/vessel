@@ -1,19 +1,11 @@
 <?php
 
-if (!class_exists('VesselNotFoundException'))
+if (!class_exists('VesselFrontNotFoundException'))
 {
-	class VesselNotFoundException extends \Exception {}
+	class VesselFrontNotFoundException extends \Exception {}
 }
 
-App::error(function(VesselNotFoundException $exception)
+if (!class_exists('VesselBackNotFoundException'))
 {
-	if (Auth::check())
-	{
-		View::share('title', '404 Not Found');
-		return Response::view('vessel::errors.VesselNotFound');
-	}
-	else
-	{
-		return 'An unknown error occurred.';
-	}
-});
+	class VesselBackNotFoundException extends \Exception {}
+}

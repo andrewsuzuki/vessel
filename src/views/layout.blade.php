@@ -112,7 +112,7 @@
 
 	<footer>
 		<div class="container">
-			<p>Vessel v{{ Hokeo\Vessel\Facades\Vessel::getVersion('full') }} &nbsp;&middot;&nbsp; <a href="//vesselcms.com">Home</a> &nbsp;&middot;&nbsp; <a href="//vesselcms.com/support">Support</a></p>
+			<p><a href="//vesselcms.com">Vessel</a> v{{ Hokeo\Vessel\Facades\Vessel::getVersion('full') }} &nbsp;&middot;&nbsp; <a href="//github.com/hokeo/vessel">GitHub</a> &nbsp;&middot;&nbsp; <a href="//vesselcms.com/support">Support</a></p>
 		</div>
 	</footer>
 	

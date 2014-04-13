@@ -63,10 +63,10 @@ Todo, roughly in order:
 * ~~Set up unit tests~~
 * ~~Set Up Permissions~~
 * ~~Block manager~~
+* ~~Site settings~~
+* ~~User Settings~~
 * Menu builder
 * Menu api
-* Site settings
-* ~~User Settings~~
 * User Password resets
 * User Registration
 * User Management
