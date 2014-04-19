@@ -65,13 +65,14 @@ Todo, roughly in order:
 * ~~Block manager~~
 * ~~Site settings~~
 * ~~User Settings~~
+* ~~Media management~~
+* Media thumbnails
 * Menu builder
 * Menu api
 * User Password resets
 * User Registration
 * User Management
 * Cool formatters (redactor/wysiwyg, image, text, advanced-custom-fields-like, table, custom, etc)
-* Media management
 * Installer
 * Docs
 * Packagist submission

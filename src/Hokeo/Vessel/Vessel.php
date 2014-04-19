@@ -12,15 +12,13 @@ class Vessel {
 
 	protected $filesystem;
 
-	protected $dirs = array('plugins', 'themes');
-
 	public function __construct(Application $app, Repository $config, Filesystem $filesystem)
 	{
 		$this->app        = $app;
 		$this->config     = $config;
 		$this->filesystem = $filesystem;
 
-		$this->checkDirs();
+		$this->checkDirs(array('plugins', 'themes', $this->config->get('vessel::upload_path', 'public/uploads')));
 		$this->setTimezone();
 	}
 
@@ -38,15 +36,17 @@ class Vessel {
 
 	/**
 	 * Checks if all required vessel directories exist, and makes them if not.
+	 * 
+	 * @param  array $dirs Directories to check, if characters 0 is NOT / it will append to base_path
+	 * @return void
 	 */
-	public function checkDirs()
+	public function checkDirs($dirs)
 	{
-		foreach ($this->dirs as $dir)
+		foreach ($dirs as $dir)
 		{
-			if (!$this->filesystem->isDirectory(base_path().'/'.$dir))
-			{
-				$this->filesystem->makeDirectory(base_path().'/'.$dir, 0777, true);
-			}
+			if (!is_string($dir)) throw new \Exception('Directory path must be string.'); // check dir is string
+			if ($dir[0] != '/') $dir = base_path($dir); // prepend base_path if [0] != /
+			if (!$this->filesystem->isDirectory($dir)) $this->filesystem->makeDirectory($dir, 0777, true); // if directory does not exist, make it
 		}
 	}
 
@@ -58,7 +58,7 @@ class Vessel {
 	public function setTimezone()
 	{
 		if (($timezone = $this->config->get('vset::site.timezone')))
-			$this->config->set('app.timezone', $timezone);
+			$this->config->set('app.timezone', $timezone); // if a timezone is set, then rewrite laravel config value
 	}
 
 	/**

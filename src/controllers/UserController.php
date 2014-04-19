@@ -96,4 +96,14 @@ class UserController extends Controller {
 		$this->notification->success('Your settings were updated successfully.');
 		return $this->redirect->route('vessel.me');
 	}
+
+	/**
+	 * Get Users page
+	 * 
+	 * @return response
+	 */
+	public function getUsers()
+	{
+		return 'this is users';
+	}
 }

@@ -36,7 +36,7 @@ class VesselServiceProvider extends ServiceProvider {
 		$this->app['vessel.version.full']  = $this->app['vessel.version.short'].'.'.$this->app['vessel.version.patch'];
 		$this->app['vessel.version']       = $this->app['vessel.version.full'];
 
-		include __DIR__.'/../../errors.php'; // errors
+		include __DIR__.'/../../errors.php'; // errors (classes)
 		include __DIR__.'/../../routes.php'; // routes
 		include __DIR__.'/../../filters.php'; // filters
 		include __DIR__.'/../../macros.php'; // html/form macros
@@ -237,6 +237,22 @@ class VesselServiceProvider extends ServiceProvider {
 				);
 		});
 
+		$this->app->bind('Hokeo\\Vessel\\MediaController', function($app) {
+			return new MediaController(
+				$app['view'],
+				$app['url'],
+				$app['request'],
+				$app['files'],
+				$app['validator'],
+				$app['auth'],
+				$app['config'],
+				new \Illuminate\Support\Facades\Response,
+				$app['notification'],
+				$app['Hokeo\\Vessel\\Plugin'],
+				$app['Hokeo\\Vessel\\Asset']
+				);
+		});
+
 		$this->app->bind('Hokeo\\Vessel\\UserController', function($app) {
 			return new UserController(
 				$app['view'],
@@ -303,7 +319,8 @@ class VesselServiceProvider extends ServiceProvider {
 				$this->app['view']->share('title', 'Error');
 				// get admin 404 if it's on the back and we're logged in, otherwise get theme 404
 				$view = (VESSEL_FRONT || !$this->app['auth']->check()) ? 'vessel-theme::unknown' : 'vessel::errors.unknown';
-				if ($this->app['view']->exists($view)) return $this->app['view']->make($view); // if view exists, make+return
+				// if view exists, make+return
+				if ($this->app['view']->exists($view)) return $this->app['view']->make($view);
 			}
 
 			return 'An unknown error occurred.'; // fallback

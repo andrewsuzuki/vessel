@@ -46,3 +46,12 @@ Validator::extend('timezone', function($attribute, $value, $parameters)
 {
 	return in_array($value, \DateTimeZone::listIdentifiers());
 });
+
+// Checks if file exists in config upload_path
+Validator::extend('uploaded', function($attribute, $value, $parameters)
+{
+	$upload_path = rtrim(\Config::get('vessel::upload_path', 'public/uploads'), '/');
+	$upload_path = ($upload_path[0] == '/') ? $upload_path : base_path($upload_path);
+
+	return \File::exists($upload_path.'/'.$value);
+});

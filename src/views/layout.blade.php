@@ -140,8 +140,10 @@
 	<!-- start other handlebars templates -->
 
 	@yield('templates')
-	
+
 	<!-- end other handlebars templates -->
+	
+	{{ fire('back.scripts-pre') }}
 	
 	<script> var base_site_url = '{{ URL::to('/') }}'; var base_vessel_url = '{{ URL::route('vessel') }}'; </script>
 	<script type='text/javascript' src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
@@ -149,16 +151,15 @@
 	<script type='text/javascript' src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.1.2/handlebars.min.js"></script>
 	<script type='text/javascript' src="{{ asset('packages/hokeo/vessel/js/jquery.slugify.js') }}"></script>
 
+	{{ fire('back.scripts-assets-pre') }}
+
 	{{ $js }}
+
+	{{ fire('back.scripts-assets-post') }}
 
 	<script type='text/javascript' src="<?php echo URL::asset('packages/hokeo/vessel/js/app.js') ?>"></script>
 
-	<script type='text/javascript'>
+	{{ fire('back.scripts-post') }}
 
-	$(document).ready(function() {
-
-	});
-
-	</script>
 </body>
 </html>
