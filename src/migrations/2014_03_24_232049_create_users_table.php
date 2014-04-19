@@ -22,6 +22,7 @@ class CreateUsersTable extends Migration {
 			$table->string('last_name');
 			$table->string('preferred_formatter');
 			$table->timestamp('last_login');
+			$table->string('remember_token')->nullable();
 			$table->string('confirmation')->unique();
 			$table->boolean('confirmed')->default(false);
 
