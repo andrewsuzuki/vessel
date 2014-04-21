@@ -8,12 +8,20 @@
 
 // Checks if page parent is valid
 Validator::extend('pageParent', function($attribute, $value, $parameters)
-{
-	// check if value is none or if value is valid page id 
-	$valid = $value == 'none' || ($page = Hokeo\Vessel\Page::find($value));
+{	
+	if (isset($parameters[1]) && $parameters[1] == 'true') // check if this is the home page
+	{
+		$valid = $value == 'none';
+	}
+	else
+	{
+		// make sure it's a page id
+		$valid = $value == 'none' || ($page = Hokeo\Vessel\Page::find($value));
 
-	if ($valid && $value != 'none' && isset($parameters[0]))
-		$valid = !$page->isSelfOrDescendantOf(Hokeo\Vessel\Page::find($parameters[0]));
+		// make sure page id is not self or descendant of this page
+		if ($valid && $value != 'none' && isset($parameters[0]))
+			$valid = !$page->isSelfOrDescendantOf(Hokeo\Vessel\Page::find($parameters[0]));
+	}
 
 	return $valid;
 });
@@ -32,6 +40,19 @@ Validator::extend('template', function($attribute, $value, $parameters)
 	Hokeo\Vessel\Facades\Theme::load();
 	$templates = Hokeo\Vessel\Facades\Theme::getThemeViews();
 	return array_key_exists($value, $templates);
+});
+
+// Checks if checkbox was checked (equal to '1', 'on', 'true', 'yes')
+Validator::extend('checked', function($attribute, $value, $parameters)
+{
+	return in_array(strtolower($value), array('1', 'on', 'true', 'yes'));
+});
+
+// Checks if page id exists, is public, and is root
+Validator::extend('home_page_id', function($attribute, $value, $parameters)
+{
+	$page = Hokeo\Vessel\Page::find($value);
+	return $page && $page->visible && $page->isRoot();
 });
 
 // Checks if theme exists

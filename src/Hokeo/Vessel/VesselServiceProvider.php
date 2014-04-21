@@ -130,6 +130,7 @@ class VesselServiceProvider extends ServiceProvider {
 				$app['db'],
 				$app['redirect'],
 				$app['auth'],
+				$app['config'],
 				$app['validator'],
 				$app['notification'],
 				$app['Hokeo\\Vessel\\FormatterManager'],
@@ -284,7 +285,8 @@ class VesselServiceProvider extends ServiceProvider {
 				$app['redirect'],
 				$app['notification'],
 				$app['Andrewsuzuki\\Perm\\Perm'],
-				$app['Hokeo\\Vessel\\Theme']
+				$app['Hokeo\\Vessel\\Theme'],
+				$app['Hokeo\\Vessel\\PageHelper']
 				);
 		});
 	}

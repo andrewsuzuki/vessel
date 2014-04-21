@@ -63,7 +63,7 @@ class Theme {
 	/**
 	 * Get views in dot notation, recursive, from loaded theme directory
 	 * 
-	 * @return array                       Array of view names (key = view, value = display)
+	 * @return array Array of view names (key = view, value = display)
 	 */
 	public function getThemeViews()
 	{

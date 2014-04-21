@@ -60,17 +60,19 @@ class Page extends Node {
 	 * Validation rules
 	 * 
 	 * @param  object|null $edit If editing, pass in the updating page model
+	 * @param  boolean     $home If editing the home page
 	 * @return array             Rules for validator
 	 */
-	public function rules($edit = null)
+	public function rules($edit = null, $home = false)
 	{
 		return [
-			'title' => 'required',
-			'slug' => 'required|alpha_dash|unique:vessel_pages,slug'.(($edit) ? ','.$edit->id : ''),
+			'title'       => 'required',
+			'slug'        => 'required|alpha_dash|unique:vessel_pages,slug'.(($edit) ? ','.$edit->id : ''),
 			'description' => '',
-			'parent' => 'required|pageParent'.(($edit) ? ':'.$edit->id : ''),
-			'formatter' => 'required|formatter',
-			'template' => 'required|template',
+			'visible'     => (($home) ? 'checked' : ''),
+			'parent'      => 'required|pageParent'.(($edit) ? ':'.$edit->id.(($home) ? ',true' : '') : ''),
+			'formatter'   => 'required|formatter',
+			'template'    => 'required|template',
 		];
 	}
 

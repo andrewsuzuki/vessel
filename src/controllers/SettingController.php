@@ -24,6 +24,8 @@ class SettingController extends Controller {
 
 	protected $theme;
 
+	protected $pagehelper;
+
 	public function __construct(
 		Environment $view,
 		Request $input,
@@ -31,7 +33,8 @@ class SettingController extends Controller {
 		Redirector $redirect,
 		Notification $notification,
 		Perm $perm,
-		Theme $theme)
+		Theme $theme,
+		PageHelper $pagehelper)
 	{
 		$this->view         = $view;
 		$this->input        = $input;
@@ -40,6 +43,7 @@ class SettingController extends Controller {
 		$this->notification = $notification;
 		$this->perm         = $perm;
 		$this->theme        = $theme;
+		$this->pagehelper   = $pagehelper;
 	}
 
 	/**
@@ -54,6 +58,8 @@ class SettingController extends Controller {
 		// load persistent site settings and cast to object (emulates model for Form)
 		$settings = (object) $this->perm->load('vessel.site')->all();
 
+		$home_select_array = $this->pagehelper->possibleHomeArray();
+
 		$timezones = \DateTimeZone::listIdentifiers();
 		$timezone_select_array = array_combine($timezones, array_map(function($timezone) {
 			return str_replace(['_', '/'], [' ', ' / '], $timezone);
@@ -61,7 +67,7 @@ class SettingController extends Controller {
 
 		$themes = $this->theme->getAvailable();
 
-		return $this->view->make('vessel::settings')->with(compact('settings', 'timezone_select_array', 'themes'));
+		return $this->view->make('vessel::settings')->with(compact('settings', 'home_select_array', 'timezone_select_array', 'themes'));
 	}
 
 	/**
@@ -76,6 +82,7 @@ class SettingController extends Controller {
 			'title'              => 'required',
 			'description'        => '',
 			'url'                => 'required|url',
+			'home'               => 'required|home_page_id',
 			'theme'              => 'required|theme',
 			'timezone'           => 'required|timezone',
 			// 'language'        => 'required|language',
@@ -96,6 +103,7 @@ class SettingController extends Controller {
 			'title'              => $this->input->get('title'),
 			'description'        => $this->input->get('description'),
 			'url'                => $this->input->get('url'),
+			'home'               => $this->input->get('home'),
 			'theme'              => $this->input->get('theme'),
 			'timezone'           => $this->input->get('timezone'),
 		));

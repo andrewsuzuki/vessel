@@ -30,6 +30,12 @@
 							</div>
 						</div>
 						<div class="form-group">
+							{{ Form::label('home', 'Homepage', array('class' => 'col-sm-4 control-label')) }}
+							<div class="col-sm-8">
+								{{ Form::select('home', $home_select_array, null, array('class' => 'form-control input-sm')) }}
+							</div>
+						</div>
+						<div class="form-group">
 							{{ Form::label('timezone', 'Timezone', array('class' => 'col-sm-4 control-label')) }}
 							<div class="col-sm-8">
 								{{ Form::select('timezone', $timezone_select_array, null, array('class' => 'form-control input-sm')) }}

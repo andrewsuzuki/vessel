@@ -50,23 +50,30 @@ class FrontController extends Controller {
 	/**
 	 * Get page on front end
 	 * 
-	 * @param  string $all Request path (from route)
+	 * @param string $all Request path (from route)
 	 */
 	public function getPage($all)
 	{
-		// explode request path
-		$hierarchy = explode('/', $all);
+		if ($all == '/') // if this is home...
+		{
+			$home = $this->config->get('vset::site.home'); // get home page from config
+			$main = $this->page->find($home); // get home page by id
+			if (!$home || !$main || !$main->isRoot()) throw new \VesselFrontNotFoundException; // make sure home exists & is root
+			$hierarchy = array($main->slug);
+		}
+		else
+		{
+			$hierarchy = explode('/', $all); // explode request path
 
-		// get last page slug's page
-		$main = $this->page->where('slug', end($hierarchy))->first();
-		reset($hierarchy);
+			// get last page slug's page
+			$main = $this->page->where('slug', end($hierarchy))->first();
+			reset($hierarchy);
+		}
 
 		// load theme with name from settings, with no fallbacks
 		$theme_good = $this->theme->load($this->config->get('vset::site.theme'), false);
 		// if all fails...
-		if (!$theme_good) $this->app->abort(404);
-
-		$this->theme->getThemeViews();
+		if (!$theme_good) throw new \VesselFrontNotFoundException;
 
 		// check that this page exists and is public
 		if ($main && $main->visible)
@@ -90,10 +97,7 @@ class FrontController extends Controller {
 			// otherwise, make sure there ain't even a nest
 			else
 			{
-				if (count($hierarchy) > 1)
-				{
-					$valid = false;
-				}
+				if (count($hierarchy) > 1) $valid = false;
 			}
 			
 			if ($valid)
@@ -106,7 +110,8 @@ class FrontController extends Controller {
 					$menu->add('/', 'Home')
 					->add('/about', 'About')
 					->add('#', 'More', $this->menu->items('more')
-						->add('/blog', 'Blog'));
+						->add('/blog', 'Blog')
+						);
 
 					$this->menu->handler('vessel.menu.front')->getItemsAtDepth(0)->map(function($item)
 					{
@@ -167,8 +172,7 @@ class FrontController extends Controller {
 						}],
 					]);
 
-					$view_name = ($main->template && $main->template !== 'none') ? $main->template.'_template' : 'template';
-
+					$view_name = ($main->template && $main->template !== 'none') ? $main->template.'_template' : 'template'; // use sub-template if specified
 					if (!$this->view->exists('vessel-theme::'.$view_name)) $view_name = 'template'; // revert to default template if it doesn't exist
 
 					return $view = $this->view->make('vessel-theme::'.$view_name);

@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Routing\Redirector;
 use Illuminate\Auth\AuthManager;
+use Illuminate\Config\Repository;
 use Illuminate\Validation\Factory;
 use Krucas\Notification\Notification;
 
@@ -16,6 +17,8 @@ class PageHelper {
 	protected $redirect;
 
 	protected $auth;
+
+	protected $config;
 
 	protected $validator;
 
@@ -36,6 +39,7 @@ class PageHelper {
 		DatabaseManager $db,
 		Redirector $redirect,
 		AuthManager $auth,
+		Repository $config,
 		Factory $validator,
 		Notification $notification,
 		FormatterManager $fm,
@@ -48,6 +52,7 @@ class PageHelper {
 		$this->db           = $db;
 		$this->redirect     = $redirect;
 		$this->auth         = $auth;
+		$this->config       = $config;
 		$this->validator    = $validator;
 		$this->notification = $notification;
 		$this->page         = $page;
@@ -65,6 +70,8 @@ class PageHelper {
 	 */
 	public function savePage($page, $mode = 'edit', $draft = false)
 	{
+		$is_home = $page->id == $this->config->get('vset::site.home'); // determine if this is the home page
+
 		if ($mode == 'edit')
 		{
 			$backparams = array('id' => $page->id);
@@ -75,7 +82,7 @@ class PageHelper {
 				return $this->redirect->route('vessel.pages.'.$mode, $backparams)->with('force_edit', 'true')->withInput();
 			}
 
-			$rules = $this->page->rules($page); // validation rules for editing
+			$rules = $this->page->rules($page, $is_home); // validation rules for editing
 		}
 		else
 		{
@@ -96,10 +103,9 @@ class PageHelper {
 
 		// process content
 		
-		// get formatter
 		try
 		{
-			$formatter = $this->fm->get($this->input->get('formatter'), 'page');
+			$formatter = $this->fm->get($this->input->get('formatter'), 'page'); // get formatter
 		}
 		catch (\Exception $e)
 		{
@@ -108,7 +114,7 @@ class PageHelper {
 			return $this->redirect->route('vessel.pages.'.$mode, $backparams)->withInput();
 		}
 
-		$processed = $formatter->fmProcess();
+		$processed = $formatter->fmProcess(); // process + format raw content
 
 		// verify processing returns array with two elements
 		if (!is_array($processed) || count($processed) !== 2)
@@ -135,11 +141,10 @@ class PageHelper {
 
 			$edithistory->is_draft    = false;
 			$edithistory->created_at  = $page->updated_at;
-			$edithistory->edit        = ($last_edit = $this->db->table($edithistory->getTable())->max('edit')) ? $last_edit + 1 : 1;
+			$edithistory->edit        = ($last_edit = $this->db->table($edithistory->getTable())->max('edit')) ? $last_edit + 1 : 1; // make edit #
 
-			$edithistory->page()->associate($page);
-
-			$edithistory->user()->associate($page->user);
+			$edithistory->page()->associate($page); // associate page with pagehistory
+			$edithistory->user()->associate($page->user); // associate last editing user with pagehistory
 
 			$edithistory->save();
 		}
@@ -203,5 +208,18 @@ class PageHelper {
 		if ($draft) $params['history'] = $setter->id;
 
 		return $this->redirect->route('vessel.pages.edit', array('id' => $page->id));
+	}
+
+	/**
+	 * Get array (for <select>) of possible home pages (public & rooot)
+	 * 
+	 * @return array
+	 */
+	public function possibleHomeArray()
+	{
+		$homes = $this->page->visible()->root()->get(); // get visible root pages
+		$array = array();
+		foreach ($homes as $home) $array[$home->id] = $home->title; // make array of id => title
+		return $array;
 	}
 }

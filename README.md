@@ -54,21 +54,10 @@ Feel free to post any issues or comments here on github.
 
 Todo, roughly in order:
 
-* ~~JS auto-slugs~~
-* ~~Plugins system~~
-* ~~Theme setting~~
-* ~~Page sub-templates~~
-* ~~Page edit history~~
-* ~~Page drafts~~
-* ~~Set up unit tests~~
-* ~~Set Up Permissions~~
-* ~~Block manager~~
-* ~~Site settings~~
-* ~~User Settings~~
-* ~~Media management~~
-* ~~Media thumbnails~~
+* ~~Home page~~
 * Menu builder
 * Menu api
+* Lang + Validation messages
 * User Password resets
 * User Registration
 * User Management
