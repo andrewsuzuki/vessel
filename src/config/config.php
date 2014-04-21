@@ -34,4 +34,28 @@ return array(
 	 */
 	'upload_url' => 'uploads',
 
+	/**
+	 * Thumbnails to make of uploaded images.
+	 *
+	 * Takes any number of arrays specifying:
+	 * KEY (name/subdirectory for thumbnail)
+	 * 'resize', 'crop', or 'grab' (intelligent crop+resize)
+	 * width (pixels, or on resize mode, null for using ratio with other value)
+	 * height (pixels, or on resize mode, null)
+	 * additional params (upsizing, x/y position, etc, see below)
+	 * 
+	 * See the following urls for more information:
+	 * http://image.intervention.io/methods/resize
+	 * http://image.intervention.io/methods/grab
+	 */
+	'thumbnails' => array(
+		'100x100'  => array('grab', 100, 100),
+		'300xauto' => array('resize', 300, null, true),
+	),
+
+	/**
+	 * Thumbnail to use as main backend thumbnail (should be a small ~100px size)
+	 */
+	'main_thumbnail' => '100x100',
+
 );

@@ -61,6 +61,7 @@ class VesselServiceProvider extends ServiceProvider {
 		$dependent_provides = [
 			'Krucas\\Notification\\NotificationServiceProvider',
 			'Zizaco\\Entrust\\EntrustServiceProvider',
+			'Intervention\\Image\\ImageServiceProvider',
 			'Menu\\MenuServiceProvider',
 			'Andrewsuzuki\\Perm\\PermServiceProvider'
 		];
@@ -151,6 +152,16 @@ class VesselServiceProvider extends ServiceProvider {
 				);
 		});
 
+		$this->app->bindShared('Hokeo\\Vessel\\MediaHelper', function($app) {
+			return new MediaHelper(
+				$app['url'],
+				$app['files'],
+				$app['config'],
+				$app['image'],
+				$app['Hokeo\\Vessel\\Plugin']
+				);
+		});
+
 		$this->app->bindShared('Hokeo\\Vessel\\Theme', function($app) {
 			return new Theme($app['app'],
 				$app['config'],
@@ -236,20 +247,19 @@ class VesselServiceProvider extends ServiceProvider {
 				$app['Hokeo\\Vessel\\Block']
 				);
 		});
-
+		
 		$this->app->bind('Hokeo\\Vessel\\MediaController', function($app) {
 			return new MediaController(
 				$app['view'],
 				$app['url'],
 				$app['request'],
 				$app['files'],
-				$app['validator'],
 				$app['auth'],
 				$app['config'],
 				new \Illuminate\Support\Facades\Response,
-				$app['notification'],
 				$app['Hokeo\\Vessel\\Plugin'],
-				$app['Hokeo\\Vessel\\Asset']
+				$app['Hokeo\\Vessel\\Asset'],
+				$app['Hokeo\\Vessel\\MediaHelper']
 				);
 		});
 

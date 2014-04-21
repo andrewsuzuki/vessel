@@ -5,11 +5,9 @@ use Illuminate\View\Environment;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Http\Request;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Validation\Factory;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Config\Repository;
 use Illuminate\Support\Facades\Response;
-use Krucas\Notification\Notification;
 
 class MediaController extends Controller
 {
@@ -21,54 +19,40 @@ class MediaController extends Controller
 
 	protected $file;
 
-	protected $validator;
-
 	protected $auth;
 
 	protected $config;
 
 	protected $response;
 
-	protected $notification;
-
 	protected $plugin;
 
 	protected $asset;
 
-	protected $upload_path;
-
-	protected $upload_url;
+	protected $mediahelper;
 
 	public function __construct(
 		Environment $view,
 		UrlGenerator $url,
 		Request $input,
 		Filesystem $file,
-		Factory $validator,
 		AuthManager $auth,
 		Repository $config,
 		Response $response,
-		Notification $notification,
 		Plugin $plugin,
-		Asset $asset)
+		Asset $asset,
+		MediaHelper $mediahelper)
 	{
 		$this->view         = $view;
 		$this->url          = $url;
 		$this->input        = $input;
 		$this->file         = $file;
-		$this->validator    = $validator;
 		$this->auth         = $auth;
 		$this->config       = $config;
 		$this->response     = $response;
-		$this->notification = $notification;
 		$this->asset        = $asset;
 		$this->plugin       = $plugin;
-
-		$upload_path       = rtrim($this->config->get('vessel::upload_path', 'public/uploads'), '/');
-		$this->upload_path = ($upload_path[0] == '/') ? $upload_path : base_path($upload_path);
-
-		$upload_url        = rtrim($this->config->get('vessel::upload_url', 'uploads'), '/');
-		$this->upload_url  = ($upload_url[0] == '/') ? $upload_url : url($upload_url);
+		$this->mediahelper  = $mediahelper;
 	}
 
 	/**
@@ -113,34 +97,13 @@ class MediaController extends Controller
 	}
 
 	/**
-	 * Get uploaded media
+	 * Get all uploaded media
 	 * 
 	 * @return response json response
 	 */
 	public function getHandle()
 	{
-		$files = array();
-
-		foreach ($this->file->files($this->upload_path) as $file) // get files in config upload path
-		{
-			if ($file[0] != '.')
-			{
-				// if file doesn't start with '.', add to array
-	
-				$basename = basename($file);
-
-				$files[] = array(
-					'name'         => $basename,
-					'size'         => $this->file->size($file),
-					'url'          => $this->upload_url.'/'.$basename,
-					'thumbnailUrl' => $this->upload_url.'/'.$basename, // tmp
-					'deleteUrl'    => $this->url->route('vessel.media.handle', array('filename' => $basename)), // tmp
-					'deleteType'   => 'DELETE',
-				);
-			}
-		}
-
-		return $this->response->json(array('files' => $files));
+		return $this->response->json(array('files' => $this->mediahelper->all()));
 	}
 
 	/**
@@ -150,79 +113,41 @@ class MediaController extends Controller
 	 */
 	public function postHandle()
 	{
-		// file validation rules
-		$rules = array(
-			'files.0' => 'required|image|max:3000',
-		);
+		$filename = '';
+		$size     = 0;
 
-		$validation = $this->validator->make($this->input->all(), $rules); // validate
-		
-		$file          = $this->input->file('files.0'); // get file object
-		$size          = $file->getSize(); // get file size
-		$original_name = $file->getClientOriginalName(); // get file name (uploaded as)
-
-		if ($validation->passes())
+		try
 		{
-			$file_parts = explode('.', $original_name); // explode basename by .
+			if (!$this->input->hasFile('files.0')) throw new \Exception('File was not uploaded.'); // check file input
+			$file     = $this->input->file('files.0'); // get file object
+			$filename = $this->mediahelper->upload($file->getRealPath(), basename($file->getClientOriginalName())); // save + make thumbs if image
+			$file     = $this->mediahelper->path($filename); // get new file path
+			$return   = array(
+				'name'         => $filename,
+				'size'         => $this->file->size($file),
+				'url'          => $this->mediahelper->url($filename),
+				'deleteUrl'    => $this->mediahelper->urlDelete($filename),
+				'deleteType'   => 'DELETE',
+			);
 
-			$original_basename = $file_parts[0]; // get basename without extension(s)
-			$basename = $original_basename;
-
-			if ($basename) // make sure this filename doesn't start with .
+			// add thumbnail url to return if image
+			if ($this->mediahelper->isImage($file)) // if file is an image...
 			{
-				array_shift($file_parts);
-				$extension = implode('.', $file_parts); // make extension(s) string
-
-				// append -i (file-1, file-2, etc) if it already exists (until it doesn't)
-				$i = 1;
-				while ($this->file->exists($this->upload_path.'/'.$basename.'.'.$extension))
-				{
-					$basename = $original_basename.'-'.$i;
-					$i++;
-				}
-
-				// final filename to save as
-				$filename = $basename.'.'.$extension;
-
-				// save file from tmp to config upload path
-				if ($file->move($this->upload_path, $filename))
-				{
-					// return response with upload data
-					return $this->response->json(array('files' => array(
-						array(
-							'name'         => $filename,
-							'size'         => $size,
-							'url'          => $this->upload_url.'/'.$filename,
-							'thumbnailUrl' => $this->upload_url.'/'.$filename, // tmp
-							'deleteUrl'    => $this->url->route('vessel.media.handle', array('filename' => $filename)), // tmp
-							'deleteType'   => 'DELETE',
-						),
-					)));
-				}
-				else
-				{
-					$error = 'An unknown error occurred.';
-				}
-			}
-			else
-			{
-				$error = 'Filename must not start with a period.';
+				if ($name = $this->mediahelper->getMainThumbName()) // get main thumbnail name
+					$return['thumbnailUrl'] = $this->mediahelper->url($name.'/'.$filename); // set thumbnail url
 			}
 		}
-		else
+		catch (\Exception $e)
 		{
-			$filename = $original_name;
-			$error = $validation->errors()->first(); // get validation errors
-		}
-
-		// return error json
-		return $this->response->json(array('files' => array(
-			array(
+			// return exception
+			$return = array(
 				'name'  => $filename,
 				'size'  => $size,
-				'error' => $error,
-			),
-		)));
+				'error' => $e->getMessage(),
+			);
+		}
+
+		return $this->response->json(array('files' => array($return))); // return json response
 	}
 
 	/**
@@ -231,21 +156,12 @@ class MediaController extends Controller
 	 * @return response json response
 	 */
 	public function deleteHandle()
-	{
-		// file delete validation rules
-		$rules = array(
-			'filename' => 'required|uploaded',
-		);
+	{		
+		$filename = $this->input->get('filename'); // get filename
 
-		$validation = $this->validator->make($this->input->all(), $rules); // validate
-		
-		$filename = $this->input->get('filename', '[unknown]'); // get filename
+		$success = $filename && $this->mediahelper->delete($filename); // try to delete file
 
-		// if filename is specified + exists, delete it
-		if ($validation->passes())
-			$success = $this->file->delete($this->upload_path.'/'.$filename);
-
-		// return json response
+		// return json response with success boolean
 		return $this->response->json(array('files' => array(
 			array(
 				$filename => $success
