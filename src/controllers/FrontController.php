@@ -131,45 +131,45 @@ class FrontController extends Controller {
 
 					$this->theme->setElement([
 
-						['site-title', function() {
+						'site-title' => function() {
 							return $this->config->get('vset::site.title', '');
-						}],
+						},
 
-						['page-title', function() use ($main) {
+						'page-title' => function() use ($main) {
 							return $main->title;
-						}],
+						},
 
-						['description', function($call) use ($main) {
+						'description' => function($call) use ($main) {
 							if ($main->description)
 								return $main->description;
 							else
 								return $this->config->get('vset::site.description', '');
-						}],
+						},
 
-						['site-desc', function() {
+						'site-desc' => function() {
 							return $this->config->get('vset::site.description', '');
-						}],
+						},
 
-						['page-desc', function() use ($main) {
+						'page-desc' => function() use ($main) {
 							return $main->description;
-						}],
+						},
 
-						['menu', function($call, $name) use ($main) {
+						'menu' => function($call, $name) use ($main) {
 							return $this->menu->handler('vessel.menu.'.$name)->render();
-						}],
+						},
 
-						['block', function($call, $slug) {
+						'block' => function($call, $slug) {
 							return $this->blockhelper->display($slug);
-						}],
+						},
 
 					]);
 
 					$formatter = $this->fm->get($main->formatter);
 
 					$this->theme->setElement([
-						['content', function() use ($main, $formatter) {
+						'content' => function() use ($main, $formatter) {
 							return $formatter->fmUse($main->raw, $main->made);
-						}],
+						},
 					]);
 
 					$view_name = ($main->template && $main->template !== 'none') ? $main->template.'_template' : 'template'; // use sub-template if specified

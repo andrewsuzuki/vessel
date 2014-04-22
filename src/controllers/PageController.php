@@ -81,7 +81,7 @@ class PageController extends Controller
 		$formatter_current = get_class($formatter);
 
 		$this->theme->load();
-		$sub_templates = $this->theme->getThemeViewsSelect();
+		$sub_templates = $this->theme->getThemeSubsSelect();
 
 		return $this->view->make('vessel::pages_edit')->with(compact(
 			'page',
@@ -151,7 +151,7 @@ class PageController extends Controller
 		$formatter_current = get_class($formatter);
 
 		$this->theme->load();
-		$sub_templates = $this->theme->getThemeViewsSelect();
+		$sub_templates = $this->theme->getThemeSubsSelect();
 
 		return $this->view->make('vessel::pages_edit')->with(compact(
 			'page',

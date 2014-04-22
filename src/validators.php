@@ -38,7 +38,7 @@ Validator::extend('template', function($attribute, $value, $parameters)
 	if ($value == 'none') return true;
 	
 	Hokeo\Vessel\Facades\Theme::load();
-	$templates = Hokeo\Vessel\Facades\Theme::getThemeViews();
+	$templates = Hokeo\Vessel\Facades\Theme::getThemeSubs();
 	return array_key_exists($value, $templates);
 });
 

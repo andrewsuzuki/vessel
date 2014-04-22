@@ -8,9 +8,11 @@ use Andrewsuzuki\Perm\Perm;
 
 class Theme {
 
+	protected $app;
+
 	protected $config;
 
-	protected $app;
+	protected $view;
 
 	protected $filesystem;
 
@@ -18,17 +20,18 @@ class Theme {
 
 	protected $themes_path;
 
-	protected $available = null;
-
 	protected $theme = null;
-
-	protected $themes;
 
 	protected $elements = array();
 
 	protected $current_element = null;
 
-	public function __construct(Application $app, Repository $config, Environment $view, Filesystem $filesystem, Perm $perm)
+	public function __construct(
+		Application $app,
+		Repository $config,
+		Environment $view,
+		Filesystem $filesystem,
+		Perm $perm)
 	{
 		$this->app         = $app;
 		$this->config      = $config;
@@ -36,7 +39,10 @@ class Theme {
 		$this->filesystem  = $filesystem;
 		$this->perm        = $perm;
 
-		$this->themes_path  = base_path().DIRECTORY_SEPARATOR.'themes';
+		$this->themes_path     = base_path().'/themes';
+		$this->theme           = null;
+		$this->elements        = array();
+		$this->current_element = null;
 	}
 
 	/**
@@ -51,67 +57,46 @@ class Theme {
 
 	/**
 	 * Gets path to a theme if it exists
-	 * @param  string $name Name of theme (directory)
-	 * @return string       Path to theme
+	 * 
+	 * @param  string $name Name or base directory of theme
+	 * @return string|void  Path to theme if it exists
 	 */
 	public function getThemePath($name)
 	{
-		if ($this->filesystem->exists($this->themes_path.DIRECTORY_SEPARATOR.$name))
-			return $this->themes_path.DIRECTORY_SEPARATOR.$name;
+		$name  = basename($name); // dir -> name 
+		$theme = $this->themes_path.'/'.$name; // name -> dir
+
+		if ($this->filesystem->exists($theme))
+			return $theme;
 	}
 
 	/**
-	 * Get views in dot notation, recursive, from loaded theme directory
+	 * Check for a valid theme (existence of template.blade.php and theme.php with title and author)
 	 * 
-	 * @return array Array of view names (key = view, value = display)
+	 * @param  string $name Name or base directory of theme
+	 * @return mixed        Info array returned by its theme.php if valid, or false if not
 	 */
-	public function getThemeViews()
+	public function get($name)
 	{
-		if ($this->theme)
+		if ($theme = $this->getThemePath($name)) // check theme dir exists and get path
 		{
-			$directory = new \RecursiveDirectoryIterator($this->getThemePath($this->theme['name']));
-			$flattened = new \RecursiveIteratorIterator($directory);
-
-			// Make sure the path does not contain "/.Trash*" folders and ends with either _template.blade.php or _template.php
-			$files = new \RegexIterator($flattened, '#^(?:[A-Z]:)?(?:/(?!\.Trash)[^/]+)+/[^/]+_template\.(?:blade.php|php)$#Di');
-
-			$return = array();
-
-			foreach ($files as $file)
+			if ($this->filesystem->exists($theme.'/template.blade.php') && $this->filesystem->exists($theme.'/theme.php')) // check dir has required files
 			{
-				$view = str_replace(DIRECTORY_SEPARATOR, '.', // replace / with .
-								str_replace(['.blade.php', '.php'], '', // strip extension
-									str_replace($this->getThemePath($this->theme['name']).DIRECTORY_SEPARATOR, '', (string) $file) // abs->rel to theme dir
-								)
-							);
+				$info = $this->filesystem->getRequire($theme.'/theme.php'); // get return from theme.php
 
-				$view = substr($view, 0, -9); // remove _template
+				$infocheck = array('title', 'author');
 
-				// make display name (i.e. pages.about turns to Pages > About)
-				$display = implode(' > ', array_map(function($part) {
-					return ucfirst($part);
-				}, explode('.', $view)));
+				// if theme return doesn't have each required key, return false
+				foreach ($infocheck as $check)
+				{
+					if (!isset($info[$check]) || !strlen($info[$check])) return false;
+				}
 
-				$return[$view] = $display;
-			}	
-
-			return $return;
+				return $info; // otherwise return theme return info array
+			}
 		}
-	}
 
-	/**
-	 * Gets <select> array for theme sub-template (with default)
-	 * 
-	 * @return array
-	 */
-	public function getThemeViewsSelect()
-	{
-		$templates = ($this->theme) ? $this->getThemeViews() : array();
-		$templates = array_reverse($templates);
-		$templates['none'] = '-- Default template --';
-		$templates = array_reverse($templates);
-
-		return $templates;
+		return false;
 	}
 
 	/**
@@ -123,75 +108,31 @@ class Theme {
 	 */
 	public function load($name = null, $try_first = false)
 	{
-		$success = false;
+		if (!$name) $name = $this->perm->load('vessel.site')->get('theme'); // if name not specified, get from settings
 
-		if (!$name)
+		$info = $this->get($name); // get theme info
+
+		if ($info)
 		{
-			$theme = $this->perm->load('vessel.config')->get('theme'); // get set theme from settings
+			$this->theme = ['name' => $name, 'info' => $info]; // set theme property
 
-			if ($theme && isset($theme['name']) && isset($theme['info']))
-			{
-				$this->theme = $theme;
-				$success = true;
-			}
-		}
-		else
-		{
-			$check = $this->check($name);
-
-			if ($check)
-			{
-				$this->theme = ['name' => $name, 'info' => $check];
-				$success = true;
-			}
-		}
-
-		if ($success)
-		{
 			// success, so set the view namespace vessel-theme to our theme directory
-			$this->view->addNamespace('vessel-theme', $this->themes_path.DIRECTORY_SEPARATOR.$this->theme['name']);
+			$this->view->addNamespace('vessel-theme', $this->themes_path.'/'.$this->theme['name']);
 			return true;
 		}
 		else
 		{
-			// since name/loading failed, let's try the first available theme
+			// name/loading failed, so we can try to revert to the first available theme
 			if ($try_first)
 			{
 				$available = $this->getAvailable(); // get available
 
-				// if it's not empty, call recursively with name (and prevent infinite loop)
 				if (!empty($available))
-				{
-					$name = key($available);
-					$load = $this->load($name, false);
-
-					if ($load)
-					{
-						$this->set($name); // save it for next time
-					}
-
-					return $load; // t/f from recursive call
-				}
+					return $this->load(key($available), false); // get first name and call this method (+ prevent infinite)
 			}
 
 			return false;
 		}
-	}
-
-	/**
-	 * Sets/saves a theme choice
-	 * 
-	 * @param string $name Name (directory) of theme
-	 */
-	public function set($name)
-	{
-		$check = $this->check($name);
-
-		if (!$check) return false;
-
-		$this->perm->load('vessel.config')->set(array('theme.name' => $name, 'theme.info' => $check));
-
-		return true;
 	}
 
 	/**
@@ -202,73 +143,109 @@ class Theme {
 	public function getAvailable()
 	{
 		$themes = $this->filesystem->directories($this->themes_path);
-
 		$available = array();
 
 		foreach ($themes as $theme)
 		{
-			$check = $this->check($theme);
-
-			if (!$check) continue;
+			if (!($info = $this->get($theme))) continue;
 			$name = basename($theme);
-			$available[$name] = $check;
+			$available[$name] = $info;
 		}
 
 		return $available;
 	}
 
 	/**
-	 * Check for a valid theme (existence of template.blade.php and theme.php with title and author)
+	 * Get views in dot notation, recursive, from loaded theme directory
 	 * 
-	 * @param  string $name Name (directory) of theme
-	 * @return mixed        Bool false if theme wasn't valid, or info array returned by its theme.php if valid
+	 * @return array Array of view names (viewname => displayname)
 	 */
-	public function check($name)
+	public function getThemeSubs()
 	{
-		$name = basename($name);
-
-		$theme = $this->themes_path.DIRECTORY_SEPARATOR.$name;
-
-		if ($this->filesystem->exists($theme))
+		if ($this->theme)
 		{
-			if ($this->filesystem->exists($theme.DIRECTORY_SEPARATOR.'template.blade.php') && $this->filesystem->exists($theme.DIRECTORY_SEPARATOR.'theme.php'))
+			$path = $this->getThemePath($this->theme['name']).'/';
+
+			$files = $this->filesystem->allFiles($path); // get all files in theme folder
+
+			$return = array();
+
+			foreach ($files as $file)
 			{
-				$info = $this->filesystem->getRequire($theme.DIRECTORY_SEPARATOR.'theme.php');
+				$basename = basename($file);
 
-				$infocheck = array('title', 'author');
+				// skip basenames starting with '.', and non *.sub.blade.php or *.sub.php
+				if (substr($basename, 0, 1) != '.' &&
+					(substr($basename, -14) == '.sub.blade.php' || substr($basename, -8) == '.sub.php'))
+				{				
+					$view = str_replace('/', '.', // replace / with .
+									str_replace(['.blade.php', '.php'], '', // strip extension
+										str_replace($path, '', $file) // abs->rel to theme dir
+									)
+								);
 
-				$failed = false;
+					$view = substr($view, 0, -4); // remove .sub
 
-				foreach ($infocheck as $check)
-				{
-					if (!isset($info[$check]) || !strlen($info[$check])) $failed = true; break;
+					// make display name (i.e. pages.about turns to Pages > About)
+					$display = implode(' > ', array_map(function($part) {
+						return ucfirst($part);
+					}, explode('.', $view)));
+
+					$return[$view] = $display;
 				}
+			}	
 
-				if ($failed) return false;
-
-				return $info;
-			}
+			return $return;
 		}
+	}
+
+	/**
+	 * Gets <select> array for theme sub-template (with default)
+	 * 
+	 * @return array
+	 */
+	public function getThemeSubsSelect()
+	{
+		$templates = ($this->theme) ? $this->getThemeSubs() : array();
+		$templates = array_reverse($templates);
+		$templates['none'] = '-- Default Template --';
+		$templates = array_reverse($templates);
+
+		return $templates;
 	}
 
 	/**
 	 * Checks if view in loaded theme dir exists
 	 * 
 	 * @param  string  $view View (dot notation)
-	 * @return boolean
+	 * @return boolean|void
 	 */
 	public function themeViewExists($view)
 	{
 		if ($this->theme)
-		{
 			return $this->view->exists('vessel-theme::'.$view);
-		}
+	}
+
+	/**
+	 * Sets theme element value
+	 * 
+	 * @param  mixed $name   Name of element ('content', 'title', etc) OR array of multiple associative 'name's and 'value's
+	 * @param  mixed $value  Anything that can be cast to a string, OR a lambda/callback function (will receive args as-is (name, arg2, arg3, etc) from template)
+	 * @return void
+	 */
+	public function setElement($name, $value = null)
+	{
+		if (is_array($name))
+			foreach ($name as $subname => $subvalue) $this->setElement($subname, $subvalue); #recursion ftw
+		elseif (is_string($name))
+			$this->elements[$name] = $value;
 	}
 
 	/**
 	 * Returns set theme element ('content', 'title', 'block', 'stylesheets', etc)
 	 * 
 	 * @param  string $name Element name
+	 * @param  mixed        Any number of params to pass to callables/lambdas
 	 * @return mixed        Element value, or null if not set (might be null anyways if lambda returns it)
 	 */
 	public function element($name)
@@ -278,43 +255,12 @@ class Theme {
 		{
 			$this->current_element = $name; // set current element to this (preventing recursion)
 			
-			// Check if the value is callable
-			if (is_callable($this->elements[$name]))
-			{
+			if (is_callable($this->elements[$name])) // check if the value is callable
 				return call_user_func_array($this->elements[$name], func_get_args());
-			}
-			// If not, then return it as-is
-			else
-			{
+			else // if not, then return it as-is
 				return $this->elements[$name];
-			}
 		}
 
 		return null;
 	}
-
-	/**
-	 * Sets theme element value
-	 * 
-	 * @param mixed $name   Name of element ('content', 'title', etc) OR array of multiple associative 'name's and 'value's
-	 * @param mixed $value  Anything that can be cast to a string, OR a lambda/callback function (will receive args as-is (name, arg2, arg3, etc) from template)
-	 */
-	public function setElement($name, $value = null)
-	{
-		if (is_array($name))
-		{
-			foreach ($name as $element)
-			{
-				if (is_array($name) && count($element) >= 2)
-				{
-					$this->setElement($element[0], $element[1]); #recursion ftw
-				}
-			}
-		}
-		else
-		{
-			$this->elements[$name] = $value;
-		}
-	}
-	
 }
