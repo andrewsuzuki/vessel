@@ -11,9 +11,9 @@ class FormatterManager {
 
 	protected $plugin;
 
-	protected $formatters = array();
+	protected $formatters;
 
-	protected $native = array('Plain', 'Html', 'Markdown');
+	protected $native;
 
 	public function __construct(Application $app, BladeCompiler $blade, Plugin $plugin)
 	{
@@ -21,16 +21,17 @@ class FormatterManager {
 		$this->blade  = $blade;
 		$this->plugin = $plugin;
 
+		$this->formatters = array();
+		$this->native     = array('Plain', 'Html', 'Markdown');
+
 		foreach ($this->native as $formatter)
-		{
 			$this->register('Hokeo\\Vessel\\Formatter\\'.$formatter);
-		}
 	}
 
 	/**
 	 * Registers a class as a formatter
 	 * 
-	 * @return void
+	 * @return bool Success
 	 */
 	public function register($class)
 	{
@@ -49,13 +50,15 @@ class FormatterManager {
 			$name = $formatter->fmName();
 			$for = $formatter->fmFor();
 
-			// Verify returns for name + for
+			// Verify returns for name + for, then register
 			if (is_string($name) && is_array($for))
 			{
-				// register
 				$this->formatters[$class] = array('name' => $name, 'for' => $for, 'class' => $class);
+				return true;
 			}
 		}
+
+		return false;
 	}
 
 	/**
@@ -78,13 +81,8 @@ class FormatterManager {
 	{
 		$filtered = array();
 
-		foreach ($this->formatters as $formatter)
-		{
-			if (in_array($use, $formatter['for']))
-			{
-				$filtered[] = $formatter;
-			}
-		}
+		foreach ($this->formatters as $class => $formatter)
+			if (in_array($use, $formatter['for'])) $filtered[$class] = $formatter;
 
 		return $filtered;
 	}
@@ -100,12 +98,21 @@ class FormatterManager {
 
 		$select = array();
 
-		foreach ($formatters as $formatter)
-		{
-			$select[$formatter['class']] = $formatter['name'];
-		}
+		foreach ($formatters as $class => $formatter)
+			$select[$class] = $formatter['name'];
 
 		return $select;
+	}
+
+	/**
+	 * Checks if a formatter is registered
+	 * 
+	 * @param  string $name
+	 * @return bool
+	 */
+	public function registered($class)
+	{
+		return is_string($class) && isset($this->formatters[$class]);
 	}
 
 	/**
@@ -117,25 +124,9 @@ class FormatterManager {
 	 */
 	public function get($class, $type = null)
 	{
-		if ($this->registered($class) && (!$type || in_array($type, $this->formatters[$class]['for'])))
-		{
-			return $this->app->make($class);
-		}
-		else
-		{
-			throw new \Exception('Formatter does not exist, is not of the correct type, or is not valid.');
-		}
-	}
-
-	/**
-	 * Checks if a formatter is registered
-	 * 
-	 * @param  string $name
-	 * @return bool
-	 */
-	public function registered($class)
-	{
-		return isset($this->formatters[$class]);
+		if (!$this->registered($class)) throw new \Exception('Formatter is not registered or does not exist.');
+		if ($type && !in_array($type, $this->formatters[$class]['for'])) throw new \Exception('Formatter is not of the correct type.');
+		return $this->app->make($class); // return instance of formatter
 	}
 
 	/**
@@ -146,18 +137,11 @@ class FormatterManager {
 	public function tryEach()
 	{
 		foreach (func_get_args() as $formatter)
-		{
-			if ($formatter && $this->registered($formatter))
-			{
-				return $this->get($formatter);
-			}
-		}
+			if ($formatter && $this->registered($formatter)) return $this->get($formatter);
 
 		// revert to plain
 		return $this->get('Hokeo\\Vessel\\Formatter\\Plain');
 	}
-
-	// HELPERS
 	
 	/**
 	 * Converts PHP tags in string to entities
@@ -166,7 +150,7 @@ class FormatterManager {
 	 */
 	public function phpEntities($string)
 	{
-		return str_replace(['<?', '?>'], ['&lt;?', '?&gt'], $string);
+		return str_replace(['<?', '?>'], ['&lt;?', '?&gt;'], $string);
 	}
 
 	/**
