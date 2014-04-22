@@ -1,5 +1,10 @@
 <?php
 
+if (!defined('V_TEST_NOW'))
+{
+	define('V_TEST_NOW', true);
+}
+
 $cwd = getcwd();
 $nudir = dirname(dirname(dirname($cwd)));
 print 'Changing to '.$nudir."\n";

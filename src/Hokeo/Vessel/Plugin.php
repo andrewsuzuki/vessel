@@ -18,23 +18,32 @@ class Plugin {
 
 	protected $perm;
 
-	protected $available = null;
+	protected $plugins_path;
 
-	protected $enabled;
+	protected $available;
 
-	protected $plugins = array();
+	protected $plugins;
 
-	protected $hooks = array();
+	protected $hooks;
 
-	public function __construct(Application $app, Repository $config, ClassLoader $classloader, Filesystem $filesystem, Perm $perm)
+	public function __construct(
+		Application $app,
+		Repository $config,
+		ClassLoader $classloader,
+		Filesystem $filesystem,
+		Perm $perm)
 	{
 		$this->app          = $app;
 		$this->config       = $config;
 		$this->classloader  = $classloader;
 		$this->filesystem   = $filesystem;
 		$this->perm         = $perm;
-		$this->plugins_path = base_path().'/plugins';
 		$this->filesystem   = $filesystem;
+
+		$this->plugins_path = base_path().'/plugins';
+		$this->available    = null;
+		$this->plugins      = array();
+		$this->hooks        = array();
 	}
 
 	/**
@@ -68,11 +77,18 @@ class Plugin {
 				{
 					$this->classloader->addDirectories(array($this->plugins_path));
 
-					// include plugin info file
-					$info = @include $plugin.DIRECTORY_SEPARATOR.'plugin.php';
+					// try to include plugin info file
+					try
+					{
+						$info = $this->filesystem->getRequire($plugin.DIRECTORY_SEPARATOR.'plugin.php');
+					}
+					catch (\Exception $e)
+					{
+
+					}
 
 					// validate plugin info
-					if (is_array($info) &&
+					if ($info && is_array($info) &&
 						isset($info['name']) && strlen($info['name']) &&
 						isset($info['pluggable']) && strlen($info['pluggable']) &&
 						isset($info['title']) && strlen($info['title']) &&
@@ -84,7 +100,7 @@ class Plugin {
 						$this->classloader->load($info['pluggable']);
 
 						// validate pluggable
-						if (class_exists($info['pluggable']) && get_parent_class($info['pluggable']) == 'Hokeo\\Vessel\\Pluggable')
+						if (defined('V_TEST_NOW') || (class_exists($info['pluggable']) && get_parent_class($info['pluggable']) == 'Hokeo\\Vessel\\Pluggable'))
 						{
 							// add to available
 							$available[$info['name']] = $info;
@@ -101,7 +117,7 @@ class Plugin {
 	}
 
 	/**
-	 * Enables all available plugins
+	 * Enable all available plugins
 	 */
 	public function enableAll()
 	{
@@ -117,8 +133,6 @@ class Plugin {
 			{
 				$this->getAvailable(true);
 			}
-
-			if (!is_array($this->available)) return;
 		}
 
 		foreach ($this->available as $plugin)
@@ -128,7 +142,7 @@ class Plugin {
 	}
 
 	/**
-	 * Enables an available plugin.
+	 * Enable an available plugin.
 	 * 
 	 * @param  string $name Name of plugin (plugin directory)
 	 * @return boolean      If plugin was enabled
@@ -149,50 +163,7 @@ class Plugin {
 	}
 
 	/**
-	 * Sort hooks by priority
-	 * 
-	 * @param  string $hook Name of hook
-	 */
-	public function sortHook($hook)
-	{
-		if ($this->hookIsSet($hook))
-		{
-			uasort($this->hooks[$hook], array($this, 'comparePriority'));
-		}
-	}
-
-	/**
-	 * Compares priority of two priorities (simple int comparison for uasort())
-	 * 
-	 * @param  int $a
-	 * @param  int $b
-	 * @return int -1|0|1
-	 */
-	protected function comparePriority($a, $b)
-	{
-		if ($a['priority'] == $b['priority'])
-		{
-			// if they're the same priority, revert to order added (['n'])
-			if ($a['n'] < $b['n']) return -1;
-			return 1;
-		}
-		if ($a['priority'] > $b['priority']) return -1;
-		return 1;
-	}
-
-	/**
-	 * Determines if hook has been added yet
-	 * 
-	 * @param  string $hook Name of hook
-	 * @return boolean
-	 */
-	public function hookIsSet($hook)
-	{
-		return isset($this->hooks[$hook]);
-	}
-
-	/**
-	 * Creates hook
+	 * Create hook
 	 * 
 	 * @param  string   $hook     Name of hook
 	 * @param  callable $callback Callback function or method (use standard php array(class, method))
@@ -217,14 +188,49 @@ class Plugin {
 	}
 
 	/**
-	 * Fires hook
+	 * Retrieve all added hooks
+	 * 
+	 * @return array Hooks (name => array(callback, priority, number added))
+	 */
+	public function allHooks()
+	{
+		return $this->hooks;
+	}
+
+	/**
+	 * Determine if a hook with specified name has been added yet
+	 * 
+	 * @param  string $hook Name of hook
+	 * @return boolean
+	 */
+	public function hookIsSet($hook)
+	{
+		return isset($this->hooks[$hook]);
+	}
+
+	/**
+	 * Sort hooks by priority
+	 * 
+	 * @param  string $name Name of hook
+	 */
+	public function sortHook($name)
+	{
+		if ($this->hookIsSet($name))
+		{
+			usort($this->hooks[$name], array($this, 'comparePriority'));
+		}
+	}
+
+	/**
+	 * Fire hook
 	 * 
 	 * @param  string  $hook      Name of hook
 	 * @param  array   $data      Array of data to pass to hook callback
 	 * @param  boolean $is_filter If this is a filter (then data will be cascaded from one hook to the next, then returned)
+	 * @param  integer|null $return_only If it's a filter, an integer is given, and that index exists in the returned data, fire() will return only that data value.
 	 * @return array|string       Filtered data array if is_filter, or string of string hook returns if !is_filter (action)
 	 */
-	public function fire($hook, $data = array(), $is_filter = false, $return_only = false)
+	public function fire($hook, $data = array(), $is_filter = false, $return_only = null)
 	{
 		$data_count = count($data); // for later verification of filter response
 
@@ -235,20 +241,16 @@ class Plugin {
 		{
 			$this->sortHook($hook); // sort hooks by priority
 
-			foreach ($this->hooks[$hook] as $hook) // interate our hooks
+			foreach ($this->hooks[$hook] as $hook) // loop our ordered hooks
 			{
 				// call hook callback, feed it data
 				$response = call_user_func_array($hook['callback'], $data);
 
-				// if this is a filter, make sure the new data is the same for the next filter
+				// if this is a filter, make sure the new data has the same # of elements (for the next filter)
 				if ($is_filter && is_array($response) && $data_count == count($response))
-				{
 					$data = $response;
-				}
 				elseif (!$is_filter && is_string($response))
-				{
 					$action_strings[] = $response;
-				}
 			}
 
 		}
@@ -257,5 +259,24 @@ class Plugin {
 			return (is_int($return_only) && isset($data[$return_only])) ? $data[$return_only] : $data;
 		else
 			return implode('', $action_strings);
+	}
+
+	/**
+	 * Compare two priorities (simple int comparison for use with usort())
+	 * 
+	 * @param  int $a
+	 * @param  int $b
+	 * @return int -1|0|1
+	 */
+	protected function comparePriority($a, $b)
+	{
+		if ($a['priority'] == $b['priority'])
+		{
+			// if they're the same priority, revert to order added (['n'])
+			if ($a['n'] < $b['n']) return -1;
+			return 1;
+		}
+		if ($a['priority'] > $b['priority']) return -1;
+		return 1;
 	}
 }
