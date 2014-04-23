@@ -17,7 +17,7 @@ if (!is_dir($nudir.'/app/config/testing'))
 	mkdir($nudir.'/app/config/testing', 0755, true);
 }
 
-if (file_exists(__DIR__.DIRECTORY_SEPARATOR.'is_travis_test'))
+if (file_exists(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'is_travis_test'))
 {
 	define('IS_VESSEL_TRAVIS_TEST', true);
 	file_put_contents($nudir.'/app/config/testing/database.php', "<?php return array('connections' => array('mysql' => array('database' => 'vessel_testing', 'username' => 'root', 'password' => '')));");
