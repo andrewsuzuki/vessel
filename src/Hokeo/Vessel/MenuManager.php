@@ -4,13 +4,15 @@ use Menu\Menu as VMenu;
 use Illuminate\Html\HtmlBuilder;
 use Illuminate\Routing\UrlGenerator;
 
-class Menu extends VMenu {
+class MenuManager extends VMenu {
 
 	protected $html;
 
 	protected $url;
 
 	protected $plugin;
+
+	protected $menu; // model
 
 	protected $back_menu_built;
 
@@ -19,11 +21,16 @@ class Menu extends VMenu {
 	 * 
 	 * @return void
 	 */
-	public function __construct(HtmlBuilder $html, UrlGenerator $url, Plugin $plugin)
+	public function __construct(
+		HtmlBuilder $html,
+		UrlGenerator $url,
+		Plugin $plugin,
+		Menu $menu)
 	{
 		$this->html   = $html;
 		$this->url    = $url;
 		$this->plugin = $plugin;
+		$this->menu   = $menu;
 	}
 
 	/**
@@ -39,6 +46,7 @@ class Menu extends VMenu {
 			$menu->add($this->url->route('vessel'), 'Home')
 			->add($this->url->route('vessel.pages'), 'Pages')
 			->add($this->url->route('vessel.blocks'), 'Blocks')
+			->add($this->url->route('vessel.menus'), 'Menus')
 			->add($this->url->route('vessel.media'), 'Media')
 			->add($this->url->route('vessel.users'), 'Users')
 			->add($this->url->route('vessel.settings'), 'Settings');
@@ -74,16 +82,4 @@ class Menu extends VMenu {
 			}
 		});
 	}
-
-	/**
-	 * Gets collection of menu pages for front-end menu
-	 * Note: will be replaced
-	 * 
-	 * @return object nested collection object
-	 */
-	public function getMenuHierarchy()
-	{
-		return Page::visible()->menu()->get()->toHierarchy();
-	}
-
 }

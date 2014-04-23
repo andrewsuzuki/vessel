@@ -13,7 +13,7 @@ class FrontController extends Controller {
 
 	protected $view;
 
-	protected $menu;
+	protected $mm;
 
 	protected $pagehelper;
 
@@ -29,7 +29,7 @@ class FrontController extends Controller {
 		Application $app,
 		Repository $config,
 		Environment $view,
-		Menu $menu,
+		MenuManager $mm,
 		PageHelper $pagehelper,
 		BlockHelper $blockhelper,
 		FormatterManager $fm,
@@ -39,7 +39,7 @@ class FrontController extends Controller {
 		$this->app         = $app;
 		$this->config      = $config;
 		$this->view        = $view;
-		$this->menu        = $menu;
+		$this->mm          = $mm;
 		$this->pagehelper  = $pagehelper;
 		$this->blockhelper = $blockhelper;
 		$this->fm          = $fm;
@@ -105,15 +105,15 @@ class FrontController extends Controller {
 				if ($this->fm->registered($main->formatter))
 				{
 					// Create menu
-					$menu = $this->menu->handler('vessel.menu.front', array('class' => 'nav navbar-nav'));
+					$menu = $this->mm->handler('vessel.menu.front', array('class' => 'nav navbar-nav'));
 
 					$menu->add('/', 'Home')
 					->add('/about', 'About')
-					->add('#', 'More', $this->menu->items('more')
+					->add('#', 'More', $this->mm->items('more')
 						->add('/blog', 'Blog')
 						);
 
-					$this->menu->handler('vessel.menu.front')->getItemsAtDepth(0)->map(function($item)
+					$this->mm->handler('vessel.menu.front')->getItemsAtDepth(0)->map(function($item)
 					{
 						if($item->hasChildren())
 						{
@@ -155,7 +155,7 @@ class FrontController extends Controller {
 						},
 
 						'menu' => function($call, $name) use ($main) {
-							return $this->menu->handler('vessel.menu.'.$name)->render();
+							return $this->mm->handler('vessel.menu.'.$name)->render();
 						},
 
 						'block' => function($call, $slug) {

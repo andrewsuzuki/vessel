@@ -40,19 +40,14 @@ class Page extends Node {
 	// Events
 	
 	public static function boot()
-    {
-        parent::boot();
+	{
+		parent::boot();
 
-        static::deleted(function($page)
-        {
-        	// delete edits and drafts
-        	$page->history()->delete();
-        	// delete content
-        	Facades\PageHelper::deleteContent($page->id);
-
-        	// hook here
-        });
-    }
+		static::deleted(function($page)
+		{
+			$page->history()->delete(); // delete edits and drafts
+		});
+	}
 
 	// Methods
 	

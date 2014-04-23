@@ -2,10 +2,10 @@
 
 use Illuminate\Support\Facades\Facade;
 
-class Menu extends Facade {
+class MenuManager extends Facade {
 
 	protected static function getFacadeAccessor()
 	{
-		return 'Hokeo\\Vessel\\Menu';
+		return 'Hokeo\\Vessel\\MenuManager';
 	}
 }

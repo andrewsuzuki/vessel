@@ -23,20 +23,6 @@ class Block extends Model {
 	public function scopeActive($query) {return $query->where('active', true); }
 	public function scopeNotActive($query) {return $query->where('Active', false); }
 
-	// Events
-	
-	public static function boot()
-    {
-        parent::boot();
-
-        static::deleted(function($page)
-        {
-        	// delete content
-        	
-        	// hook?
-        });
-    }
-
 	// Methods
 	
 	/**

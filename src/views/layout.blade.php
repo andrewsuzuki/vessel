@@ -106,6 +106,10 @@
 
 				@yield('content')
 
+				{{ fire('back.content-bottom') }}
+
+				{{ fire('back.page-bottom') }}
+
 			</div> 
 		</div>
 	</div>

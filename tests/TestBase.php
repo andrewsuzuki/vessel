@@ -4,6 +4,11 @@ use \Mockery as m;
 
 class TestBase extends \PHPUnit_Framework_TestCase {
 
+	/**
+	 * Tear down test (close mockery)
+	 * 
+	 * @return void
+	 */
 	protected function tearDown()
 	{
 		m::close();
@@ -19,17 +24,6 @@ class TestBase extends \PHPUnit_Framework_TestCase {
 	 */
 	public function newClass($class, array $dependencies = array(), array $methods = array())
 	{
-		// $params = array();
-
-		// foreach ($dependencies as $name => $dep)
-		// 	$params[$name] = $this->getMockBuilder($dep)->disableOriginalConstructor()->getMock();
-
-		// foreach ($methods as $name => $method)
-		// 	$params[$name] = call_user_func($method, $params[$name]);
-
-		// $reflection = new \ReflectionClass($class);
-		// return $reflection->newInstanceArgs($params);
-		
 		$params = array();
 
 		foreach ($dependencies as $name => $dep)

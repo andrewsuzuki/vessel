@@ -104,11 +104,12 @@ class VesselServiceProvider extends ServiceProvider {
 				);
 		});
 
-		$this->app->bindShared('Hokeo\\Vessel\\Menu', function($app) {
-			return new Menu(
+		$this->app->bindShared('Hokeo\\Vessel\\MenuManager', function($app) {
+			return new MenuManager(
 				$app['html'],
 				$app['url'],
-				$app['Hokeo\\Vessel\\Plugin']
+				$app['Hokeo\\Vessel\\Plugin'],
+				$app['Hokeo\\Vessel\\Menu']
 				);
 		});
 
@@ -201,7 +202,7 @@ class VesselServiceProvider extends ServiceProvider {
 				$app['app'],
 				$app['config'],
 				$app['view'],
-				$app['Hokeo\\Vessel\\Menu'],
+				$app['Hokeo\\Vessel\\MenuManager'],
 				$app['Hokeo\\Vessel\\PageHelper'],
 				$app['Hokeo\\Vessel\\BlockHelper'],
 				$app['Hokeo\\Vessel\\FormatterManager'],
@@ -246,6 +247,17 @@ class VesselServiceProvider extends ServiceProvider {
 				$app['Hokeo\\Vessel\\FormatterManager'],
 				$app['Hokeo\\Vessel\\Theme'],
 				$app['Hokeo\\Vessel\\Block']
+				);
+		});
+
+		$this->app->bind('Hokeo\\Vessel\\MenuController', function($app) {
+			return new MenuController(
+				$app['view'],
+				$app['request'],
+				$app['auth'],
+				$app['config'],
+				new \Illuminate\Support\Facades\Response,
+				$app['Hokeo\\Vessel\\Plugin']
 				);
 		});
 		
@@ -305,6 +317,8 @@ class VesselServiceProvider extends ServiceProvider {
 			'Page',
 			'Pagehistory',
 			'Block',
+			'Menu',
+			'Menuitem'
 			);
 
 		foreach ($models as $model)
