@@ -55,8 +55,8 @@ Feel free to post any issues or comments here on github.
 Todo, roughly in order:
 
 * ~~Home page~~
-* Menu builder
-* Menu api
+* ~~Menu builder~~
+* ~~Menu api~~
 * Lang + Validation messages
 * User Password resets
 * User Registration

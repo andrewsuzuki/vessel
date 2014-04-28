@@ -76,13 +76,13 @@ class MenuController extends Controller {
 	{
 		$mode = 'new';
 		$menu = $this->menu->newInstance();
-
 		$ddlist = $this->menumanager->ddList($menu);
+		$menuable_pages = $this->menumanager->getMenuablePages();
 
 		$this->asset->css(asset('packages/hokeo/vessel/css/jquery.nestable.css'), 'jquery-nestable');
 		$this->asset->js(asset('packages/hokeo/vessel/js/jquery.nestable.js'), 'jquery-nestable');
 		$this->view->share('title', 'New Menu');
-		return $this->view->make('vessel::menu')->with(compact('menu', 'ddlist', 'mode'));
+		return $this->view->make('vessel::menu')->with(compact('menu', 'ddlist', 'menuable_pages', 'mode'));
 	}
 
 	/**
@@ -96,12 +96,13 @@ class MenuController extends Controller {
 		$mode = 'edit';
 		$menu = $this->menu->with('menuitems')->where('id', $id)->first(); // get menu with items
 		if (!$menu) throw new \VesselBackNotFoundException;
-		$ddlist = $this->menumanager->ddList($menu);
+		$ddlist         = $this->menumanager->ddList($menu);
+		$menuable_pages = $this->menumanager->getMenuablePages();
 
 		$this->asset->css(asset('packages/hokeo/vessel/css/jquery.nestable.css'), 'jquery-nestable');
 		$this->asset->js(asset('packages/hokeo/vessel/js/jquery.nestable.js'), 'jquery-nestable');
 		$this->view->share('title', 'Edit Menu');
-		return $this->view->make('vessel::menu')->with(compact('menu', 'ddlist', 'mode'));
+		return $this->view->make('vessel::menu')->with(compact('menu', 'ddlist', 'menuable_pages', 'mode'));
 	}
 
 	/**

@@ -60,7 +60,7 @@
 	<li class="dd-item" data-id="{@{{id}}}" data-type="{@{{type}}}" {@{{dataattrs}}}>
 		<div class="dd-handle"></div>
 		<div class="dd-content">
-			{@{{title}}}&nbsp;&middot;&nbsp;<a href="#">Edit</a>&nbsp;&middot;&nbsp;<a href="#" class="menuitem-delete" style="color:red">Delete</a>
+			{@{{title}}}&nbsp;&middot;&nbsp;<a href="#" class="menuitem-edit">Edit</a>&nbsp;&middot;&nbsp;<a href="#" class="menuitem-delete" style="color:red">Delete</a>
 		</div>
 	</li>
 	</script>
@@ -84,20 +84,22 @@
 					<div class="tab-content">
 						<div class="tab-pane active" id="menuitem-edit-page">
 							<div class="form-group">
-								<label for="menuitem-edit-title">Item Title</label>
-								<input type="text" id="menuitem-edit-title" class="form-control">
+								<label for="menuitem-edit-page-title">Item Title</label>
+								<input type="text" id="menuitem-edit-page-title" class="form-control">
 							</div>
 							<div class="form-group">
 								<label for="menuitem-edit-page-input">Public Page</label>
 								<select id="menuitem-edit-page-input" class="form-control">
-									<option value="1">Page 1</option>
+									@foreach ($menuable_pages as $page)
+									<option value="{{ $page->id }}">{{ $page->getNestLevelIndication().$page->title }}</option>
+									@endforeach
 								</select>
 							</div>
 						</div>
 						<div class="tab-pane" id="menuitem-edit-link">
 							<div class="form-group">
-								<label for="menuitem-edit-title">Item Title</label>
-								<input type="text" id="menuitem-edit-title" class="form-control">
+								<label for="menuitem-edit-link-title">Item Title</label>
+								<input type="text" id="menuitem-edit-link-title" class="form-control">
 							</div>
 							<div class="form-group">
 								<label for="menuitem-edit-link-select">Link</label>
@@ -111,7 +113,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-					<button type="button" class="btn btn-success menuitem-alert-save" data-id="@{{mode}}">Save</button>
+					<button type="button" class="btn btn-success menuitem-alert-save" data-id="@{{id}}">Save</button>
 				</div>
 			</div>
 		</div>

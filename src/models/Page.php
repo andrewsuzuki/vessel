@@ -84,4 +84,15 @@ class Page extends Node {
 		else
 			return URL::to($this->slug);
 	}
+
+	/**
+	 * Repeats a string n times, where n in the nest level
+	 *
+	 * @param  string $repeat string to be repeated
+	 * @return string         repeated string
+	 */
+	public function getNestLevelIndication($repeat = '- ')
+	{
+		return str_repeat($repeat, $this->getLevel());
+	}
 }

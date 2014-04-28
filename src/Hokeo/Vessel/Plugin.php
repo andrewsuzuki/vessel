@@ -224,20 +224,22 @@ class Plugin {
 	/**
 	 * Fire hook
 	 * 
-	 * @param  string  $hook      Name of hook
-	 * @param  array   $data      Array of data to pass to hook callback
-	 * @param  boolean $is_filter If this is a filter (then data will be cascaded from one hook to the next, then returned)
-	 * @param  integer|null $return_only If it's a filter, an integer is given, and that index exists in the returned data, fire() will return only that data value.
-	 * @return array|string       Filtered data array if is_filter, or string of string hook returns if !is_filter (action)
+	 * @param  string       $hook        Name of hook
+	 * @param  mixed        $data        Array of data to pass to hook callback, or non-arrays will automatically be inserted into empty array
+	 * @param  boolean      $is_filter   If this is a filter (then data will be cascaded from one hook to the next, then returned)
+	 * @param  integer|bool $return_only If it's a filter, an integer is given, and that index exists in the returned data, fire() will return only that data value, or bool true will return all data
+	 * @return array|string              Filtered data array if is_filter, or string of string hook returns if !is_filter (action)
 	 */
-	public function fire($hook, $data = array(), $is_filter = false, $return_only = null)
+	public function fire($hook, $data = array(), $is_filter = false, $return_only = 0)
 	{
 		$data_count = count($data); // for later verification of filter response
 
 		$action_strings = array();
 
+		if (!is_array($data)) $data = array($data); // force data array if it isnt
+
 		// validate fire
-		if ($this->hookIsSet($hook) && is_array($data))
+		if ($this->hookIsSet($hook))
 		{
 			$this->sortHook($hook); // sort hooks by priority
 
@@ -252,7 +254,6 @@ class Plugin {
 				elseif (!$is_filter && is_string($response))
 					$action_strings[] = $response;
 			}
-
 		}
 
 		if ($is_filter)

@@ -25,6 +25,7 @@ Filters are passed any number of arguments, and must return the same number of a
 | Hook Name | Description | Arguments |
 | --------- | ----------- | ----------|
 | back.menu.main | Vessel back-end menu | $menu (handler object from vespakoen/menu package) |
+| back.menumanager.getmenuablepages | Pages to list in <select> as pages available for menu | $pages (collection) |
 
 ## Observers
 

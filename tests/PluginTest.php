@@ -209,20 +209,20 @@ class PluginTest extends TestBase {
 			return $n + 2;
 		});
 
-		$this->assertEquals(array(4), $p->fire('test.hook.BAD.filter', array(4), true));
+		$this->assertEquals(4, $p->fire('test.hook.BAD.filter', array(4), true));
 
 		$p->hook('test.hook.filter', function($n) {
 			return array($n + 2);
 		});
 
-		$this->assertEquals(array(6), $p->fire('test.hook.filter', array(4), true));
 		$this->assertEquals(6, $p->fire('test.hook.filter', array(4), true, 0));
+		$this->assertEquals(array(6), $p->fire('test.hook.filter', 4, true, true));
 
 		$p->hook('test.hook.filter', function($n) {
 			return array($n * 3);
 		});
 
-		$this->assertEquals(array(18), $p->fire('test.hook.filter', array(4), true));
-		$this->assertEquals(18, $p->fire('test.hook.filter', array(4), true, 0));
+		$this->assertEquals(18, $p->fire('test.hook.filter', 4, true));
+		$this->assertEquals(array(18), $p->fire('test.hook.filter', array(4), true, true));
 	}
 }

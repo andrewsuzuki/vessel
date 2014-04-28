@@ -75,7 +75,7 @@ class MenuManager extends VMenu {
 
 			$html .= '<li class="dd-item" data-id="'.$item['id'].'" data-type="'.$type.'" '.$dataattrs.'>'.
 					'<div class="dd-handle"></div><div class="dd-content">'.$title.
-					'&nbsp;&middot;&nbsp;<a href="#">Edit</a>'.
+					'&nbsp;&middot;&nbsp;<a href="#" class="menuitem-edit">Edit</a>'.
 					'&nbsp;&middot;&nbsp;<a href="#" class="menuitem-delete" style="color:red">Delete</a></div>';
 
 			$children = $item->children()->get(); // get this item's children
@@ -213,6 +213,17 @@ class MenuManager extends VMenu {
 	}
 
 	/**
+	 * Gets pages to display in 
+	 * 
+	 * @return obj collection
+	 */
+	public function getMenuablePages()
+	{
+		$pages = $this->page->all();
+		return $this->plugin->fire('back.menumanager.getmenuablepages', $pages, true);
+	}
+
+	/**
 	 * Make Vessel back-end menu on handler vessel.back.menu.main
 	 * 
 	 * @return void
@@ -230,7 +241,7 @@ class MenuManager extends VMenu {
 			->add($this->url->route('vessel.users'), 'Users')
 			->add($this->url->route('vessel.settings'), 'Settings');
 
-			$menu = $this->plugin->fire('back.menu.main', [$menu], true);
+			$menu = $this->plugin->fire('back.menu.main', $menu, true);
 
 			$this->handler('vessel.back.menu.main')->mapBootstrap();
 
