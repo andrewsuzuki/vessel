@@ -34,16 +34,16 @@ class Menu extends Model {
 		$prevent_main = function($menu, $deleting)
 		{
 			$original = $menu->getOriginal();
-			if ($original->slug == 'main' && ($menu->slug != 'main' || $deleting)) return false;
+			if ($original['slug'] == 'main' && ($menu->slug != 'main' || $deleting)) return false;
 		};
 
-		static::updating(function($menu) {
-			$prevent_main($menu, false);
+		static::updating(function($menu) use ($prevent_main) {
+			if (!$prevent_main($menu, false)) return false;
 		});
 
-		static::deleting(function($menu) {
-			$prevent_main($menu, true);
-			$this->menuitems()->delete(); // delete associated menuitems
+		static::deleting(function($menu) use ($prevent_main) {
+			if (!$prevent_main($menu, true)) return false;
+			$menu->menuitems()->delete(); // delete associated menuitems
 		});
 	}
 
@@ -58,9 +58,10 @@ class Menu extends Model {
 	public static function rules($edit = null)
 	{
 		return [
-			'title' => 'required',
-			'slug' => 'required|alpha_dash|unique:vessel_menus,slug'.(($edit) ? ','.$edit->id : ''),
+			'title'       => 'required',
+			'slug'        => 'required|alpha_dash|unique:vessel_menus,slug'.(($edit) ? ','.$edit->id : ''),
 			'description' => '',
+			'menuitems'   => 'json_string_array'
 		];
 	}
 }

@@ -1,9 +1,9 @@
 <?php namespace Hokeo\Vessel;
 
-use Illuminate\Database\Eloquent\Model;
+use Baum\Node;
 use Illuminate\Support\Facades\URL;
 
-class Menuitem extends Model {
+class Menuitem extends Node {
 
 	protected $table = 'vessel_menuitems';
 

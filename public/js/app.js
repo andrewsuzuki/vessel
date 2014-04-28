@@ -185,6 +185,54 @@ function setThemeChoice(name) {
 	}
 }
 
+function serializeNestable() {
+	sel = $('input.hidden-menu-serialized');
+	if (sel.length) {
+		return sel.val(JSON.stringify($('.dd').nestable('serialize')));
+	}
+}
+
+function showMenuitemBox(menuitemIf) {
+	data = {};
+
+	if (menuitemIf) {
+		// get existing data from menuitem
+	}
+	else
+	{
+		data.id = 'new';
+	}
+
+	$('#menuitem-alert').remove();
+
+	template = Handlebars.compile($('#menuitem-alert-template').html());
+
+	$('body').append(template(data));
+	$('#menuitem-alert').css({borderTopLeftRadius: '6px', borderTopRightRadius : '6px'});
+	$('#menuitem-alert').modal();
+}
+
+String.prototype.addSlashes = function() {
+   return this.replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0');
+};
+
+String.prototype.quoteAsAttr = function(preserveCR) {
+    preserveCR = preserveCR ? '&#13;' : '\n';
+    return ('' + this) /* Forces the conversion to string. */
+        .replace(/&/g, '&amp;') /* This MUST be the 1st replacement. */
+        .replace(/'/g, '&apos;') /* The 4 other predefined entities, required. */
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        /*
+        You may add other replacements here for HTML only 
+        (but it's not necessary).
+        Or for XML, only if the named entities are defined in its DTD.
+        */
+        .replace(/\r\n/g, preserveCR) /* Must be before the next replacement. */
+        .replace(/[\r\n]/g, preserveCR);
+};
+
 $(document).ready(function() {
 
 	$(document).on('change', '.vessel-page-edit-form .vessel-select-formatter', function() {
@@ -206,4 +254,64 @@ $(document).ready(function() {
 
 	// grab set theme value and choose it
 	loadSetTheme();
+
+	$('.dd').nestable();
+
+	serializeNestable();
+
+	$('.dd').on('change', function() {
+		serializeNestable();
+	});
+
+	$(document).on('click', '.menu-add-item', function(e) {
+		e.preventDefault();
+		showMenuitemBox();
+	});
+
+	$(document).on('click', '.menuitem-delete', function(e) {
+		e.preventDefault();
+		var item = $(this).closest('.dd-item');
+		if (item.length && !item.siblings().length) {
+			var parent = item.parent().closest('.dd-item');
+			parent.find('.dd-list').remove();
+			parent.find('button').remove();
+		}
+		item.remove();
+		$('.dd').trigger('change');
+	});
+
+	$(document).on('click', '.menuitem-alert-save', function(e) {
+		e.preventDefault();
+
+		id = $(this).data('id');
+
+		tab = $('#menuitem-alert .tab-content .tab-pane.active').first();
+
+		if (tab.length && tab.attr('id') == 'menuitem-edit-page') {
+			type       = 'page';
+			item_title = tab.find('#menuitem-edit-title').first().val();
+			item_page  = tab.find('#menuitem-edit-page-input').first().val();
+			title      = item_title + ' (Page: ' + item_page + ')';
+			dataattrs  = 'data-title="'+item_title.quoteAsAttr()+'" data-page="'+item_page+'"';
+		} else if (tab.length && tab.attr('id') == 'menuitem-edit-link') {
+			type       = 'link';
+			item_title = tab.find('#menuitem-edit-title').first().val();
+			item_link  = tab.find('#menuitem-edit-link-input').first().val();
+			title      = item_title + ' (Link: <a href="'+item_link.quoteAsAttr()+'">'+item_link+'</a>)';
+			dataattrs  = 'data-title="'+item_title.quoteAsAttr()+'" data-link="'+item_link.quoteAsAttr()+'"';
+		} else if (tab.length && tab.attr('id') == 'menuitem-edit-sep') {
+			type      = 'sep';
+			title     = 'Separator';
+			dataattrs = '';
+		} else {
+			$('#menuitem-alert').modal('hide');
+			return false;
+		}
+		
+		template = Handlebars.compile($('#vessel-menuitem-template').html());
+		html = template({id: id, title: title, type: type, dataattrs: dataattrs});
+		$('.dd > .dd-list').prepend(html);
+		$('.dd').trigger('change');
+		$('#menuitem-alert').modal('hide');
+	});
 });

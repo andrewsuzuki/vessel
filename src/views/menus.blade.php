@@ -10,7 +10,6 @@
 
 		<thead>
 			<tr>
-				<th>&nbsp;</th>
 				<th>Title</th>
 				<th>Slug</th>
 				<th>Updated</th>
@@ -23,13 +22,12 @@
 			@foreach($menus as $menu)
 
 			<tr>
-				<td><input type="checkbox"></td>
 				<td>{{ link_to_route('vessel.menus.edit', $menu->title, array($menu->id)) }}</td>
 				<td>{{ $menu->slug }}</td>
 				<td>{{ $menu->updated_at->user() }}</td>
 				<td>
 					{{ link_to_route('vessel.menus.edit', 'Edit', array($menu->id), array('class' => 'btn btn-xs btn-default')) }}
-					<a href="#" class="btn btn-xs btn-danger">Delete</a>
+					{{ link_to_route('vessel.menus.delete', 'Delete', array($menu->id), array('class' => 'btn btn-xs btn-danger')) }}
 				</td>
 			</tr>
 

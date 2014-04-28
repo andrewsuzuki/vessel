@@ -109,7 +109,9 @@ class VesselServiceProvider extends ServiceProvider {
 				$app['html'],
 				$app['url'],
 				$app['Hokeo\\Vessel\\Plugin'],
-				$app['Hokeo\\Vessel\\Menu']
+				$app['Hokeo\\Vessel\\Menu'],
+				$app['Hokeo\\Vessel\\Menuitem'],
+				$app['Hokeo\\Vessel\\Page']
 				);
 		});
 
@@ -254,10 +256,15 @@ class VesselServiceProvider extends ServiceProvider {
 			return new MenuController(
 				$app['view'],
 				$app['request'],
+				$app['validator'],
 				$app['auth'],
 				$app['config'],
-				new \Illuminate\Support\Facades\Response,
-				$app['Hokeo\\Vessel\\Plugin']
+				$app['notification'],
+				$app['redirect'],
+				$app['Hokeo\\Vessel\\Asset'],
+				$app['Hokeo\\Vessel\\Plugin'],
+				$app['Hokeo\\Vessel\\MenuManager'],
+				$app['Hokeo\\Vessel\\Menu']
 				);
 		});
 		

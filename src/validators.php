@@ -76,3 +76,9 @@ Validator::extend('uploaded', function($attribute, $value, $parameters)
 
 	return \File::exists($upload_path.'/'.$value);
 });
+
+// Checks if string is valid json, and is an array
+Validator::extend('json_string_array', function($attribute, $value, $parameters)
+{
+	return is_array(json_decode($value, true));
+});

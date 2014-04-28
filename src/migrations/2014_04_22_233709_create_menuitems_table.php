@@ -15,7 +15,7 @@ class CreateMenuitemsTable extends Migration {
 		Schema::create('vessel_menuitems', function($table)
 		{
 			$table->increments('id');
-			$table->string('name');
+			$table->string('title');
 			$table->integer('menu_id')->unsigned()->nullable();
 			$table->integer('page_id')->unsigned()->nullable();
 			$table->string('link_if')->nullable();
