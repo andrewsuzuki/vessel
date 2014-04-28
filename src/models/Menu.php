@@ -30,11 +30,11 @@ class Menu extends Model {
 		parent::boot();
 
 		// don't allow delete, or update if changing slug, of main menu (last resort)
-		
 		$prevent_main = function($menu, $deleting)
 		{
 			$original = $menu->getOriginal();
 			if ($original['slug'] == 'main' && ($menu->slug != 'main' || $deleting)) return false;
+			return true;
 		};
 
 		static::updating(function($menu) use ($prevent_main) {
@@ -61,6 +61,7 @@ class Menu extends Model {
 			'title'       => 'required',
 			'slug'        => 'required|alpha_dash|unique:vessel_menus,slug'.(($edit) ? ','.$edit->id : ''),
 			'description' => '',
+			'mapper'      => 'required|menu_mapper',
 			'menuitems'   => 'json_string_array'
 		];
 	}

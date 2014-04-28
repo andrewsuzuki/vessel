@@ -75,14 +75,15 @@ class MenuController extends Controller {
 	public function getMenuNew()
 	{
 		$mode = 'new';
-		$menu = $this->menu->newInstance();
-		$ddlist = $this->menumanager->ddList($menu);
-		$menuable_pages = $this->menumanager->getMenuablePages();
+		$menu                 = $this->menu->newInstance();
+		$ddlist               = $this->menumanager->ddList($menu);
+		$menuable_pages       = $this->menumanager->getMenuablePages();
+		$mappers_select_array = $this->menumanager->getRegisteredMappersSelectArray();
 
 		$this->asset->css(asset('packages/hokeo/vessel/css/jquery.nestable.css'), 'jquery-nestable');
 		$this->asset->js(asset('packages/hokeo/vessel/js/jquery.nestable.js'), 'jquery-nestable');
 		$this->view->share('title', 'New Menu');
-		return $this->view->make('vessel::menu')->with(compact('menu', 'ddlist', 'menuable_pages', 'mode'));
+		return $this->view->make('vessel::menu')->with(compact('menu', 'ddlist', 'menuable_pages', 'mappers_select_array', 'mode'));
 	}
 
 	/**
@@ -96,13 +97,14 @@ class MenuController extends Controller {
 		$mode = 'edit';
 		$menu = $this->menu->with('menuitems')->where('id', $id)->first(); // get menu with items
 		if (!$menu) throw new \VesselBackNotFoundException;
-		$ddlist         = $this->menumanager->ddList($menu);
-		$menuable_pages = $this->menumanager->getMenuablePages();
+		$ddlist               = $this->menumanager->ddList($menu);
+		$menuable_pages       = $this->menumanager->getMenuablePages();
+		$mappers_select_array = $this->menumanager->getRegisteredMappersSelectArray();
 
 		$this->asset->css(asset('packages/hokeo/vessel/css/jquery.nestable.css'), 'jquery-nestable');
 		$this->asset->js(asset('packages/hokeo/vessel/js/jquery.nestable.js'), 'jquery-nestable');
 		$this->view->share('title', 'Edit Menu');
-		return $this->view->make('vessel::menu')->with(compact('menu', 'ddlist', 'menuable_pages', 'mode'));
+		return $this->view->make('vessel::menu')->with(compact('menu', 'ddlist', 'menuable_pages', 'mappers_select_array', 'mode'));
 	}
 
 	/**
@@ -113,10 +115,10 @@ class MenuController extends Controller {
 	public function postMenuEdit($id = null)
 	{
 		$is_new = !((bool) $id); // determine if this is a new menu
-		$menu = ($is_new) ? $this->menu->newInstance() : $this->menu->with('menuitems')->where('id', $id)->first(); // get new or existing menu model
+		$menu   = ($is_new) ? $this->menu->newInstance() : $this->menu->with('menuitems')->where('id', $id)->first(); // get new or existing menu model
 		if (!$menu) throw new \VesselBackNotFoundException;
-		$rules = ($is_new) ? $this->menu->rules() : $this->menu->rules($menu); // get rules
 
+		$rules     = ($is_new) ? $this->menu->rules() : $this->menu->rules($menu); // get rules
 		$validator = $this->validator->make($this->input->all(), $rules); // validate input
 
 		if ($validator->fails())
@@ -130,6 +132,7 @@ class MenuController extends Controller {
 		$menu->title       = $this->input->get('title');
 		$menu->slug        = $this->input->get('slug');
 		$menu->description = $this->input->get('description');
+		$menu->mapper      = $this->input->get('mapper');
 		$menu->user()->associate($this->auth->user());
 		$menu->save();
 

@@ -24,10 +24,16 @@
 						{{ Form::text('slug', null, array('class' => 'form-control input-sm')) }}
 					</div>
 				</div>
-				<div class="col-sm-6">
+				<div class="col-sm-3">
 					<div class="form-group">
 						{{ Form::label('description', 'Description') }}
 						{{ Form::text('description', null, array('class' => 'form-control input-sm')) }}
+					</div>
+				</div>
+				<div class="col-sm-3">
+					<div class="form-group">
+						{{ Form::label('mapper', 'Mapper') }}
+						{{ Form::select('mapper', $mappers_select_array, null, array('class' => 'form-control input-sm')) }}
 					</div>
 				</div>
 			</div>
@@ -86,6 +92,7 @@
 							<div class="form-group">
 								<label for="menuitem-edit-page-title">Item Title</label>
 								<input type="text" id="menuitem-edit-page-title" class="form-control">
+								<p class="help-block"><a href="#" class="menuitem-copy-page-title">Copy page title</a></p>
 							</div>
 							<div class="form-group">
 								<label for="menuitem-edit-page-input">Public Page</label>

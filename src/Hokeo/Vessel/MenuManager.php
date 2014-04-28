@@ -18,7 +18,7 @@ class MenuManager extends VMenu {
 
 	protected $page; // model
 
-	protected $back_menu_built;
+	protected $registered_mappers;
 
 	/**
 	 * Construct menu class
@@ -39,6 +39,9 @@ class MenuManager extends VMenu {
 		$this->menu     = $menu;
 		$this->menuitem = $menuitem;
 		$this->page     = $page;
+
+		$this->registered_mappers = array();
+		$this->registerBootstrapNavbarMapper();
 	}
 
 	/**
@@ -103,6 +106,82 @@ class MenuManager extends VMenu {
 			return 'link';
 		else
 			return 'page';
+	}
+
+
+	/**
+	 * Renders a saved menu by slug
+	 *
+	 * @param  string        $menu_slug Menu slug
+	 * @param  bool|string   $map       Bool true maps menu with saved mapper, false doesn't, or string maps with registered mapper name
+	 * @return string|null              HTML of menu, or null if it doesn't exist
+	 */
+	public function getSavedMenu($menu_slug, $map = true)
+	{
+		$menu = $this->menu->with('menuitems')->where('slug', $menu_slug)->first();
+		if (!$menu) return null;
+		return $this->makeSavedMenuHandler($menu, $map)->render();
+	}
+
+	/**
+	 * Returns a saved menu and its menuitems and returns a vespakoen/menu handler
+	 *
+	 * @param  object        $menu Menu model
+	 * @param  bool|string   $map  Bool true maps menu with saved mapper, false doesn't, or string maps with registered mapper name
+	 * @return object
+	 */
+	public function makeSavedMenuHandler($menu, $map = true)
+	{
+		$handle = $this->handler('front.'.$menu->slug); // create handler
+
+		$handle = $this->addSavedMenuitems($handle, $menu->menuitems->toHierarchy()); // add hierarchical menuitems to handler
+
+		$handle = $this->plugin->fire('back.menu.front', array($handle, $menu), true); // plugin filter on handler
+
+		$mapper = (is_string($map)) ? $map : $menu->mapper; // determine mapper to use
+
+		if (!$map || !$mapper || !$this->mapperRegistered($mapper)) return $handle; // no mapping if mapper dne
+
+		try
+		{
+			$this->useRegisteredMapper($handle, $mapper); // map menu handler with specified mapper
+		}
+		catch (\Exception $e)
+		{
+			// revert to no mapping
+		}
+
+		return $handle;
+	}
+
+	/**
+	 * Adds saved menuitem to menu handler or ItemList
+	 *
+	 * @return void
+	 */
+	protected function addSavedMenuitems($handler, $items)
+	{
+		foreach ($items as $item) // loop over this level's items
+		{
+			$type = $this->getItemType($item); // get type
+
+			if ($type == 'page' && ($page = $this->page->find($item->page_id))) // if it's a page, then make sure it exists
+				$link = $page->url(); // get page url
+			elseif ($type == 'link')
+				$link = $item->link_if; // get link
+			else
+				$link = '#'; // if it wasn't an existing page revert to #
+
+			// if there are children, recursively add children (using empty ItemList object instead of handler), otherwise children are null
+			$children = ($item->children) ? $this->addSavedMenuitems($this->items(), $item->children) : null;
+
+			if ($type == 'sep')
+				$handler->raw('{SEPARATOR}', $children);
+			else
+				$handler->add($link, $item->title, $children);
+		}
+
+		return $handler;
 	}
 
 	/**
@@ -230,46 +309,129 @@ class MenuManager extends VMenu {
 	 */
 	public function backMenu()
 	{
-		if (!$this->back_menu_built)
-		{
-			$menu = $this->handler('vessel.back.menu.main', array('class' => 'nav navbar-nav'));
-			$menu->add($this->url->route('vessel'), 'Home')
-			->add($this->url->route('vessel.pages'), 'Pages')
-			->add($this->url->route('vessel.blocks'), 'Blocks')
-			->add($this->url->route('vessel.menus'), 'Menus')
-			->add($this->url->route('vessel.media'), 'Media')
-			->add($this->url->route('vessel.users'), 'Users')
-			->add($this->url->route('vessel.settings'), 'Settings');
+		$menu = $this->handler('back.main');
+		$menu->add($this->url->route('vessel'), 'Home')
+		->add($this->url->route('vessel.pages'), 'Pages')
+		->add($this->url->route('vessel.blocks'), 'Blocks')
+		->add($this->url->route('vessel.menus'), 'Menus')
+		->add($this->url->route('vessel.media'), 'Media')
+		->add($this->url->route('vessel.users'), 'Users')
+		->add($this->url->route('vessel.settings'), 'Settings');
 
-			$menu = $this->plugin->fire('back.menu.main', $menu, true);
+		$menu = $this->plugin->fire('back.menu.main', $menu, true);
 
-			$this->handler('vessel.back.menu.main')->mapBootstrap();
+		$this->useRegisteredMapper($menu, 'bootstrap-navbar');
 
-			$this->back_menu_built = true;
-		}
+		$this->back_menu_built = true;
 	}
 
 	/**
-	 * Maps a menu for bootstrap navbar formatting
+	 * Registers a menu handler mapper
+	 *
+	 * @param  string   $name   Name of mapper, should be something unique (will not overwrite existing if not)
+	 * @param  string   $title  Display title of mapper
+	 * @param  callable $mapper Callable (can be array(class, method)) to map handler
+	 * @return boole            Success
+	 */
+	public function registerMapper($name, $title, $mapper)
+	{
+		if (is_callable($mapper) && !isset($this->registered_mappers[$name]))
+		{
+			$this->registered_mappers[$name] = array(
+				'name'   => $name,
+				'title'  => $title,
+				'mapper' => $mapper
+			);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Gets array of registered mappers
+	 * 
+	 * @return array Format: name => array(name, title, mapper)
+	 */
+	public function getRegisteredMappers()
+	{
+		return $this->registered_mappers;
+	}
+
+	/**
+	 * Gets array of registered mappers for <select>
+	 * 
+	 * @return array Format: name => title
+	 */
+	public function getRegisteredMappersSelectArray()
+	{
+		$mappers = array();
+
+		foreach ($this->registered_mappers as $mapper)
+			$mappers[$mapper['name']] = $mapper['title'];
+
+		return $mappers;
+	}
+
+	/**
+	 * Checks if mapper with name exists
+	 *
+	 * @param  string $name Name of mapper
+	 * @return bool
+	 */
+	public function mapperRegistered($name)
+	{
+		return isset($this->registered_mappers[$name]);
+	}
+
+	/**
+	 * Uses a registered mapper on a menu handler
+	 *
+	 * @param  object $handler Menu handler
+	 * @param  string $name    Name of registered menu mapper
+	 * @return void
+	 */
+	public function useRegisteredMapper(&$handler, $name)
+	{
+		if (isset($this->registered_mappers[$name]))
+			call_user_func($this->registered_mappers[$name]['mapper'], $handler);
+		else
+			throw new \Exception('Specified menu mapper is not registered.');
+	}
+
+	/**
+	 * Register mapper for bootstrap navbar
 	 * 
 	 * @return void
 	 */
-	public function mapBootstrap()
+	public function registerBootstrapNavbarMapper()
 	{
-		return $this->getItemsAtDepth(0)->map(function($item)
-		{
-			if($item->hasChildren())
+		$this->registerMapper('bootstrap-navbar', 'Bootstrap Navbar', function($handler) {
+			$handler->addClass('nav navbar-nav')->getItemsAtDepth(0)->map(function($item)
 			{
-				$item->addClass('dropdown');
+				if ($item->hasChildren())
+				{
+					$item->addClass('dropdown');
 
-				$item->getChildren()
-				->addClass('dropdown-menu');
+					$item->getChildren()
+					->addClass('dropdown-menu');
 
-				$item->getContent()
-				->addClass('dropdown-toggle')
-				->dataToggle('dropdown')
-				->nest(' <b class="caret"></b>');
-			}
+					$item->getContent()
+					->addClass('dropdown-toggle')
+					->dataToggle('dropdown')
+					->nest(' <b class="caret"></b>');
+				}
+			});
+
+			$handler->getAllItems()->map(function($item)
+			{
+				if ($item->getValue()->getValue() == '{SEPARATOR}')
+				{
+					$item->getValue()->setValue('');
+					$item->addClass('divider');
+				}
+			});
 		});
 	}
 }

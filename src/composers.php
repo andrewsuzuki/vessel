@@ -12,7 +12,7 @@ View::creator('vessel::layout', function($view)
 	$js = Hokeo\Vessel\Facades\Asset::make('js');
 
 	\Hokeo\Vessel\Facades\MenuManager::backMenu();
-	$mainmenu = \Hokeo\Vessel\Facades\MenuManager::handler('vessel.back.menu.main')->render();
+	$mainmenu = \Hokeo\Vessel\Facades\MenuManager::handler('back.main')->render();
 
 	$notifications = Krucas\Notification\Facades\Notification::showAll();
 

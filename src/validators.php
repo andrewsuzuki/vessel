@@ -82,3 +82,10 @@ Validator::extend('json_string_array', function($attribute, $value, $parameters)
 {
 	return is_array(json_decode($value, true));
 });
+
+// Checks if string a registered menu mapper name
+Validator::extend('menu_mapper', function($attribute, $value, $parameters)
+{
+	$mappers = Hokeo\Vessel\Facades\MenuManager::getRegisteredMappers();
+	return isset($mappers[$value]);
+});

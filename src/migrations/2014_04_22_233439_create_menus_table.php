@@ -18,6 +18,7 @@ class CreateMenusTable extends Migration {
 			$table->string('slug');
 			$table->string('title');
 			$table->string('description');
+			$table->string('mapper');
 			$table->integer('user_id')->unsigned();
 			$table->timestamps();
 		});

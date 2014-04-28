@@ -347,4 +347,9 @@ $(document).ready(function() {
 		$('.dd').trigger('change');
 		$('#menuitem-alert').modal('hide');
 	});
+	
+	$(document).on('click', '.menuitem-copy-page-title', function(e) {
+		e.preventDefault();
+		$('#menuitem-edit-page-title').val($('#menuitem-edit-page-input option:selected').first().text());
+	});
 });

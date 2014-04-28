@@ -155,7 +155,7 @@ class FrontController extends Controller {
 						},
 
 						'menu' => function($call, $name) use ($main) {
-							return $this->mm->handler('vessel.menu.'.$name)->render();
+							return $this->mm->getSavedMenu($name);
 						},
 
 						'block' => function($call, $slug) {
