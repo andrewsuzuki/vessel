@@ -14,22 +14,52 @@ class User extends Model implements UserInterface, RemindableInterface {
 	use DateAccessorTrait;
 
 	use HasRole;
-	
-	public static function rules($mode = 'user')
+
+	/**
+	 * Date mutators
+	 * 
+	 * @return array Fields to convert to Carbon instances
+	 */
+	public function getDates()
 	{
-		if ($mode == 'admin') // user admin
+		return array('created_at', 'updated_at', 'last_login');
+	}
+
+	// Events
+
+	public static function boot()
+	{
+		parent::boot();
+
+		// don't allow delete if user is self
+		static::deleting(function($user) {
+			return $user->id != \Auth::user()->id;
+		});
+	}
+	
+	/**
+	 * Validation rules
+	 * 
+	 * @param  string $mode 'new' or 'edit'
+	 * @param  object $user User model (when editing an existing user)
+	 * @return array        Validation rules array
+	 */
+	public static function rules($mode = 'edit', $user = null)
+	{
+		$base = array(
+			'email' => 'required|email|unique:vessel_users,email'.(($mode == 'edit') ? ','.$user->id : ''),
+			'first_name' => '',
+			'last_name' => '',
+			'password' => 'min:6|confirmed',
+		);
+
+		if ($mode == 'new')
 		{
-			// todo
+			$base['username'] = 'required|unique:vessel_users';
+			$base['password'] = 'required|'.$base['password'];
 		}
-		else // user settings
-		{
-			return [
-				'email' => 'required|email',
-				'first_name' => '',
-				'last_name' => '',
-				'password' => 'min:6|confirmed',
-			];
-		}
+
+		return $base;
 	}
 
 	/**

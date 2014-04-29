@@ -22,7 +22,6 @@ class TestUsersSeeder extends Seeder {
 					'last_login'=> \Carbon\Carbon::now()->subHour(),
 					'created_at'=> \Carbon\Carbon::parse('5 days ago'),
 					'updated_at'=> \Carbon\Carbon::parse('1 day ago'),
-					'preferred_formatter' => 'Markdown',
 				],
 				'role' => 'Admin',
 			],
@@ -38,7 +37,6 @@ class TestUsersSeeder extends Seeder {
 					'last_login'=> \Carbon\Carbon::now()->subHours(5),
 					'created_at'=> \Carbon\Carbon::parse('3 days ago'),
 					'updated_at'=> \Carbon\Carbon::parse('2 days ago'),
-					'preferred_formatter' => 'Markdown',
 				],
 				'role' => 'Client'
 			],
@@ -54,7 +52,6 @@ class TestUsersSeeder extends Seeder {
 					'last_login'=> \Carbon\Carbon::now()->subMonths(4),
 					'created_at'=> \Carbon\Carbon::now()->subMonths(6),
 					'updated_at'=> \Carbon\Carbon::now()->subMonths(5),
-					'preferred_formatter' => 'Plain',
 				],
 				'role' => 'User'
 			]

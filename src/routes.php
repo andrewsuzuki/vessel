@@ -36,6 +36,10 @@ Route::group(array('prefix' => Config::get('vessel::vessel.uri', 'vessel')), fun
 		Route::delete('media/handle', array('as' => 'vessel.media.handle', 'uses' => 'Hokeo\\Vessel\\MediaController@deleteHandle'));
 
 		Route::get('users', array('as' => 'vessel.users', 'uses' => 'Hokeo\\Vessel\\UserController@getUsers'));
+		Route::get('users/new', array('as' => 'vessel.users.new', 'uses' => 'Hokeo\\Vessel\\UserController@getUser'));
+		Route::get('users/edit/{id}', array('as' => 'vessel.users.edit', 'uses' => 'Hokeo\\Vessel\\UserController@getUser'));
+		Route::post('users/edit/{id?}', array('as' => 'vessel.users.edit', 'uses' => 'Hokeo\\Vessel\\UserController@postUser'));
+		Route::get('users/delete/{id}', array('as' => 'vessel.users.delete', 'uses' => 'Hokeo\\Vessel\\UserController@getUserDelete'));
 
 		Route::get('settings', array('as' => 'vessel.settings', 'uses' => 'Hokeo\\Vessel\\SettingController@getSettings'));
 		Route::post('settings', array('as' => 'vessel.settings', 'uses' => 'Hokeo\\Vessel\\SettingController@postSettings'));

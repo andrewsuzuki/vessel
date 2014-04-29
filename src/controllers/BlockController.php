@@ -65,8 +65,7 @@ class BlockController extends Controller
 
 		$formatter = $this->fm->tryEach(
 			$this->input->get('formatter'),
-			$this->input->old('formatter'),
-			$this->auth->user()->preferred_formatter
+			$this->input->old('formatter')
 			);
 
 		$interface = $formatter->fmInterface('', '');
@@ -96,8 +95,7 @@ class BlockController extends Controller
 		$formatter = $this->fm->tryEach(
 			$this->input->get('formatter'),
 			$this->input->old('formatter'),
-			$block->formatter,
-			$this->auth->user()->preferred_formatter
+			$block->formatter
 			);
 
 		$interface = $formatter->fmInterface($block->raw, $block->made);

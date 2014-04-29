@@ -69,8 +69,7 @@ class PageController extends Controller
 
 		$formatter = $this->fm->tryEach(
 			$this->input->get('formatter'),
-			$this->input->old('formatter'),
-			$this->auth->user()->preferred_formatter
+			$this->input->old('formatter')
 			);
 
 		$interface = $formatter->fmInterface('', '');
@@ -136,8 +135,7 @@ class PageController extends Controller
 		$formatter = $this->fm->tryEach(
 			$this->input->get('formatter'),
 			$this->input->old('formatter'),
-			$page->formatter,
-			$this->auth->user()->preferred_formatter
+			$page->formatter
 			);
 
 		$raw = ($pagehistory) ? $pagehistory->raw : $page->raw;
