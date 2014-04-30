@@ -57,10 +57,11 @@ Todo, roughly in order:
 * ~~Home page~~
 * ~~Menu builder~~
 * ~~Menu api~~
+* ~~User Management~~
+* Role/Permission Management
 * Lang + Validation messages
 * User Password resets
 * User Registration
-* User Management
 * Cool formatters (redactor/wysiwyg, image, text, advanced-custom-fields-like, table, custom, etc)
 * Lots of hooks
 * Installer

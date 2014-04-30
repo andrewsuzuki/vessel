@@ -89,3 +89,12 @@ Validator::extend('menu_mapper', function($attribute, $value, $parameters)
 	$mappers = Hokeo\Vessel\Facades\MenuManager::getRegisteredMappers();
 	return isset($mappers[$value]);
 });
+
+// Checks if array of ids are all existing roles
+Validator::extend('roles', function($attribute, $value, $parameters)
+{
+	if (!is_array($value) || empty($value)) return false; // false for non-array or empty array
+	foreach ($value as $role)
+		if (!Hokeo\Vessel\Role::find($role)) return false; // false if one of the roles doesn't exist
+	return true;
+});

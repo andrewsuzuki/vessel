@@ -27,6 +27,8 @@ class UserController extends Controller {
 
 	protected $user; // model
 
+	protected $role; // model
+
 	public function __construct(
 		Environment $view,
 		Request $input,
@@ -35,7 +37,8 @@ class UserController extends Controller {
 		HasherInterface $hash,
 		Redirector $redirect,
 		Notification $notification,
-		User $user)
+		User $user,
+		Role $role)
 	{
 		$this->view         = $view;
 		$this->input        = $input;
@@ -45,6 +48,7 @@ class UserController extends Controller {
 		$this->redirect     = $redirect;
 		$this->notification = $notification;
 		$this->user         = $user;
+		$this->role         = $role;
 	}
 
 	/**
@@ -69,7 +73,7 @@ class UserController extends Controller {
 		// get current authenticated user
 		$user = $this->auth->user();
 
-		$rules = $this->user->rules('edit', $user); // get validation rules (for user settings editing)
+		$rules = $this->user->rules('edit', true, $user); // get validation rules (for user settings editing)
 		$validator = $this->validator->make($this->input->all(), $rules); // validate input
 
 		if ($validator->fails())
@@ -130,7 +134,11 @@ class UserController extends Controller {
 			$this->view->share('title', 'Edit User '.$user->username);
 		}
 
-		return $this->view->make('vessel::user')->with(compact('user', 'mode'));
+		$user_is_self = $user->id == $this->auth->user()->id;
+
+		$roles = $this->role->all(); // get roles
+
+		return $this->view->make('vessel::user')->with(compact('user', 'roles', 'user_is_self', 'mode'));
 	}
 
 	/**
@@ -154,7 +162,9 @@ class UserController extends Controller {
 			$mode = 'edit';
 		}
 
-		$rules     = $this->user->rules($mode, $user); // get validation rules (for user settings editing)
+		$user_is_self = $user->id == $this->auth->user()->id;
+
+		$rules     = $this->user->rules($mode, $user_is_self, $user); // get validation rules (for user settings editing)
 		$validator = $this->validator->make($this->input->all(), $rules); // validate input
 
 		if ($validator->fails())
@@ -169,6 +179,23 @@ class UserController extends Controller {
 		// if new user, save username
 		if ($id === null)
 			$user->username = $this->input->get('username');
+
+		// sync roles if user isn't self
+		if (!$user_is_self)
+		{
+			$user->roles()->sync($this->input->get('user_roles'));
+			// foreach ($this->role->all() as $role)
+			// {
+			// 	if (in_array($role->id, $this->input->get('user_roles')))
+			// 	{
+			// 		if (!$user->hasRole($role->name)) $user->attachRole($role);
+			// 	}
+			// 	else
+			// 	{
+			// 		$user->detachRole($role);
+			// 	}
+			// }
+		}
 
 		$user->email      = $this->input->get('email');
 		$user->first_name = $this->input->get('first_name');

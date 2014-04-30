@@ -26,7 +26,7 @@
 				<td>{{ link_to_route('vessel.users.edit', $user->username, array($user->id)) }}</td>
 				<td>{{ $user->first_name.' '.$user->last_name }}</td>
 				<td>{{ $user->email }}</td>
-				<td>{{ $user->last_login->user() }}</td>
+				<td>{{ ($user->last_login->toDateTimeString() == '-0001-11-30 00:00:00') ? 'n/a' : $user->last_login->user() }}</td>
 				<td>
 					{{ link_to_route('vessel.users.edit', 'Edit', array($user->id), array('class' => 'btn btn-xs btn-default')) }}
 					{{ link_to_route('vessel.users.delete', 'Delete', array($user->id), array('class' => 'btn btn-xs btn-danger')) }}

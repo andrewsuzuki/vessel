@@ -13,8 +13,7 @@ class Role extends EntrustRole {
 	public static function rules($edit = null)
 	{
 		return [
-			'title' => 'required',
-			'slug' => 'required|alpha_dash|unique:vessel_pages,slug'.(($edit) ? ','.$edit->id : '')
+			'name' => 'required|unique:roles,name'.(($edit) ? ','.$edit->name : ''),
 		];
 	}
 }

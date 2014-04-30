@@ -31,9 +31,14 @@ class User extends Model implements UserInterface, RemindableInterface {
 	{
 		parent::boot();
 
-		// don't allow delete if user is self
 		static::deleting(function($user) {
-			return $user->id != \Auth::user()->id;
+			// don't allow delete if user is self
+			if ($user->id == \Auth::user()->id) return false;
+
+			// unsync roles
+			$user->roles()->sync(array());
+
+			return true;
 		});
 	}
 	
@@ -41,10 +46,11 @@ class User extends Model implements UserInterface, RemindableInterface {
 	 * Validation rules
 	 * 
 	 * @param  string $mode 'new' or 'edit'
+	 * @param  bool   $self If user is editing self (/me)
 	 * @param  object $user User model (when editing an existing user)
 	 * @return array        Validation rules array
 	 */
-	public static function rules($mode = 'edit', $user = null)
+	public static function rules($mode = 'edit', $self = false, $user = null)
 	{
 		$base = array(
 			'email' => 'required|email|unique:vessel_users,email'.(($mode == 'edit') ? ','.$user->id : ''),
@@ -52,6 +58,11 @@ class User extends Model implements UserInterface, RemindableInterface {
 			'last_name' => '',
 			'password' => 'min:6|confirmed',
 		);
+
+		if (!$self)
+		{
+			$base['user_roles'] = 'required|array|roles';
+		}
 
 		if ($mode == 'new')
 		{

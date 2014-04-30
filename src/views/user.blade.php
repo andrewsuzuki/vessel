@@ -6,7 +6,7 @@
 		
 		<div class="col-lg-12">
 			
-			{{ Form::model($user, array('route' => array('vessel.users.edit'), 'role' => 'form')) }}
+			{{ Form::model($user, array('route' => array('vessel.users.edit', (($mode == 'edit') ? $user->id : null)), 'role' => 'form')) }}
 			
 			<div class="form-horizontal">
 				<div class="row">
@@ -51,6 +51,19 @@
 								{{ Form::password('password_confirmation', array('class' => 'form-control input-sm')) }}
 							</div>
 						</div>
+						@if (!$user_is_self)
+						<div class="form-group">
+							{{ Form::label('roles', 'Roles', array('class' => 'col-sm-4 control-label')) }}
+							<div class="col-sm-8">
+
+								@foreach ($roles as $role)
+								<div class="checkbox"><label>{{ Form::checkbox('user_roles[]', $role->id, (($user->hasRole($role->name)) ? true : null)) }} {{ $role->name }}</label></div>
+
+								@endforeach
+
+							</div>
+						</div>
+						@endif
 						<div class="form-group">
 							<div class="col-sm-4"></div>
 							<div class="col-sm-8">
