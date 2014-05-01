@@ -51,7 +51,7 @@ class Role extends Model {
 	public static function rules($edit = null)
 	{
 		$base = array(
-			'name'             => 'required|unique:roles,name'.(($edit) ? ','.$edit->id : ''),
+			'name'             => 'required|unique:vessel_roles,name'.(($edit) ? ','.$edit->id : ''),
 			'role_permissions' => 'required|array|permissions',
 		);
 

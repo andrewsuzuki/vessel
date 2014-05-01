@@ -20,6 +20,17 @@ Blade::extend(function($view, $compiler)
 });
 
 /**
+ * Alias of Facades\Translator::get
+ */
+if (!function_exists('vest'))
+{
+	function vest()
+	{
+		return call_user_func_array(array('Hokeo\\Vessel\\Facades\\Translator', 'get'), func_get_args());
+	}
+}
+
+/**
  * Echos vr() (see below)
  */
 if (!function_exists('v'))
@@ -31,7 +42,7 @@ if (!function_exists('v'))
 }
 
 /**
- * Alias or Facades\Theme::element()
+ * Alias of Facades\Theme::element()
  * 
  * @return string|null
  */
@@ -44,7 +55,7 @@ if (!function_exists('vr'))
 }
 
 /**
- * Alias or Facades\Plugin::hook()
+ * Alias of Facades\Plugin::hook()
  */
 if (!function_exists('hook'))
 {
@@ -55,7 +66,7 @@ if (!function_exists('hook'))
 }
 
 /**
- * Alias or Facades\Plugin::fire()
+ * Alias of Facades\Plugin::fire()
  * 
  * @return string|null
  */

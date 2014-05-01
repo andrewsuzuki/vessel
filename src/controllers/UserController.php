@@ -25,6 +25,8 @@ class UserController extends Controller {
 
 	protected $notification;
 
+	protected $t;
+
 	protected $user; // model
 
 	protected $role; // model
@@ -198,7 +200,7 @@ class UserController extends Controller {
 			$user->roles()->sync($this->input->get('user_roles'));
 
 		// notification
-		$this->notification->success('User was saved successfully.');
+		$this->notification->success(vest('messages.users.edit.saved'));
 		// redirect
 		return $this->redirect->route('vessel.users.edit', array('id' => $user->id));
 	}
@@ -215,9 +217,9 @@ class UserController extends Controller {
 		if (!$user) throw new \VesselBackNotFoundException;
 
 		if ($user->delete()) // delete user
-			$this->notification->success('The user was deleted successfully.');
+			$this->notification->success(vest('messages.users.edit.deleted'));
 		else
-			$this->notification->error('You cannot delete your own user account.');
+			$this->notification->error(vest('messages.users.edit.deleted-error'));
 
 		return $this->redirect->route('vessel.users');
 	}
@@ -244,7 +246,6 @@ class UserController extends Controller {
 			$mode = 'edit';
 			$this->view->share('title', 'Edit Role '.$role->name);
 		}
-
 
 		$role_is_native = in_array($role->name, $this->role->getNative());
 
@@ -294,7 +295,7 @@ class UserController extends Controller {
 		$role->permissions()->sync($this->input->get('role_permissions')); // sync permissions
 		
 		// notification
-		$this->notification->success('Role was saved successfully.');
+		$this->notification->success(vest('messages.users.roles.edit.saved'));
 		// redirect
 		return $this->redirect->route('vessel.users.roles.edit', array('id' => $role->id));
 	}
@@ -311,9 +312,9 @@ class UserController extends Controller {
 		if (!$role) throw new \VesselBackNotFoundException;
 
 		if ($role->delete()) // delete role
-			$this->notification->success('The role was deleted successfully.');
+			$this->notification->success(vest('messages.users.roles.delete.deleted'));
 		else
-			$this->notification->error('You cannot delete native roles.');
+			$this->notification->error(vest('messages.users.roles.delete.deleted-error'));
 
 		return $this->redirect->route('vessel.users', array('#tab-roles'));
 	}

@@ -90,6 +90,17 @@ class VesselServiceProvider extends ServiceProvider {
 				);
 		});
 
+		$this->app->bindShared('Hokeo\\Vessel\\Translator', function($app)
+		{
+			// copied from Illuminate\Translation\TranslationServiceProvider translator binding
+			$loader = $app['translation.loader'];
+			$locale = $app['config']['app.locale'];
+			$trans  = new Translator($loader, $locale);
+			$trans->setFallback($app['config']['app.fallback_locale']);
+			$trans->addNamespace('vessel', __DIR__.'/../../lang');
+			return $trans;
+		});
+
 		$this->app->bindShared('Hokeo\\Vessel\\Plugin', function($app) {
 			return new Plugin(
 				$app['app'],
