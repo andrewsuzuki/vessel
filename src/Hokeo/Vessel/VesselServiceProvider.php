@@ -60,7 +60,7 @@ class VesselServiceProvider extends ServiceProvider {
 		// Register dependencies
 		$dependent_provides = [
 			'Krucas\\Notification\\NotificationServiceProvider',
-			'Zizaco\\Entrust\\EntrustServiceProvider',
+			'Baum\\BaumServiceProvider',
 			'Intervention\\Image\\ImageServiceProvider',
 			'Menu\\MenuServiceProvider',
 			'Andrewsuzuki\\Perm\\PermServiceProvider'
@@ -71,10 +71,6 @@ class VesselServiceProvider extends ServiceProvider {
 			if (!class_exists($provider)) throw new \Exception('Vessel dependency '.$provider.' was not found.');
 			$this->app->register($provider);
 		}
-
-		// set some dependency config values
-		$this->app['config']->set('entrust::role', '\\Hokeo\\Vessel\\Role');
-		$this->app['config']->set('entrust::permission', '\\Hokeo\\Vessel\\Permission');
 
 		// add namespace for vessel settings (perm)
 		$this->app['config']->addNamespace('vset', app_path('config/vessel'));

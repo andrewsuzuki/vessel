@@ -52,13 +52,9 @@ Feel free to post any issues or comments here on github.
 
 ### Roadmap
 
-Todo, roughly in order:
+Todo and recently completed, roughly in order:
 
-* ~~Home page~~
-* ~~Menu builder~~
-* ~~Menu api~~
-* ~~User Management~~
-* ~~Role Management~~
+* ~~Replace entrust with native role/permission mechanism~~
 * Lang + Validation messages
 * Breadcrumbs?
 * User Password resets

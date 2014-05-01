@@ -249,7 +249,7 @@ class UserController extends Controller {
 		$role_is_native = in_array($role->name, $this->role->getNative());
 
 		$permissions = $this->permission->all(); // get permissions
-		$role_permissions = $role->perms()->getRelatedIds(); // get role's current permissions
+		$role_permissions = $role->permissions()->getRelatedIds(); // get role's current permissions
 
 		return $this->view->make('vessel::role')->with(compact('role', 'permissions', 'role_permissions', 'role_is_native', 'mode'));
 	}
@@ -291,7 +291,7 @@ class UserController extends Controller {
 		if (!in_array($role->name, $this->role->getNative()))
 			$role->name = $this->input->get('name');
 		$role->save();
-		$role->perms()->sync($this->input->get('role_permissions')); // sync permissions
+		$role->permissions()->sync($this->input->get('role_permissions')); // sync permissions
 		
 		// notification
 		$this->notification->success('Role was saved successfully.');

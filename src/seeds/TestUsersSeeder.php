@@ -66,7 +66,7 @@ class TestUsersSeeder extends Seeder {
 			{
 				if ($user['role'] && $role = \Hokeo\Vessel\Role::where('name', $user['role'])->first())
 				{
-					$created_user->attachRole($role);
+					$created_user->roles()->attach($role);
 				}
 			}
 		}

@@ -9,10 +9,10 @@ class TestPermissionsSeeder extends Seeder {
 	{
 		// clear tables
 		
-		DB::table('roles')->delete();
-		DB::table('permissions')->delete();
-		DB::table('permission_role')->delete();
-		DB::table('assigned_roles')->delete();
+		DB::table('vessel_roles')->delete();
+		DB::table('vessel_permissions')->delete();
+		DB::table('vessel_permission_role')->delete();
+		DB::table('vessel_role_user')->delete();
 
 		// create roles
 		
@@ -180,7 +180,7 @@ class TestPermissionsSeeder extends Seeder {
 		
 		foreach ($roles_created as $role)
 		{
-			$role['role']->perms()->sync($role['permissions_to_sync']);
+			$role['role']->permissions()->sync($role['permissions_to_sync']);
 		}
 	}
 

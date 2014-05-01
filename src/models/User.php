@@ -3,7 +3,6 @@
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Auth\UserInterface;
 use Illuminate\Auth\Reminders\RemindableInterface;
-use Zizaco\Entrust\HasRole;
 
 class User extends Model implements UserInterface, RemindableInterface {
 
@@ -13,8 +12,6 @@ class User extends Model implements UserInterface, RemindableInterface {
 
 	use DateAccessorTrait;
 
-	use HasRole;
-
 	/**
 	 * Date mutators
 	 * 
@@ -23,6 +20,18 @@ class User extends Model implements UserInterface, RemindableInterface {
 	public function getDates()
 	{
 		return array('created_at', 'updated_at', 'last_login');
+	}
+
+	// Relations
+	
+	/**
+	 * Roles Many to Many
+	 * 
+	 * @return object
+	 */
+	public function roles()
+	{
+		return $this->belongsToMany('Hokeo\\Vessel\\Role', 'vessel_role_user');
 	}
 
 	// Events
@@ -73,6 +82,40 @@ class User extends Model implements UserInterface, RemindableInterface {
 		return $base;
 	}
 
+	// Roles and Permissions
+
+	/**
+	 * Checks if user has role
+	 * 
+	 * @param  string  $name Name of role
+	 * @return boolean       If user has role
+	 */
+	public function hasRole($name)
+	{
+		// loop user's roles
+		foreach ($this->roles as $role)
+			if ($role->name == $name) return true;
+
+		return false;
+	}
+
+	/**
+	 * Checks if user has a permission
+	 * 
+	 * @return boolean
+	 */
+	public function can($name)
+	{
+		// loop user's roles
+		foreach ($this->roles as $role)
+		{
+			foreach ($role->perms as $permission)
+				if ($permission->name == $name) return true;
+		}
+
+		return false;
+	}
+
 	/**
 	 * Return comma-separated string of this user's roles
 	 * 
@@ -85,6 +128,8 @@ class User extends Model implements UserInterface, RemindableInterface {
 			$join[] = $role->name;
 		return implode(', ', $join);
 	}
+
+	// AUTH
 
 	/**
 	 * Get the unique identifier for the user.
