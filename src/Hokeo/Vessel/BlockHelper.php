@@ -80,7 +80,7 @@ class BlockHelper {
 			// if saving an edit, give a warning if it's been edited elsewhere since
 			if ($this->input->get('updated_at') != (string) $block->updated_at && !$this->input->get('force_edit'))
 			{
-				$this->notification->warning('This block has been updated elsewhere since you started editing. Click save again to force this edit.');
+				$this->notification->warning(vest('messages.blocks.edit.concurrency-warning'));
 				return $this->redirect->back()->with('force_edit', 'true')->withInput();
 			}
 
@@ -141,11 +141,7 @@ class BlockHelper {
 
 		$block->save();
 
-		// determine success message
-		if ($mode == 'edit')
-			$this->notification->success('Block was edited successfully.');
-		else
-			$this->notification->success('Block was created successfully.');
+		$this->notification->success(vest('messages.general.save-success', array('name' => 'Block')));
 
 		// redirect to edit page
 		return $this->redirect->route('vessel.blocks.edit', array('id' => $block->id));

@@ -60,7 +60,7 @@
 
 			{{ Form::submit('Save', array('class' => 'btn btn-success mb-15')) }}
 			@if ($mode == 'edit')
-			<a href="{{ URL::route('vessel.blocks.delete', array('id' => $block->id)) }}" class="btn btn-danger mb-15">Delete</a>
+			{{ link_to_route('vessel.blocks.delete', 'Delete', array($block->id), array('class' => 'btn btn-danger mb-15')) }}
 			@endif
 		</div>
 

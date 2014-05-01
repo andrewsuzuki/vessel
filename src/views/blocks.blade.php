@@ -35,7 +35,7 @@
 				<td>{{ $block->updated_at->user() }}</td>
 				<td>
 					{{ link_to_route('vessel.blocks.edit', 'Edit', array($block->id), array('class' => 'btn btn-xs btn-default')) }}
-					<a href="#" class="btn btn-xs btn-danger">Delete</a>
+					{{ link_to_route('vessel.blocks.delete', 'Delete', array($block->id), array('class' => 'btn btn-xs btn-danger')) }}
 				</td>
 			</tr>
 

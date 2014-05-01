@@ -309,20 +309,29 @@ class MenuManager extends VMenu {
 	 */
 	public function backMenu()
 	{
+		// make handler
 		$menu = $this->handler('back.main');
-		$menu->add($this->url->route('vessel'), 'Home')
-		->add($this->url->route('vessel.pages'), 'Pages')
-		->add($this->url->route('vessel.blocks'), 'Blocks')
-		->add($this->url->route('vessel.menus'), 'Menus')
-		->add($this->url->route('vessel.media'), 'Media')
-		->add($this->url->route('vessel.users'), 'Users')
-		->add($this->url->route('vessel.settings'), 'Settings');
 
+		// items list
+		$items = array(
+			'vessel'          => 'Home',
+			'vessel.pages'    => 'Pages',
+			'vessel.blocks'   => 'Blocks',
+			'vessel.menus'    => 'Menus',
+			'vessel.media'    => 'Media',
+			'vessel.users'    => 'Users',
+			'vessel.settings' => 'Settings',
+		);
+
+		// add items to menu
+		foreach ($items as $route => $display)
+			$menu->add($this->url->route($route), $display);
+
+		// filter
 		$menu = $this->plugin->fire('back.menu.main', $menu, true);
 
+		// map html for bootstrap
 		$this->useRegisteredMapper($menu, 'bootstrap-navbar');
-
-		$this->back_menu_built = true;
 	}
 
 	/**

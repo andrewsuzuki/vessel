@@ -263,13 +263,13 @@ class Plugin {
 	}
 
 	/**
-	 * Compare two priorities (simple int comparison for use with usort())
+	 * Compare two plugins by priority (simple int comparison for use with usort())
 	 * 
-	 * @param  int $a
-	 * @param  int $b
-	 * @return int -1|0|1
+	 * @param  array  $a
+	 * @param  arrray $b
+	 * @return int    -1|0|1
 	 */
-	protected function comparePriority($a, $b)
+	protected function comparePriority(array $a, array $b)
 	{
 		if ($a['priority'] == $b['priority'])
 		{

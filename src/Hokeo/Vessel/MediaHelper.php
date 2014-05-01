@@ -99,16 +99,16 @@ class MediaHelper {
 	 */
 	public function upload($tmp, $filename)
 	{
-		if (!$this->file->exists($tmp)) throw new \Exception('File was not uploaded.');
+		if (!$this->file->exists($tmp)) throw new \Exception(vest('messages.media.upload.not-uploaded-error'));
 		// TODO: check file size is less than max
-		if (!$filename || !is_string($filename)) throw new \InvalidArgumentException('Filename was not valid.');
+		if (!$filename || !is_string($filename)) throw new \InvalidArgumentException(vest('messages.media.upload.name-invalid-error'));
 
 		$file_parts = explode('.', $filename); // explode basename by .
 
 		$original_basename = $file_parts[0]; // get basename without extension(s)
 		$basename = $original_basename;
 
-		if (!$basename) throw new \InvalidArgumentException('Filename cannot start with a period.'); // make sure this filename doesn't start with .
+		if (!$basename) throw new \InvalidArgumentException(vest('messages.media.upload.name-invalid-error')); // make sure this filename doesn't start with .
 		
 		array_shift($file_parts); // remove first element (basename without extension(s))
 		$extension = implode('.', $file_parts); // make extension(s) into string

@@ -2,6 +2,6 @@
 
 @section('content')
 
-	Hello
+	This is the dashboard.
 
 @stop

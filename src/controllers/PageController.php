@@ -178,7 +178,7 @@ class PageController extends Controller
 		if ($page)
 		{
 			$page->delete();
-			$this->notification->success('Page was deleted successfully.');
+			$this->notification->success(vest('messages.general.delete-success', array('name' => 'Page')));
 			return $this->redirect->route('vessel.pages');
 		}
 
@@ -193,10 +193,7 @@ class PageController extends Controller
 		{
 			$page = $pagehistory->page;
 
-			if ($pagehistory->is_draft)
-				$this->notification->success('Draft was deleted successfully.');
-			else
-				$this->notification->success('Edit was deleted successfully.');
+			$this->notification->success(vest('messages.general.delete-success', array('name' => (($pagehistory->is_draft) ? 'Draft' : 'Edit'))));
 
 			$pagehistory->delete();
 

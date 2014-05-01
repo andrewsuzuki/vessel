@@ -31,6 +31,17 @@ if (!function_exists('vest'))
 }
 
 /**
+ * Alias of Facades\Translator::choice
+ */
+if (!function_exists('vestc'))
+{
+	function vestc()
+	{
+		return call_user_func_array(array('Hokeo\\Vessel\\Facades\\Translator', 'choice'), func_get_args());
+	}
+}
+
+/**
  * Echos vr() (see below)
  */
 if (!function_exists('v'))

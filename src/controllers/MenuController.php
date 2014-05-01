@@ -141,11 +141,11 @@ class MenuController extends Controller {
 		if ($this->menumanager->saveItems($menu, $items) === false)
 		{
 			// redirect back with error and input
-			$this->notification->error('There was an error saving the menu\'s items.');
+			$this->notification->error(vest('messages.menus.delete.items-error'));
 			return $this->redirect->back()->withInput();
 		}
 
-		$this->notification->success('The menu was saved successfully.');
+		$this->notification->success(vest('messages.general.save-success', array('name' => 'Menu')));
 		return $this->redirect->route('vessel.menus.edit', array('id' => $menu->id));
 	}
 
@@ -161,9 +161,9 @@ class MenuController extends Controller {
 		if (!$menu) throw new \VesselBackNotFoundException;
 
 		if ($menu->delete()) // delete menu (model event deletes associated menuitems automagically)
-			$this->notification->success('The menu was deleted successfully.');
+			$this->notification->success(vest('messages.general.delete-success', array('name' => 'Menu')));
 		else
-			$this->notification->error('You cannot delete the main menu.');
+			$this->notification->error(vest('messages.menus.delete.error'));
 
 		return $this->redirect->route('vessel.menus');
 	}

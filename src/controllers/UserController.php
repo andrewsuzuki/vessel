@@ -99,7 +99,7 @@ class UserController extends Controller {
 
 		$user->save();
 		
-		$this->notification->success('Your settings were updated successfully.');
+		$this->notification->success(vest('messages.general.save-success-p', array('name' => 'Your user settings')));
 		return $this->redirect->route('vessel.me');
 	}
 
@@ -295,7 +295,7 @@ class UserController extends Controller {
 		$role->permissions()->sync($this->input->get('role_permissions')); // sync permissions
 		
 		// notification
-		$this->notification->success(vest('messages.users.roles.edit.saved'));
+		$this->notification->success(vest('messages.general.save-success', array('name' => 'Role')));
 		// redirect
 		return $this->redirect->route('vessel.users.roles.edit', array('id' => $role->id));
 	}
@@ -312,9 +312,9 @@ class UserController extends Controller {
 		if (!$role) throw new \VesselBackNotFoundException;
 
 		if ($role->delete()) // delete role
-			$this->notification->success(vest('messages.users.roles.delete.deleted'));
-		else
-			$this->notification->error(vest('messages.users.roles.delete.deleted-error'));
+			$this->notification->success(vest('messages.general.delete-success', array('name' => 'Role')));
+		else // if role was native, error
+			$this->notification->error(vest('messages.roles.delete.error'));
 
 		return $this->redirect->route('vessel.users', array('#tab-roles'));
 	}
