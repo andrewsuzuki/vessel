@@ -27,6 +27,12 @@
         "phpunit/phpunit": "4.0.*",
         "mockery/mockery": "dev-master"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git://github.com/orchestral/phpseclib.git"
+        }
+    ],
     "autoload": {
         "classmap": [
             "src/controllers",
