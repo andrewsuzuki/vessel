@@ -60,6 +60,7 @@
 					<span class="icon-bar"></span>
 				</button>
 				{{ link_to_route('vessel', 'Vessel', null, array('class' => 'navbar-brand')) }}
+
 			</div>
 			<nav class="collapse navbar-collapse" role="navigation">
 				{{ $mainmenu }}
@@ -96,6 +97,7 @@
 			<div class="col-lg-12">
 				<div id="vessel-notifications">
 					{{ $notifications }}
+					
 				</div>
 
 				{{ fire('back.page-top') }}

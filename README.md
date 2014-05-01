@@ -58,8 +58,9 @@ Todo, roughly in order:
 * ~~Menu builder~~
 * ~~Menu api~~
 * ~~User Management~~
-* Role/Permission Management
+* ~~Role Management~~
 * Lang + Validation messages
+* Breadcrumbs?
 * User Password resets
 * User Registration
 * Cool formatters (redactor/wysiwyg, image, text, advanced-custom-fields-like, table, custom, etc)

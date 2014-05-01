@@ -293,7 +293,8 @@ class VesselServiceProvider extends ServiceProvider {
 				$app['redirect'],
 				$app['notification'],
 				$app['Hokeo\\Vessel\\User'],
-				$app['Hokeo\\Vessel\\Role']
+				$app['Hokeo\\Vessel\\Role'],
+				$app['Hokeo\\Vessel\\Permission']
 				);
 		});
 

@@ -98,3 +98,12 @@ Validator::extend('roles', function($attribute, $value, $parameters)
 		if (!Hokeo\Vessel\Role::find($role)) return false; // false if one of the roles doesn't exist
 	return true;
 });
+
+// Checks if array of ids are all existing permissions
+Validator::extend('permissions', function($attribute, $value, $parameters)
+{
+	if (!is_array($value) || empty($value)) return false; // false for non-array or empty array
+	foreach ($value as $permission)
+		if (!Hokeo\Vessel\Permission::find($permission)) return false; // false if one of the permissions doesn't exist
+	return true;
+});

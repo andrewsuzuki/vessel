@@ -239,22 +239,30 @@ String.prototype.addSlashes = function() {
 
 String.prototype.quoteAsAttr = function(preserveCR) {
     preserveCR = preserveCR ? '&#13;' : '\n';
-    return ('' + this) /* Forces the conversion to string. */
-        .replace(/&/g, '&amp;') /* This MUST be the 1st replacement. */
-        .replace(/'/g, '&apos;') /* The 4 other predefined entities, required. */
+    return ('' + this)
+        .replace(/&/g, '&amp;')
+        .replace(/'/g, '&apos;')
         .replace(/"/g, '&quot;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
-        /*
-        You may add other replacements here for HTML only 
-        (but it's not necessary).
-        Or for XML, only if the named entities are defined in its DTD.
-        */
-        .replace(/\r\n/g, preserveCR) /* Must be before the next replacement. */
+        .replace(/\r\n/g, preserveCR)
         .replace(/[\r\n]/g, preserveCR);
 };
 
+function loadHashTab() {
+	var hash = document.location.hash;
+	if (hash) {
+		$('.nav-tabs.tabs-from-url a[href='+hash+']').tab('show');
+	}
+}
+
 $(document).ready(function() {
+
+	loadHashTab();
+
+	$(document).on('shown.bs.tab', '.nav-tabs.tabs-from-url a', function (e) {
+		window.location.hash = e.target.hash;
+	});
 
 	$(document).on('change', '.vessel-page-edit-form .vessel-select-formatter', function() {
 		refreshFormatter($('.vessel-page-edit-form .vessel-carry-field'));
@@ -276,80 +284,83 @@ $(document).ready(function() {
 	// grab set theme value and choose it
 	loadSetTheme();
 
-	$('.dd').nestable();
+	if ($('.dd').length) {
 
-	serializeNestable();
+		$('.dd').nestable();
 
-	$('.dd').on('change', function() {
 		serializeNestable();
-	});
 
-	$(document).on('click', '.menu-add-item', function(e) {
-		e.preventDefault();
-		showMenuitemBox();
-	});
+		$('.dd').on('change', function() {
+			serializeNestable();
+		});
 
-	$(document).on('click', '.menuitem-edit', function(e) {
-		e.preventDefault();
-		showMenuitemBox($(this).closest('.dd-item'));
-	});
+		$(document).on('click', '.menu-add-item', function(e) {
+			e.preventDefault();
+			showMenuitemBox();
+		});
 
-	$(document).on('click', '.menuitem-delete', function(e) {
-		e.preventDefault();
-		var item = $(this).closest('.dd-item');
-		if (item.length && !item.siblings().length) {
-			var parent = item.parent().closest('.dd-item');
-			parent.find('.dd-list').remove();
-			parent.find('button').remove();
-		}
-		item.remove();
-		$('.dd').trigger('change');
-	});
+		$(document).on('click', '.menuitem-edit', function(e) {
+			e.preventDefault();
+			showMenuitemBox($(this).closest('.dd-item'));
+		});
 
-	$(document).on('click', '.menuitem-alert-save', function(e) {
-		e.preventDefault();
+		$(document).on('click', '.menuitem-delete', function(e) {
+			e.preventDefault();
+			var item = $(this).closest('.dd-item');
+			if (item.length && !item.siblings().length) {
+				var parent = item.parent().closest('.dd-item');
+				parent.find('.dd-list').remove();
+				parent.find('button').remove();
+			}
+			item.remove();
+			$('.dd').trigger('change');
+		});
 
-		id = $(this).data('id');
+		$(document).on('click', '.menuitem-alert-save', function(e) {
+			e.preventDefault();
 
-		tab = $('#menuitem-alert .tab-content .tab-pane.active').first();
+			id = $(this).data('id');
 
-		if (tab.length && tab.attr('id') == 'menuitem-edit-page') {
-			type       = 'page';
-			item_title = tab.find('#menuitem-edit-page-title').first().val();
-			item_page  = tab.find('#menuitem-edit-page-input').first().val();
-			item_paget = tab.find('#menuitem-edit-page-input option:selected').first().text();
-			title      = item_title + ' (Page: ' + item_paget + ')';
-			dataattrs  = 'data-title="'+item_title.quoteAsAttr()+'" data-page="'+item_page+'"';
-		} else if (tab.length && tab.attr('id') == 'menuitem-edit-link') {
-			type       = 'link';
-			item_title = tab.find('#menuitem-edit-link-title').first().val();
-			item_link  = tab.find('#menuitem-edit-link-input').first().val();
-			title      = item_title + ' (Link: <a href="'+item_link.quoteAsAttr()+'">'+item_link+'</a>)';
-			dataattrs  = 'data-title="'+item_title.quoteAsAttr()+'" data-link="'+item_link.quoteAsAttr()+'"';
-		} else if (tab.length && tab.attr('id') == 'menuitem-edit-sep') {
-			type      = 'sep';
-			title     = 'Separator';
-			dataattrs = '';
-		} else {
+			tab = $('#menuitem-alert .tab-content .tab-pane.active').first();
+
+			if (tab.length && tab.attr('id') == 'menuitem-edit-page') {
+				type       = 'page';
+				item_title = tab.find('#menuitem-edit-page-title').first().val();
+				item_page  = tab.find('#menuitem-edit-page-input').first().val();
+				item_paget = tab.find('#menuitem-edit-page-input option:selected').first().text();
+				title      = item_title + ' (Page: ' + item_paget + ')';
+				dataattrs  = 'data-title="'+item_title.quoteAsAttr()+'" data-page="'+item_page+'"';
+			} else if (tab.length && tab.attr('id') == 'menuitem-edit-link') {
+				type       = 'link';
+				item_title = tab.find('#menuitem-edit-link-title').first().val();
+				item_link  = tab.find('#menuitem-edit-link-input').first().val();
+				title      = item_title + ' (Link: <a href="'+item_link.quoteAsAttr()+'">'+item_link+'</a>)';
+				dataattrs  = 'data-title="'+item_title.quoteAsAttr()+'" data-link="'+item_link.quoteAsAttr()+'"';
+			} else if (tab.length && tab.attr('id') == 'menuitem-edit-sep') {
+				type      = 'sep';
+				title     = 'Separator';
+				dataattrs = '';
+			} else {
+				$('#menuitem-alert').modal('hide');
+				return false;
+			}
+			
+			template = Handlebars.compile($('#vessel-menuitem-template').html());
+			html = template({id: id, title: title, type: type, dataattrs: dataattrs});
+
+			if ($('.dd > .dd-list .dd-item[data-id="'+id+'"').length) {
+				$('.dd > .dd-list .dd-item[data-id="'+id+'"').replaceWith(html);
+			} else {
+				$('.dd > .dd-list').prepend(html);
+			}
+
+			$('.dd').trigger('change');
 			$('#menuitem-alert').modal('hide');
-			return false;
-		}
+		});
 		
-		template = Handlebars.compile($('#vessel-menuitem-template').html());
-		html = template({id: id, title: title, type: type, dataattrs: dataattrs});
-
-		if ($('.dd > .dd-list .dd-item[data-id="'+id+'"').length) {
-			$('.dd > .dd-list .dd-item[data-id="'+id+'"').replaceWith(html);
-		} else {
-			$('.dd > .dd-list').prepend(html);
-		}
-
-		$('.dd').trigger('change');
-		$('#menuitem-alert').modal('hide');
-	});
-	
-	$(document).on('click', '.menuitem-copy-page-title', function(e) {
-		e.preventDefault();
-		$('#menuitem-edit-page-title').val($('#menuitem-edit-page-input option:selected').first().text());
-	});
+		$(document).on('click', '.menuitem-copy-page-title', function(e) {
+			e.preventDefault();
+			$('#menuitem-edit-page-title').val($('#menuitem-edit-page-input option:selected').first().text());
+		});
+	}
 });

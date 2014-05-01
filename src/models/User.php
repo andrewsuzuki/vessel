@@ -74,6 +74,19 @@ class User extends Model implements UserInterface, RemindableInterface {
 	}
 
 	/**
+	 * Return comma-separated string of this user's roles
+	 * 
+	 * @return string
+	 */
+	public function getRolesString()
+	{
+		$join = array();
+		foreach ($this->roles as $role)
+			$join[] = $role->name;
+		return implode(', ', $join);
+	}
+
+	/**
 	 * Get the unique identifier for the user.
 	 *
 	 * @return mixed

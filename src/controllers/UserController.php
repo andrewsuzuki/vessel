@@ -38,7 +38,8 @@ class UserController extends Controller {
 		Redirector $redirect,
 		Notification $notification,
 		User $user,
-		Role $role)
+		Role $role,
+		Permission $permission)
 	{
 		$this->view         = $view;
 		$this->input        = $input;
@@ -49,6 +50,7 @@ class UserController extends Controller {
 		$this->notification = $notification;
 		$this->user         = $user;
 		$this->role         = $role;
+		$this->permission   = $permission;
 	}
 
 	/**
@@ -107,8 +109,9 @@ class UserController extends Controller {
 	public function getUsers()
 	{
 		$users = $this->user->all();
+		$roles = $this->role->all();
 		$this->view->share('title', 'Users');
-		return $this->view->make('vessel::users')->with(compact('users'));
+		return $this->view->make('vessel::users')->with(compact('users', 'roles'));
 	}
 
 	/**
@@ -180,23 +183,6 @@ class UserController extends Controller {
 		if ($id === null)
 			$user->username = $this->input->get('username');
 
-		// sync roles if user isn't self
-		if (!$user_is_self)
-		{
-			$user->roles()->sync($this->input->get('user_roles'));
-			// foreach ($this->role->all() as $role)
-			// {
-			// 	if (in_array($role->id, $this->input->get('user_roles')))
-			// 	{
-			// 		if (!$user->hasRole($role->name)) $user->attachRole($role);
-			// 	}
-			// 	else
-			// 	{
-			// 		$user->detachRole($role);
-			// 	}
-			// }
-		}
-
 		$user->email      = $this->input->get('email');
 		$user->first_name = $this->input->get('first_name');
 		$user->last_name  = $this->input->get('last_name');
@@ -207,6 +193,10 @@ class UserController extends Controller {
 
 		$user->save();
 		
+		// sync roles if user isn't self
+		if (!$user_is_self)
+			$user->roles()->sync($this->input->get('user_roles'));
+
 		// notification
 		$this->notification->success('User was saved successfully.');
 		// redirect
@@ -230,5 +220,101 @@ class UserController extends Controller {
 			$this->notification->error('You cannot delete your own user account.');
 
 		return $this->redirect->route('vessel.users');
+	}
+
+	/**
+	 * Get new/edit role page
+	 * 
+	 * @return response
+	 */
+	public function getRole($id = null)
+	{
+		if ($id === null)
+		{
+			$mode = 'new';
+			$role = $this->role->newInstance(); // new role
+			$this->view->share('title', 'New Role');
+		}
+		elseif (!($role = $this->role->find($id))) // find existing role
+		{
+			throw new \VesselBackNotFoundException; // 404 if not found
+		}
+		else
+		{
+			$mode = 'edit';
+			$this->view->share('title', 'Edit Role '.$role->name);
+		}
+
+
+		$role_is_native = in_array($role->name, $this->role->getNative());
+
+		$permissions = $this->permission->all(); // get permissions
+		$role_permissions = $role->perms()->getRelatedIds(); // get role's current permissions
+
+		return $this->view->make('vessel::role')->with(compact('role', 'permissions', 'role_permissions', 'role_is_native', 'mode'));
+	}
+
+	/**
+	 * Handle post to role edit page
+	 * 
+	 * @return response
+	 */
+	public function postRole($id = null)
+	{
+		if ($id === null)
+		{
+			$mode       = 'new';
+			$role       = $this->role->newInstance(); // new role
+			$rulesinput = null;
+		}
+		elseif (!($role = $this->role->find($id))) // find existing role
+		{
+			throw new \VesselBackNotFoundException; // 404 if not found
+		}
+		else
+		{
+			$mode       = 'edit';
+			$rulesinput = $role;
+		}
+
+		$rules     = $this->role->rules($rulesinput); // get validation rules
+		$validator = $this->validator->make($this->input->all(), $rules); // validate input
+
+		if ($validator->fails())
+		{
+			// redirect back with error and input
+			$this->notification->error($validator->messages()->first());
+			return $this->redirect->back()->withInput();
+		}
+
+		// save
+		if (!in_array($role->name, $this->role->getNative()))
+			$role->name = $this->input->get('name');
+		$role->save();
+		$role->perms()->sync($this->input->get('role_permissions')); // sync permissions
+		
+		// notification
+		$this->notification->success('Role was saved successfully.');
+		// redirect
+		return $this->redirect->route('vessel.users.roles.edit', array('id' => $role->id));
+	}
+
+	/**
+	 * Delete a role
+	 *
+	 * @param  int|string $id ID of role to delete
+	 * @return object         redirect response
+	 */
+	public function getRoleDelete($id)
+	{
+		$role = $this->role->find($id); // get role
+		if (!$role) throw new \VesselBackNotFoundException;
+
+		if ($role->delete()) // delete role
+			$this->notification->success('The role was deleted successfully.');
+		else
+			$this->notification->error('You cannot delete native roles.');
+
+		return $this->redirect->route('vessel.users', array('#tab-roles'));
 	}
 }

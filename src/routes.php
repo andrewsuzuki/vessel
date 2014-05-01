@@ -40,6 +40,10 @@ Route::group(array('prefix' => Config::get('vessel::vessel.uri', 'vessel')), fun
 		Route::get('users/edit/{id}', array('as' => 'vessel.users.edit', 'uses' => 'Hokeo\\Vessel\\UserController@getUser'));
 		Route::post('users/edit/{id?}', array('as' => 'vessel.users.edit', 'uses' => 'Hokeo\\Vessel\\UserController@postUser'));
 		Route::get('users/delete/{id}', array('as' => 'vessel.users.delete', 'uses' => 'Hokeo\\Vessel\\UserController@getUserDelete'));
+		Route::get('users/roles/new', array('as' => 'vessel.users.roles.new', 'uses' => 'Hokeo\\Vessel\\UserController@getRole'));
+		Route::get('users/roles/edit/{id}', array('as' => 'vessel.users.roles.edit', 'uses' => 'Hokeo\\Vessel\\UserController@getRole'));
+		Route::post('users/roles/edit/{id?}', array('as' => 'vessel.users.roles.edit', 'uses' => 'Hokeo\\Vessel\\UserController@postRole'));
+		Route::get('users/roles/delete/{id}', array('as' => 'vessel.users.roles.delete', 'uses' => 'Hokeo\\Vessel\\UserController@getRoleDelete'));
 
 		Route::get('settings', array('as' => 'vessel.settings', 'uses' => 'Hokeo\\Vessel\\SettingController@getSettings'));
 		Route::post('settings', array('as' => 'vessel.settings', 'uses' => 'Hokeo\\Vessel\\SettingController@postSettings'));
