@@ -92,8 +92,7 @@ class User extends Model implements UserInterface, RemindableInterface {
 	 */
 	public function hasRole($name)
 	{
-		// loop user's roles
-		foreach ($this->roles as $role)
+		foreach ($this->roles as $role) // loop user's roles
 			if ($role->name == $name) return true;
 
 		return false;
@@ -106,10 +105,11 @@ class User extends Model implements UserInterface, RemindableInterface {
 	 */
 	public function can($name)
 	{
-		// loop user's roles
-		foreach ($this->roles as $role)
+		foreach ($this->roles as $role) // loop user's roles
 		{
-			foreach ($role->perms as $permission)
+			if ($role->name == 'Admin') return true; // Admins can do anything
+
+			foreach ($role->permissions as $permission) // loop role's permissions
 				if ($permission->name == $name) return true;
 		}
 

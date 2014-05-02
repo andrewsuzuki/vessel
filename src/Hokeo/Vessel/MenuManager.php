@@ -314,18 +314,18 @@ class MenuManager extends VMenu {
 
 		// items list
 		$items = array(
-			'vessel'          => t('layout.menu.home'),
-			'vessel.pages'    => t('layout.menu.pages'),
-			'vessel.blocks'   => t('layout.menu.blocks'),
-			'vessel.menus'    => t('layout.menu.menus'),
-			'vessel.media'    => t('layout.menu.media'),
-			'vessel.users'    => t('layout.menu.users'),
-			'vessel.settings' => t('layout.menu.settings'),
+			'vessel'          => array('display' => t('layout.menu.home'), 'permission' => null),
+			'vessel.pages'    => array('display' => t('layout.menu.pages'), 'permission' => 'pages_manage'),
+			'vessel.blocks'   => array('display' => t('layout.menu.blocks'), 'permission' => 'blocks_manage'),
+			'vessel.menus'    => array('display' => t('layout.menu.menus'), 'permission' => 'menus_manage'),
+			'vessel.media'    => array('display' => t('layout.menu.media'), 'permission' => 'media_manage'),
+			'vessel.users'    => array('display' => t('layout.menu.users'), 'permission' => 'users_manage'),
+			'vessel.settings' => array('display' => t('layout.menu.settings'), 'permission' => 'settings_manage'),
 		);
 
 		// add items to menu
-		foreach ($items as $route => $display)
-			$menu->add($this->url->route($route), $display);
+		foreach ($items as $route => $info)
+			if ($info['permission'] && can($info['permission'])) $menu->add($this->url->route($route), $info['display']);
 
 		// filter
 		$menu = $this->plugin->fire('back.menu.main', $menu, true);

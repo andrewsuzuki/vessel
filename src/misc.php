@@ -20,7 +20,7 @@ Blade::extend(function($view, $compiler)
 });
 
 /**
- * Match @t in blade templates (vest())
+ * Match @t in blade templates (t())
  */
 Blade::extend(function($view, $compiler)
 {
@@ -33,7 +33,7 @@ Blade::extend(function($view, $compiler)
 });
 
 /**
- * Match @c in blade templates (vestc())
+ * Match @c in blade templates (c())
  */
 Blade::extend(function($view, $compiler)
 {
@@ -66,6 +66,18 @@ if (!function_exists('c'))
 	{
 		if (!$key || !is_string($key)) return false;
 		return call_user_func_array(array('Hokeo\\Vessel\\Facades\\Translator', 'choice'), func_get_args());
+	}
+}
+
+
+/**
+ * Alias of \Auth::user()->can()
+ */
+if (!function_exists('can'))
+{
+	function can($key)
+	{
+		return \Auth::user()->can($key);
 	}
 }
 

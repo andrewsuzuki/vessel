@@ -33,7 +33,7 @@
 
 								@foreach ($permissions as $permission)
 
-								<div class="checkbox"><label>{{ Form::checkbox('role_permissions[]', $permission->id, in_array($permission->id, $role_permissions)) }} {{ $permission->display_name }}</label></div>
+								<div class="checkbox"><label>{{ Form::checkbox('role_permissions[]', $permission->id, (in_array($permission->id, $role_permissions) || $role->name == 'Admin')) }} {{ $permission->display_name }}</label></div>
 								@endforeach
 
 							</div>
