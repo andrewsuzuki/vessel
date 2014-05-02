@@ -56,7 +56,7 @@ class PageController extends Controller
 	public function getPages()
 	{
 		$pages = $this->page->with('user')->get();
-		$this->view->share('title', 'Pages');
+		$this->view->share('title', t('pages.main-title'));
 		return $this->view->make('vessel::pages')->with(compact('pages'));
 	}
 
@@ -65,7 +65,7 @@ class PageController extends Controller
 		$mode = 'new';
 		$page = $this->page->newInstance();
 
-		$this->view->share('title', 'New Page');
+		$this->view->share('title', t('pages.new-page-title'));
 
 		$formatter = $this->fm->tryEach(
 			$this->input->get('formatter'),
@@ -130,8 +130,6 @@ class PageController extends Controller
 			}
 		}
 
-		$this->view->share('title', 'Edit '.$page->title.(($pagehistory) ? ' <span class="label label-pagehistory label-'.(($pagehistory->is_draft) ? 'primary">Draft ' : 'info">Edit ').$pagehistory->edit.'</span>' : '')); // set view title
-
 		$formatter = $this->fm->tryEach(
 			$this->input->get('formatter'),
 			$this->input->old('formatter'),
@@ -150,6 +148,12 @@ class PageController extends Controller
 
 		$this->theme->load();
 		$sub_templates = $this->theme->getThemeSubsSelect();
+
+		// set view title
+		$view_title = t('pages.edit-page-title', array('title' => $page->title));
+		if ($pagehistory)
+			$view_title .= ' <span class="label label-pagehistory label-'.(($pagehistory->is_draft) ? 'primary">Draft ' : 'info">Edit ').$pagehistory->edit.'</span>';
+		$this->view->share('title', $view_title);
 
 		return $this->view->make('vessel::pages_edit')->with(compact(
 			'page',
@@ -178,7 +182,7 @@ class PageController extends Controller
 		if ($page)
 		{
 			$page->delete();
-			$this->notification->success(vest('messages.general.delete-success', array('name' => 'Page')));
+			$this->notification->success(t('messages.general.delete-success', array('name' => 'Page')));
 			return $this->redirect->route('vessel.pages');
 		}
 
@@ -193,7 +197,7 @@ class PageController extends Controller
 		{
 			$page = $pagehistory->page;
 
-			$this->notification->success(vest('messages.general.delete-success', array('name' => (($pagehistory->is_draft) ? 'Draft' : 'Edit'))));
+			$this->notification->success(t('messages.general.delete-success', array('name' => (($pagehistory->is_draft) ? 'Draft' : 'Edit'))));
 
 			$pagehistory->delete();
 

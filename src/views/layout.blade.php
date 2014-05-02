@@ -54,7 +54,7 @@
 		<div class="container">
 			<div class="navbar-header">
 				<button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".navbar-collapse">
-					<span class="sr-only">Toggle navigation</span>
+					<span class="sr-only">{{ t('layout.toggle-nav') }}</span>
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
@@ -66,12 +66,12 @@
 				{{ $mainmenu }}
 				
 				<ul class="nav navbar-nav navbar-right">
-					<li><a href="{{ Config::get('vset::site.url') }}">View Site</a></li>
+					<li><a href="{{ Config::get('vset::site.url') }}">{{ t('layout.menu.view-site') }}</a></li>
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ Auth::user()->username }} <b class="caret"></b></a>
 						<ul class="dropdown-menu">
-							<li>{{ link_to_route('vessel.me', 'User Settings') }}</li>
-							<li>{{ link_to_route('vessel.logout', 'Logout') }}</li>
+							<li>{{ link_to_route('vessel.me', t('layout.menu.user-settings')) }}</li>
+							<li>{{ link_to_route('vessel.logout', t('general.logout')) }}</li>
 						</ul>
 					</li>
 				</ul>
@@ -118,7 +118,7 @@
 
 	<footer>
 		<div class="container">
-			<p><a href="//vesselcms.com">Vessel</a> v{{ Hokeo\Vessel\Facades\Vessel::getVersion('full') }} &nbsp;&middot;&nbsp; <a href="//github.com/hokeo/vessel">GitHub</a> &nbsp;&middot;&nbsp; <a href="//vesselcms.com/support">Support</a></p>
+			<p><a href="//vesselcms.com">Vessel</a> v{{ Hokeo\Vessel\Facades\Vessel::getVersion('full') }} &nbsp;&middot;&nbsp; <a href="//github.com/hokeo/vessel">GitHub</a> &nbsp;&middot;&nbsp; <a href="//vesselcms.com/support">{{ t('general.support') }}</a></p>
 		</div>
 	</footer>
 	
@@ -135,7 +135,7 @@
 					@{{body}}
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">{{ t('general.close') }}</button>
 				</div>
 			</div>
 		</div>

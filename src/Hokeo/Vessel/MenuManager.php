@@ -314,13 +314,13 @@ class MenuManager extends VMenu {
 
 		// items list
 		$items = array(
-			'vessel'          => 'Home',
-			'vessel.pages'    => 'Pages',
-			'vessel.blocks'   => 'Blocks',
-			'vessel.menus'    => 'Menus',
-			'vessel.media'    => 'Media',
-			'vessel.users'    => 'Users',
-			'vessel.settings' => 'Settings',
+			'vessel'          => t('layout.menu.home'),
+			'vessel.pages'    => t('layout.menu.pages'),
+			'vessel.blocks'   => t('layout.menu.blocks'),
+			'vessel.menus'    => t('layout.menu.menus'),
+			'vessel.media'    => t('layout.menu.media'),
+			'vessel.users'    => t('layout.menu.users'),
+			'vessel.settings' => t('layout.menu.settings'),
 		);
 
 		// add items to menu

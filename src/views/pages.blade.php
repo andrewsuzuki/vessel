@@ -2,13 +2,13 @@
 
 @section('content')
 
-	<a href="{{ URL::route('vessel.pages.new') }}" class="btn btn-primary">New Page</a>
+	<a href="{{ URL::route('vessel.pages.new') }}" class="btn btn-primary">{{ t('pages.new-button') }}</a>
 
 	<div class="clearfix mb-15"></div>
 	
 	@if($pages->isEmpty())
 
-	<p>There aren't any pages yet.</p>
+	<p>{{ t('pages.no-pages') }}</p>
 
 	@else
 
@@ -17,9 +17,9 @@
 		<thead>
 			<tr>
 				<th>&nbsp;</th>
-				<th>Title</th>
-				<th>Updated</th>
-				<th>Actions</th>
+				<th>{{ t('general.title') }}</th>
+				<th>{{ t('general.updated') }}</th>
+				<th>{{ t('general.actions') }}</th>
 			</tr>
 		</thead>
 
@@ -32,8 +32,8 @@
 				<td>{{ str_repeat('&mdash;&nbsp;', $page->getLevel()) }}{{ link_to_route('vessel.pages.edit', $page->title, array($page->id)) }}</td>
 				<td>{{ $page->updated_at->user() }}</td>
 				<td>
-					{{ link_to_route('vessel.pages.edit', 'Edit', array($page->id), array('class' => 'btn btn-xs btn-default')) }}
-					<a href="#" class="btn btn-xs btn-danger">Delete</a>
+					{{ link_to_route('vessel.pages.edit', t('general.edit'), array($page->id), array('class' => 'btn btn-xs btn-default')) }}
+					{{ link_to_route('vessel.pages.delete', t('general.delete'), array($page->id), array('class' => 'btn btn-xs btn-danger')) }}
 				</td>
 			</tr>
 

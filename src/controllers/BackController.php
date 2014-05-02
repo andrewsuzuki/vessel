@@ -63,18 +63,18 @@ class BackController extends Controller {
 		// attempt login
 		if ($this->auth->attempt($attempt, $this->input->get('remember')))
 		{
-			$this->notification->success(vest('messages.auth.login-success', array('name' => $this->auth->user()->username)));
+			$this->notification->success(t('messages.auth.login-success', array('name' => $this->auth->user()->username)));
 			return $this->redirect->intended('vessel');
 		}
 
-		$this->notification->error(vest('messages.auth.login-error'));
+		$this->notification->error(t('messages.auth.login-error'));
 		return $this->redirect->route('vessel.login')->withInput($this->input->except('password'));
 	}
 
 	public function getLogout()
 	{
 		$this->auth->logout();
-		$this->notification->success(vest('messages.auth.logout-success'));
+		$this->notification->success(t('messages.auth.logout-success'));
 		return $this->redirect->route('vessel');
 	}
 

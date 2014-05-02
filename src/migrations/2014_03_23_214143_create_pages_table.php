@@ -36,7 +36,6 @@ class CreatePagesTable extends Migration {
 			
 			$table->boolean('nest_url')->default(true);
 			$table->boolean('visible')->default(true);
-			$table->boolean('in_menu')->default(true);
 
 			$table->string('formatter')->nullable();
 			$table->string('template')->nullable();

@@ -19,7 +19,6 @@ class TestPagesSeeder extends Seeder {
 					'description' => 'This is a test page. Numero uno.',
 					'nest_url' => true,
 					'visible' => true,
-					'in_menu' => true,
 					'formatter' => 'Hokeo\\Vessel\\Formatter\\Markdown',
 					'template' => null,
 					'created_at' => \Carbon\Carbon::parse('now - 5 hours'),

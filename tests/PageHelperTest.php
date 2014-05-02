@@ -50,7 +50,6 @@ class PageHelperTest extends \Illuminate\Foundation\Testing\TestCase {
 			'nest_url' => '1',
 			'description' => 'Descrip of test save new page.',
 			'visible' => '1',
-			'in_menu' => '1',
 			'template' => 'none',
 		);
 
@@ -74,7 +73,6 @@ class PageHelperTest extends \Illuminate\Foundation\Testing\TestCase {
 			$this->assertEquals($page_fields['nest_url'], $page->nest_url);
 			$this->assertEquals($page_fields['description'], $page->description);
 			$this->assertEquals($page_fields['visible'], $page->visible);
-			$this->assertEquals($page_fields['in_menu'], $page->in_menu);
 			$this->assertEquals($page_fields['template'], $page->template);
 		}
 	}

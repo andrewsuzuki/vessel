@@ -99,7 +99,7 @@ class UserController extends Controller {
 
 		$user->save();
 		
-		$this->notification->success(vest('messages.general.save-success-p', array('name' => 'Your user settings')));
+		$this->notification->success(t('messages.general.save-success-p', array('name' => 'Your user settings')));
 		return $this->redirect->route('vessel.me');
 	}
 
@@ -200,7 +200,7 @@ class UserController extends Controller {
 			$user->roles()->sync($this->input->get('user_roles'));
 
 		// notification
-		$this->notification->success(vest('messages.users.edit.saved'));
+		$this->notification->success(t('messages.users.edit.saved'));
 		// redirect
 		return $this->redirect->route('vessel.users.edit', array('id' => $user->id));
 	}
@@ -217,9 +217,9 @@ class UserController extends Controller {
 		if (!$user) throw new \VesselBackNotFoundException;
 
 		if ($user->delete()) // delete user
-			$this->notification->success(vest('messages.users.edit.deleted'));
+			$this->notification->success(t('messages.users.edit.deleted'));
 		else
-			$this->notification->error(vest('messages.users.edit.deleted-error'));
+			$this->notification->error(t('messages.users.edit.deleted-error'));
 
 		return $this->redirect->route('vessel.users');
 	}
@@ -295,7 +295,7 @@ class UserController extends Controller {
 		$role->permissions()->sync($this->input->get('role_permissions')); // sync permissions
 		
 		// notification
-		$this->notification->success(vest('messages.general.save-success', array('name' => 'Role')));
+		$this->notification->success(t('messages.general.save-success', array('name' => 'Role')));
 		// redirect
 		return $this->redirect->route('vessel.users.roles.edit', array('id' => $role->id));
 	}
@@ -312,9 +312,9 @@ class UserController extends Controller {
 		if (!$role) throw new \VesselBackNotFoundException;
 
 		if ($role->delete()) // delete role
-			$this->notification->success(vest('messages.general.delete-success', array('name' => 'Role')));
+			$this->notification->success(t('messages.general.delete-success', array('name' => 'Role')));
 		else // if role was native, error
-			$this->notification->error(vest('messages.roles.delete.error'));
+			$this->notification->error(t('messages.roles.delete.error'));
 
 		return $this->redirect->route('vessel.users', array('#tab-roles'));
 	}

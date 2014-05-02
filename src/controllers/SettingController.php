@@ -109,7 +109,7 @@ class SettingController extends Controller {
 		));
 		$settings->save();
 
-		$this->notification->success(vest('messages.general.save-success-p', array('name' => 'Site settings')));
+		$this->notification->success(t('messages.general.save-success-p', array('name' => 'Site settings')));
 		return $this->redirect->route('vessel.settings');
 	}
 }

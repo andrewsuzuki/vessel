@@ -78,7 +78,7 @@ class PageHelper {
 			// if saving an edit, give a warning if concurrency check fails
 			if ($this->input->get('updated_at') != (string) $page->updated_at && !$this->input->get('force_edit'))
 			{
-				$this->notification->warning(vest('messages.pages.edit.concurrency-warning'));
+				$this->notification->warning(t('messages.pages.edit.concurrency-warning'));
 				return $this->redirect->route('vessel.pages.'.$mode, $backparams)->with('force_edit', 'true')->withInput();
 			}
 
@@ -137,7 +137,6 @@ class PageHelper {
 			$edithistory->template    = $page->template;
 			$edithistory->nest_url    = $page->nest_url;
 			$edithistory->visible     = $page->visible;
-			$edithistory->in_menu     = $page->in_menu;
 
 			$edithistory->is_draft    = false;
 			$edithistory->created_at  = $page->updated_at;
@@ -160,7 +159,6 @@ class PageHelper {
 		$setter->template    = $this->input->get('template');
 		$setter->nest_url    = (bool) $this->input->get('nest_url');
 		$setter->visible     = (bool) $this->input->get('visible');
-		$setter->in_menu     = (bool) $this->input->get('in_menu');
 
 		$setter->raw         = $processed[0];
 		$setter->made        = $processed[1];
@@ -196,7 +194,7 @@ class PageHelper {
 				$setter->makeRoot();
 		}
 
-		$this->notification->success(vest('messages.general.save-success', array('name' => (($mode == 'edit' && $draft) ? 'Draft' : 'Page'))));	
+		$this->notification->success(t('messages.general.save-success', array('name' => (($mode == 'edit' && $draft) ? 'Draft' : 'Page'))));	
 
 		// let's show them the draft with the history param
 		if ($draft) $params['history'] = $setter->id;
