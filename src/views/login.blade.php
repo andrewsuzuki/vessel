@@ -39,17 +39,17 @@
 						{{ Form::open(array('route' => array('vessel.login')), array('role' => 'form')) }}
 							<fieldset>
 								<div class="form-group">
-									{{ Form::text('usernameemail', null, array('class' => 'form-control', 'placeholder' => 'Username or Email')) }}
+									{{ Form::text('usernameemail', null, array('class' => 'form-control', 'placeholder' => t('general.username-or-email'))) }}
 								</div>
 								<div class="form-group">
-									{{ Form::password('password', array('class' => 'form-control', 'placeholder' => 'Password')) }}
+									{{ Form::password('password', array('class' => 'form-control', 'placeholder' => t('general.password'))) }}
 								</div>
 								<div class="checkbox">
 									<label>
-										{{ Form::checkbox('remember') }} Remember Me
+										{{ Form::checkbox('remember') }} {{ t('general.remember-me') }}
 									</label>
 								</div>
-								{{ Form::submit('Login', array('class' => 'btn btn-lg btn-primary btn-block'))}}
+								{{ Form::submit(t('general.log-in'), array('class' => 'btn btn-lg btn-primary btn-block'))}}
 							</fieldset>
 						{{ Form::close() }}
 					</div>

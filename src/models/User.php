@@ -75,7 +75,7 @@ class User extends Model implements UserInterface, RemindableInterface {
 
 		if ($mode == 'new')
 		{
-			$base['username'] = 'required|unique:vessel_users';
+			$base['username'] = 'required|username|unique:vessel_users';
 			$base['password'] = 'required|'.$base['password'];
 		}
 

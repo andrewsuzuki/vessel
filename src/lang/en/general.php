@@ -32,6 +32,8 @@ return array(
 	'logout'           => 'Logout',
 	'log-out'          => 'Log-out',
 	'email'            => 'Email',
+	'username-or-email'=> 'Username or Email',
+	'remember-me'      => 'Remember me',
 	'display-name'     => 'Display Name',
 	'slug'             => 'Slug',
 	'size'             => 'Size',

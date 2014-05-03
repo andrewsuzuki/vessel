@@ -6,6 +6,12 @@
 |--------------------------------------------------------------------------
 */
 
+// Checks for valid username
+Validator::extend('username', function($attribute, $value, $parameters)
+{
+	return ctype_alnum(str_replace(array('-', '_'), '', $value)); // check if value is only alphanumeric/hyphen/underscore
+});
+
 // Checks if page parent is valid
 Validator::extend('pageParent', function($attribute, $value, $parameters)
 {	
