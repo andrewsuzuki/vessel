@@ -3,15 +3,15 @@
 @section('content')
 
 	<ul class="nav nav-tabs tabs-from-url">
-		<li class="active"><a href="#tab-users" data-toggle="tab">Users</a></li>
-		<li><a href="#tab-roles" data-toggle="tab">Roles / Permissions</a></li>
+		<li class="active"><a href="#tab-users" data-toggle="tab">{{ t('users.main-title') }}</a></li>
+		<li><a href="#tab-roles" data-toggle="tab">{{ t('users.roles-title') }}</a></li>
 	</ul>
 
 	<div class="tab-content">
 		<div class="tab-pane active" id="tab-users">
 			<div class="clearfix mb-15"></div>
 
-			<a href="{{ URL::route('vessel.users.new') }}" class="btn btn-primary">New User</a>
+			<a href="{{ URL::route('vessel.users.new') }}" class="btn btn-primary">{{ t('users.new-button') }}</a>
 
 			<div class="clearfix mb-15"></div>
 			
@@ -19,12 +19,12 @@
 
 				<thead>
 					<tr>
-						<th>Username</th>
-						<th>Roles</th>
-						<th>Name</th>
-						<th>Email</th>
-						<th>Last Login</th>
-						<th>Actions</th>
+						<th>{{ t('general.username') }}</th>
+						<th>{{ t('users.roles') }}</th>
+						<th>{{ t('general.name') }}</th>
+						<th>{{ t('general.email') }}</th>
+						<th>{{ t('users.last-login') }}</th>
+						<th>{{ t('general.actions') }}</th>
 					</tr>
 				</thead>
 
@@ -39,8 +39,8 @@
 						<td>{{ $user->email }}</td>
 						<td>{{ ($user->last_login->toDateTimeString() == '-0001-11-30 00:00:00') ? 'n/a' : $user->last_login->user() }}</td>
 						<td>
-							{{ link_to_route('vessel.users.edit', 'Edit', array($user->id), array('class' => 'btn btn-xs btn-default')) }}
-							{{ link_to_route('vessel.users.delete', 'Delete', array($user->id), array('class' => 'btn btn-xs btn-danger')) }}
+							{{ link_to_route('vessel.users.edit', t('general.edit'), array($user->id), array('class' => 'btn btn-xs btn-default')) }}
+							{{ link_to_route('vessel.users.delete', t('general.delete'), array($user->id), array('class' => 'btn btn-xs btn-danger')) }}
 						</td>
 					</tr>
 
@@ -53,7 +53,7 @@
 		<div class="tab-pane" id="tab-roles">
 			<div class="clearfix mb-15"></div>
 
-			<a href="{{ URL::route('vessel.users.roles.new') }}" class="btn btn-primary">New Role</a>
+			<a href="{{ URL::route('vessel.users.roles.new') }}" class="btn btn-primary">{{ t('users.new-role-button') }}</a>
 
 			<div class="clearfix mb-15"></div>
 			
@@ -61,8 +61,8 @@
 
 				<thead>
 					<tr>
-						<th>Name</th>
-						<th>Actions</th>
+						<th>{{ t('general.name') }}</th>
+						<th>{{ t('general.actions') }}</th>
 					</tr>
 				</thead>
 
@@ -73,8 +73,8 @@
 					<tr>
 						<td>{{ link_to_route('vessel.users.roles.edit', $role->name, array($role->id)) }}</td>
 						<td>
-							{{ link_to_route('vessel.users.roles.edit', 'Edit', array($role->id), array('class' => 'btn btn-xs btn-default')) }}
-							{{ link_to_route('vessel.users.roles.delete', 'Delete', array($role->id), array('class' => 'btn btn-xs btn-danger')) }}
+							{{ link_to_route('vessel.users.roles.edit', t('general.edit'), array($role->id), array('class' => 'btn btn-xs btn-default')) }}
+							{{ link_to_route('vessel.users.roles.delete', t('general.delete'), array($role->id), array('class' => 'btn btn-xs btn-danger')) }}
 						</td>
 					</tr>
 

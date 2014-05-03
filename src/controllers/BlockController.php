@@ -52,7 +52,7 @@ class BlockController extends Controller
 	public function getBlocks()
 	{
 		$blocks = $this->block->with('user')->get();
-		$this->view->share('title', 'Blocks');
+		$this->view->share('title', t('blocks.main-title'));
 		return $this->view->make('vessel::blocks')->with(compact('blocks'));
 	}
 
@@ -61,7 +61,7 @@ class BlockController extends Controller
 		$mode = 'new';
 		$block = $this->block->newInstance();
 
-		$this->view->share('title', 'New Block');
+		$this->view->share('title', t('blocks.new-block-title'));
 
 		$formatter = $this->fm->tryEach(
 			$this->input->get('formatter'),
@@ -90,7 +90,7 @@ class BlockController extends Controller
 		$block = $this->block->find($id); // find block
 		if (!$block) throw new \VesselBackNotFoundException; // throw error if not found
 
-		$this->view->share('title', 'Edit Block '.$block->title);
+		$this->view->share('title', t('blocks.edit-block-title', array('title' => $block->title)));
 
 		$formatter = $this->fm->tryEach(
 			$this->input->get('formatter'),

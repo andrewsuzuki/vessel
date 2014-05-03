@@ -12,7 +12,7 @@
 				<div class="row">
 					<div class="col-md-7 col-sm-8">
 						<div class="form-group">
-							{{ Form::label('username', 'Username', array('class' => 'col-sm-4 control-label')) }}
+							{{ Form::label('username', t('general.username'), array('class' => 'col-sm-4 control-label')) }}
 							<div class="col-sm-8">
 								@if ($mode == 'new')
 								{{ Form::text('username', null, array('class' => 'form-control input-sm')) }}
@@ -22,38 +22,38 @@
 							</div>
 						</div>
 						<div class="form-group">
-							{{ Form::label('email', 'Email', array('class' => 'col-sm-4 control-label')) }}
+							{{ Form::label('email', t('general.email'), array('class' => 'col-sm-4 control-label')) }}
 							<div class="col-sm-8">
 								{{ Form::text('email', null, array('class' => 'form-control input-sm')) }}
 							</div>
 						</div>
 						<div class="form-group">
-							{{ Form::label('first_name', 'First name', array('class' => 'col-sm-4 control-label')) }}
+							{{ Form::label('first_name', t('general.first-name'), array('class' => 'col-sm-4 control-label')) }}
 							<div class="col-sm-8">
 								{{ Form::text('first_name', null, array('class' => 'form-control input-sm')) }}
 							</div>
 						</div>
 						<div class="form-group">
-							{{ Form::label('last_name', 'Last name', array('class' => 'col-sm-4 control-label')) }}
+							{{ Form::label('last_name', t('general.last-name'), array('class' => 'col-sm-4 control-label')) }}
 							<div class="col-sm-8">
 								{{ Form::text('last_name', null, array('class' => 'form-control input-sm')) }}
 							</div>
 						</div>
 						<div class="form-group">
-							{{ Form::label('password', 'Password', array('class' => 'col-sm-4 control-label')) }}
+							{{ Form::label('password', t('general.password'), array('class' => 'col-sm-4 control-label')) }}
 							<div class="col-sm-8">
 								{{ Form::password('password', array('class' => 'form-control input-sm')) }}
 							</div>
 						</div>
 						<div class="form-group">
-							{{ Form::label('password_confirmation', 'Password (Confirm)', array('class' => 'col-sm-4 control-label')) }}
+							{{ Form::label('password_confirmation', t('general.password-confirm'), array('class' => 'col-sm-4 control-label')) }}
 							<div class="col-sm-8">
 								{{ Form::password('password_confirmation', array('class' => 'form-control input-sm')) }}
 							</div>
 						</div>
 						@if (!$user_is_self)
 						<div class="form-group">
-							{{ Form::label('roles', 'Roles', array('class' => 'col-sm-4 control-label')) }}
+							{{ Form::label('roles', t('users.roles'), array('class' => 'col-sm-4 control-label')) }}
 							<div class="col-sm-8">
 
 								@foreach ($roles as $role)
@@ -68,9 +68,9 @@
 							<div class="col-sm-4"></div>
 							<div class="col-sm-8">
 								<div class="clearfix mb-15"></div>
-								{{ Form::submit('Save', array('class' => 'btn btn-success mb-15')) }}
+								{{ Form::submit(t('general.save'), array('class' => 'btn btn-success mb-15')) }}
 								@if ($mode == 'edit')
-								<a href="{{ URL::route('vessel.users.delete', array('id' => $user->id)) }}" class="btn btn-danger mb-15">Delete</a>
+								<a href="{{ URL::route('vessel.users.delete', array('id' => $user->id)) }}" class="btn btn-danger mb-15">{{ t('general.delete') }}</a>
 								@endif
 							</div>
 						</div>

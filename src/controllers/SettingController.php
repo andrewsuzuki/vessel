@@ -53,7 +53,7 @@ class SettingController extends Controller {
 	 */
 	public function getSettings()
 	{
-		$this->view->share('title', 'Site Settings');
+		$this->view->share('title', t('settings.main-title'));
 
 		// load persistent site settings and cast to object (emulates model for Form)
 		$settings = (object) $this->perm->load('vessel.site')->all();
@@ -109,7 +109,7 @@ class SettingController extends Controller {
 		));
 		$settings->save();
 
-		$this->notification->success(t('messages.general.save-success-p', array('name' => 'Site settings')));
+		$this->notification->success(t('messages.general.save-success-p', array('name' => t('settings.main-title'))));
 		return $this->redirect->route('vessel.settings');
 	}
 }

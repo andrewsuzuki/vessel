@@ -48,9 +48,9 @@ return array(
 	),
 
 	'users' => array(
-		'delete' => array(
-			'error' => 'You cannot delete your own user account.',
-		),
+		'save-success'   => 'User was saved successfully.',
+		'delete-success' => 'User was deleted successfully.',
+		'delete-error'   => 'You cannot delete your own user account.',
 	),
 
 	'roles' => array(

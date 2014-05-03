@@ -2,13 +2,13 @@
 
 @section('content')
 
-	<a href="{{ URL::route('vessel.blocks.new') }}" class="btn btn-primary">New Block</a>
+	<a href="{{ URL::route('vessel.blocks.new') }}" class="btn btn-primary">{{ t('blocks.new-button') }}</a>
 
 	<div class="clearfix mb-15"></div>
 	
 	@if($blocks->isEmpty())
 
-	<p>There aren't any blocks yet.</p>
+	<p>{{ t('blocks.no-blocks') }}</p>
 
 	@else
 
@@ -17,10 +17,10 @@
 		<thead>
 			<tr>
 				<th>&nbsp;</th>
-				<th>Title</th>
-				<th>Slug</th>
-				<th>Updated</th>
-				<th>Actions</th>
+				<th>{{ t('general.title') }}</th>
+				<th>{{ t('general.slug') }}</th>
+				<th>{{ t('general.updated') }}</th>
+				<th>{{ t('general.actions') }}</th>
 			</tr>
 		</thead>
 
@@ -34,8 +34,8 @@
 				<td>{{ $block->slug }}</td>
 				<td>{{ $block->updated_at->user() }}</td>
 				<td>
-					{{ link_to_route('vessel.blocks.edit', 'Edit', array($block->id), array('class' => 'btn btn-xs btn-default')) }}
-					{{ link_to_route('vessel.blocks.delete', 'Delete', array($block->id), array('class' => 'btn btn-xs btn-danger')) }}
+					{{ link_to_route('vessel.blocks.edit', t('general.edit'), array($block->id), array('class' => 'btn btn-xs btn-default')) }}
+					{{ link_to_route('vessel.blocks.delete', t('general.delete'), array($block->id), array('class' => 'btn btn-xs btn-danger')) }}
 				</td>
 			</tr>
 

@@ -15,20 +15,20 @@
 						<!-- The fileinput-button span is used to style the file input field as button -->
 						<span class="btn btn-success fileinput-button">
 							<i class="glyphicon glyphicon-plus"></i>
-							<span>Add files...</span>
+							<span>{{ t('media.add-files') }}</span>
 							<input type="file" name="files[]" multiple>
 						</span>
 						<button type="submit" class="btn btn-primary start">
 							<i class="glyphicon glyphicon-upload"></i>
-							<span>Start upload</span>
+							<span>{{ t('media.start-upload') }}</span>
 						</button>
 						<button type="reset" class="btn btn-warning cancel">
 							<i class="glyphicon glyphicon-ban-circle"></i>
-							<span>Cancel upload</span>
+							<span>{{ t('media.cancel-upload') }}</span>
 						</button>
 						<button type="button" class="btn btn-danger delete">
 							<i class="glyphicon glyphicon-trash"></i>
-							<span>Delete</span>
+							<span>{{ t('general.delete') }}</span>
 						</button>
 						<input type="checkbox" class="toggle">
 						<!-- The global file processing state -->
@@ -67,20 +67,20 @@
             <strong class="error text-danger"></strong>
         </td>
         <td>
-            <p class="size">Processing...</p>
+            <p class="size">{{ t('media.processing') }}</p>
             <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress-bar progress-bar-success" style="width:0%;"></div></div>
         </td>
         <td>
             {% if (!i && !o.options.autoUpload) { %}
                 <button class="btn btn-primary start" disabled>
                     <i class="glyphicon glyphicon-upload"></i>
-                    <span>Start</span>
+                    <span>{{ t('general.start') }}</span>
                 </button>
             {% } %}
             {% if (!i) { %}
                 <button class="btn btn-warning cancel">
                     <i class="glyphicon glyphicon-ban-circle"></i>
-                    <span>Cancel</span>
+                    <span>{{ t('general.cancel') }}</span>
                 </button>
             {% } %}
         </td>
@@ -117,13 +117,13 @@
             {% if (file.deleteUrl) { %}
                 <button class="btn btn-danger delete" data-type="{%=file.deleteType%}" data-url="{%=file.deleteUrl%}"{% if (file.deleteWithCredentials) { %} data-xhr-fields='{"withCredentials":true}'{% } %}>
                     <i class="glyphicon glyphicon-trash"></i>
-                    <span>Delete</span>
+                    <span>{{ t('general.delete') }}</span>
                 </button>
                 <input type="checkbox" name="delete" value="1" class="toggle">
             {% } else { %}
                 <button class="btn btn-warning cancel">
                     <i class="glyphicon glyphicon-ban-circle"></i>
-                    <span>Cancel</span>
+                    <span>{{ t('general.cancel') }}</span>
                 </button>
             {% } %}
         </td>

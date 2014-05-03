@@ -63,7 +63,7 @@ class UserController extends Controller {
 	public function getMe()
 	{
 		$user = $this->auth->user();
-		$this->view->share('title', 'User Settings');
+		$this->view->share('title', t('users.me-title'));
 		return $this->view->make('vessel::user_settings')->with(compact('user'));
 	}
 
@@ -112,7 +112,7 @@ class UserController extends Controller {
 	{
 		$users = $this->user->all();
 		$roles = $this->role->all();
-		$this->view->share('title', 'Users');
+		$this->view->share('title', t('users.main-title'));
 		return $this->view->make('vessel::users')->with(compact('users', 'roles'));
 	}
 
@@ -127,7 +127,7 @@ class UserController extends Controller {
 		{
 			$mode = 'new';
 			$user = $this->user->newInstance(); // new user
-			$this->view->share('title', 'New User');
+			$this->view->share('title', t('users.new-user-title'));
 		}
 		elseif (!($user = $this->user->find($id))) // find existing user
 		{
@@ -136,7 +136,7 @@ class UserController extends Controller {
 		else
 		{
 			$mode = 'edit';
-			$this->view->share('title', 'Edit User '.$user->username);
+			$this->view->share('title', t('users.edit-user-title', array('username' => $user->username)));
 		}
 
 		$user_is_self = $user->id == $this->auth->user()->id;
@@ -200,7 +200,7 @@ class UserController extends Controller {
 			$user->roles()->sync($this->input->get('user_roles'));
 
 		// notification
-		$this->notification->success(t('messages.users.edit.saved'));
+		$this->notification->success(t('messages.users.save-success'));
 		// redirect
 		return $this->redirect->route('vessel.users.edit', array('id' => $user->id));
 	}
@@ -217,9 +217,9 @@ class UserController extends Controller {
 		if (!$user) throw new \VesselBackNotFoundException;
 
 		if ($user->delete()) // delete user
-			$this->notification->success(t('messages.users.edit.deleted'));
+			$this->notification->success(t('messages.users.delete-success'));
 		else
-			$this->notification->error(t('messages.users.edit.deleted-error'));
+			$this->notification->error(t('messages.users.delete-error'));
 
 		return $this->redirect->route('vessel.users');
 	}
@@ -235,7 +235,7 @@ class UserController extends Controller {
 		{
 			$mode = 'new';
 			$role = $this->role->newInstance(); // new role
-			$this->view->share('title', 'New Role');
+			$this->view->share('title', t('users.new-role-title'));
 		}
 		elseif (!($role = $this->role->find($id))) // find existing role
 		{
@@ -244,7 +244,7 @@ class UserController extends Controller {
 		else
 		{
 			$mode = 'edit';
-			$this->view->share('title', 'Edit Role '.$role->name);
+			$this->view->share('title', t('users.new-role-title', array('username' => $role->name)));
 		}
 
 		$role_is_native = in_array($role->name, $this->role->getNative());

@@ -12,7 +12,7 @@
 				<div class="row">
 					<div class="col-md-7 col-sm-8">
 						<div class="form-group">
-							{{ Form::label('name', 'Name', array('class' => 'col-sm-4 control-label')) }}
+							{{ Form::label('name', t('general.name'), array('class' => 'col-sm-4 control-label')) }}
 
 							<div class="col-sm-8">
 								@if ($role_is_native)
@@ -27,7 +27,7 @@
 							</div>
 						</div>
 						<div class="form-group">
-							{{ Form::label('role_permissions', 'Permissions', array('class' => 'col-sm-4 control-label')) }}
+							{{ Form::label('role_permissions', t('users.permissions'), array('class' => 'col-sm-4 control-label')) }}
 
 							<div class="col-sm-8">
 
@@ -42,10 +42,10 @@
 							<div class="col-sm-4"></div>
 							<div class="col-sm-8">
 								<div class="clearfix mb-15"></div>
-								{{ Form::submit('Save', array('class' => 'btn btn-success mb-15')) }}
+								{{ Form::submit(t('general.save'), array('class' => 'btn btn-success mb-15')) }}
 								@if ($mode == 'edit')
 
-								<a href="{{ URL::route('vessel.users.roles.delete', array('id' => $role->id)) }}" class="btn btn-danger mb-15">Delete</a>
+								<a href="{{ URL::route('vessel.users.roles.delete', array('id' => $role->id)) }}" class="btn btn-danger mb-15">{{ t('general.delete') }}</a>
 								@endif
 
 							</div>
