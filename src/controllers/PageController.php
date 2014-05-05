@@ -182,7 +182,7 @@ class PageController extends Controller
 		if ($page)
 		{
 			$page->delete();
-			$this->notification->success(t('messages.general.delete-success', array('name' => 'Page')));
+			$this->notification->success(t('messages.pages.delete-success', array('title' => $page->title)));
 			return $this->redirect->route('vessel.pages');
 		}
 
@@ -197,7 +197,7 @@ class PageController extends Controller
 		{
 			$page = $pagehistory->page;
 
-			$this->notification->success(t('messages.general.delete-success', array('name' => (($pagehistory->is_draft) ? 'Draft' : 'Edit'))));
+			$this->notification->success(t('messages.pages.'.(($pagehistory->is_draft) ? 'drafts' : 'edits').'.delete-success'));
 
 			$pagehistory->delete();
 

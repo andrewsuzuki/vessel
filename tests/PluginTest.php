@@ -125,7 +125,7 @@ class PluginTest extends TestBase {
 
 	/**
 	 * @expectedException		 Exception
-	 * @expectedExceptionMessage Hook not valid.
+	 * @expectedExceptionMessage messages.plugins.hook-not-valid-error
 	 */
 	public function testHookExceptionIfNotValidName()
 	{
@@ -138,7 +138,7 @@ class PluginTest extends TestBase {
 
 	/**
 	 * @expectedException		 Exception
-	 * @expectedExceptionMessage Hook not valid.
+	 * @expectedExceptionMessage messages.plugins.hook-not-valid-error
 	 */
 	public function testHookExceptionIfNotValidCallback()
 	{

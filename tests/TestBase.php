@@ -14,6 +14,11 @@ class TestBase extends \PHPUnit_Framework_TestCase {
 		m::close();
 	}
 
+	public function setup()
+	{
+		require __DIR__.'/../src/misc.php';
+	}
+
 	/**
 	 * Create class with mocked dependencies
 	 * 

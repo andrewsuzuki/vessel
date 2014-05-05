@@ -406,7 +406,7 @@ class MenuManager extends VMenu {
 		if (isset($this->registered_mappers[$name]))
 			call_user_func($this->registered_mappers[$name]['mapper'], $handler);
 		else
-			throw new \Exception('Specified menu mapper is not registered.');
+			throw new \Exception(t('messages.menus.mapper-dne-error'));
 	}
 
 	/**

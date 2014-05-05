@@ -118,7 +118,7 @@ class MediaController extends Controller
 
 		try
 		{
-			if (!$this->input->hasFile('files.0')) throw new \Exception('File was not uploaded.'); // check file input
+			if (!$this->input->hasFile('files.0')) throw new \Exception(t('messages.media.not-uploaded-error')); // check file input
 			$file     = $this->input->file('files.0'); // get file object
 			$filename = $this->mediahelper->upload($file->getRealPath(), basename($file->getClientOriginalName())); // save + make thumbs if image
 			$file     = $this->mediahelper->path($filename); // get new file path

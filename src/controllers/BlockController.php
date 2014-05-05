@@ -122,7 +122,7 @@ class BlockController extends Controller
 		if ($block)
 		{
 			$block->delete();
-			$this->notification->success(t('messages.general.delete-success', array('name' => 'Block')));
+			$this->notification->success(t('messages.blocks.delete-success', array('title' => $block->title)));
 			return $this->redirect->route('vessel.blocks');
 		}
 

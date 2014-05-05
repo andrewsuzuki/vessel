@@ -124,8 +124,8 @@ class FormatterManager {
 	 */
 	public function get($class, $type = null)
 	{
-		if (!$this->registered($class)) throw new \Exception('Formatter is not registered or does not exist.');
-		if ($type && !in_array($type, $this->formatters[$class]['for'])) throw new \Exception('Formatter is not of the correct type.');
+		if (!$this->registered($class)) throw new \Exception(t('messages.formatters.does-not-exist-error'));
+		if ($type && !in_array($type, $this->formatters[$class]['for'])) throw new \Exception(t('messages.formatters.not-correct-type-error'));
 		return $this->app->make($class); // return instance of formatter
 	}
 

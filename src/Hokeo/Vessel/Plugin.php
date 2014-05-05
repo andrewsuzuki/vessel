@@ -183,7 +183,7 @@ class Plugin {
 		}
 		else
 		{
-			throw new \Exception('Hook not valid.');
+			throw new \Exception(t('messages.plugins.hook-not-valid-error', array('name' => $hook)));
 		}
 	}
 

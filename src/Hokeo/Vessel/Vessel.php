@@ -35,7 +35,7 @@ class Vessel {
 	}
 
 	/**
-	 * Checks if all required vessel directories exist, and makes them if not.
+	 * Checks if directories exist, and makes them if not.
 	 * 
 	 * @param  array $dirs Directories to check, if characters 0 is NOT / it will append to base_path
 	 * @return void
@@ -44,7 +44,7 @@ class Vessel {
 	{
 		foreach ($dirs as $dir)
 		{
-			if (!is_string($dir)) throw new \Exception('Directory path must be string.'); // check dir is string
+			if (!is_string($dir)) throw new \Exception(t('messages.misc.dir-must-be-string-error')); // check dir is string
 			if ($dir[0] != '/') $dir = base_path($dir); // prepend base_path if [0] != /
 			if (!$this->filesystem->isDirectory($dir)) $this->filesystem->makeDirectory($dir, 0777, true); // if directory does not exist, make it
 		}

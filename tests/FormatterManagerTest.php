@@ -4,11 +4,6 @@ use Hokeo\Vessel\FormatterManager;
 
 class FormatterManagerTest extends TestBase {
 
-	public function setup()
-	{
-		
-	}
-
 	public function newFm(array $methods = array())
 	{
 		return $this->newClass('\\Hokeo\\Vessel\\FormatterManager', array(
@@ -130,7 +125,7 @@ class FormatterManagerTest extends TestBase {
 
 	/**
 	 * @expectedException		 Exception
-	 * @expectedExceptionMessage Formatter is not registered or does not exist.
+	 * @expectedExceptionMessage messages.formatters.does-not-exist-error
 	 */
 	public function testGetThrowsExceptionIfDoesNotExist()
 	{
@@ -151,7 +146,7 @@ class FormatterManagerTest extends TestBase {
 
 	/**
 	 * @expectedException		 Exception
-	 * @expectedExceptionMessage Formatter is not of the correct type.
+	 * @expectedExceptionMessage messages.formatters.not-correct-type-error
 	 */
 	public function testGetThrowsExceptionIfNotSpecifiedType()
 	{

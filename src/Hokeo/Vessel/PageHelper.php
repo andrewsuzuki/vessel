@@ -78,7 +78,7 @@ class PageHelper {
 			// if saving an edit, give a warning if concurrency check fails
 			if ($this->input->get('updated_at') != (string) $page->updated_at && !$this->input->get('force_edit'))
 			{
-				$this->notification->warning(t('messages.pages.edit.concurrency-warning'));
+				$this->notification->warning(t('messages.general.concurrency-warning'));
 				return $this->redirect->route('vessel.pages.'.$mode, $backparams)->with('force_edit', 'true')->withInput();
 			}
 
@@ -194,7 +194,7 @@ class PageHelper {
 				$setter->makeRoot();
 		}
 
-		$this->notification->success(t('messages.general.save-success', array('name' => (($mode == 'edit' && $draft) ? 'Draft' : 'Page'))));	
+		$this->notification->success(t('messages.pages.'.(($mode == 'edit' && $draft) ? 'drafts.' : '').'save-success', array('title' => $setter->title)));	
 
 		// let's show them the draft with the history param
 		if ($draft) $params['history'] = $setter->id;
