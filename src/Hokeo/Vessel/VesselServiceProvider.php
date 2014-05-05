@@ -36,15 +36,34 @@ class VesselServiceProvider extends ServiceProvider {
 		$this->app['vessel.version.full']  = $this->app['vessel.version.short'].'.'.$this->app['vessel.version.patch'];
 		$this->app['vessel.version']       = $this->app['vessel.version.full'];
 
+		include __DIR__.'/../../helpers.php'; // helper functions
 		include __DIR__.'/../../errors.php'; // errors (classes)
 		include __DIR__.'/../../routes.php'; // routes
 		include __DIR__.'/../../filters.php'; // filters
 		include __DIR__.'/../../macros.php'; // html/form macros
-		include __DIR__.'/../../validators.php'; // validators
 		include __DIR__.'/../../events.php'; // events
 		include __DIR__.'/../../composers.php'; // composer and creators
 		include __DIR__.'/../../observers.php'; // model observers
 		include __DIR__.'/../../misc.php'; // blade extensions, helper functions, etc
+
+		// // Set Validator resolver instance
+		$this->app['validator']->resolver(function($translator, $data, $rules, $messages)
+		{
+			return new Validator(
+				$this->app['config'],
+				$this->app['files'],
+				$this->app['Hokeo\\Vessel\\FormatterManager'],
+				$this->app['Hokeo\\Vessel\\MenuManager'],
+				$this->app['Hokeo\\Vessel\\Theme'],
+				$this->app['Hokeo\\Vessel\\Page'],
+				$this->app['Hokeo\\Vessel\\Role'],
+				$this->app['Hokeo\\Vessel\\Permission'],
+				$translator,
+				$data,
+				$rules,
+				$messages
+				);
+		});
 	}
 
 	/**

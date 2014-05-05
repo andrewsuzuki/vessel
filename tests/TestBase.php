@@ -16,7 +16,7 @@ class TestBase extends \PHPUnit_Framework_TestCase {
 
 	public function setup()
 	{
-		require __DIR__.'/../src/misc.php';
+		require __DIR__.'/../src/helpers.php';
 	}
 
 	/**

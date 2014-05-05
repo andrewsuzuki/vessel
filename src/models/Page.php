@@ -65,7 +65,7 @@ class Page extends Node {
 			'slug'        => 'required|alpha_dash|unique:vessel_pages,slug'.(($edit) ? ','.$edit->id : ''),
 			'description' => '',
 			'visible'     => (($home) ? 'checked' : ''),
-			'parent'      => 'required|pageParent'.(($edit) ? ':'.$edit->id.(($home) ? ',true' : '') : ''),
+			'parent'      => 'required|page_parent'.(($edit) ? ':'.$edit->id.(($home) ? ',true' : '') : ''),
 			'formatter'   => 'required|formatter',
 			'template'    => 'required|template',
 		];
