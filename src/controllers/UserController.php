@@ -56,6 +56,61 @@ class UserController extends Controller {
 	}
 
 	/**
+	 * Get login page (guest filtered)
+	 * 
+	 * @return response
+	 */
+	public function getLogin()
+	{
+		return $this->view->make('vessel::login');
+	}
+
+	/**
+	 * Handle login (guest filtered)
+	 * 
+	 * @return redirect response
+	 */
+	public function postLogin()
+	{
+		$attempt = array(
+			'password' => $this->input->get('password'),
+			'confirmed'=> true
+		);
+
+		// check if username or email
+		if (strpos($this->input->get('usernameemail'), '@') === false)
+		{
+			$attempt['username'] = $this->input->get('usernameemail');
+		}
+		else
+		{
+			$attempt['email'] = $this->input->get('usernameemail');
+		}
+
+		// attempt login
+		if ($this->auth->attempt($attempt, $this->input->get('remember')))
+		{
+			$this->notification->success(t('messages.auth.login-success', array('name' => $this->auth->user()->username)));
+			return $this->redirect->intended('vessel');
+		}
+
+		$this->notification->error(t('messages.auth.login-error'));
+		return $this->redirect->route('vessel.login')->withInput($this->input->except('password'));
+	}
+
+	/**
+	 * Log out user
+	 * 
+	 * @return response
+	 */
+	public function getLogout()
+	{
+		$this->auth->logout();
+		$this->notification->success(t('messages.auth.logout-success'));
+		return $this->redirect->route('vessel');
+	}
+
+	/**
 	 * Get user's settings page
 	 * 
 	 * @return response

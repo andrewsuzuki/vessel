@@ -26,6 +26,8 @@ class SettingController extends Controller {
 
 	protected $pagehelper;
 
+	protected $role;
+
 	public function __construct(
 		Environment $view,
 		Request $input,
@@ -34,7 +36,8 @@ class SettingController extends Controller {
 		Notification $notification,
 		Perm $perm,
 		Theme $theme,
-		PageHelper $pagehelper)
+		PageHelper $pagehelper,
+		Role $role)
 	{
 		$this->view         = $view;
 		$this->input        = $input;
@@ -44,6 +47,7 @@ class SettingController extends Controller {
 		$this->perm         = $perm;
 		$this->theme        = $theme;
 		$this->pagehelper   = $pagehelper;
+		$this->role         = $role;
 	}
 
 	/**
@@ -58,16 +62,25 @@ class SettingController extends Controller {
 		// load persistent site settings and cast to object (emulates model for Form)
 		$settings = (object) $this->perm->load('vessel.site')->all();
 
+		// homepage select array
 		$home_select_array = $this->pagehelper->possibleHomeArray();
 
+		// timezone select array
 		$timezones = \DateTimeZone::listIdentifiers();
 		$timezone_select_array = array_combine($timezones, array_map(function($timezone) {
 			return str_replace(['_', '/'], [' ', ' / '], $timezone);
 		}, $timezones));
 
+		// role select array
+		$role_select_array = array();
+		foreach ($this->role->all() as $role)
+			$role_select_array[$role->id] = $role->name;
+		$role_select_array = array_reverse($role_select_array, true); // reverse array to keep likely inferior roles at top
+
+		// theme select array
 		$themes = $this->theme->getAvailable();
 
-		return $this->view->make('vessel::settings')->with(compact('settings', 'home_select_array', 'timezone_select_array', 'themes'));
+		return $this->view->make('vessel::settings')->with(compact('settings', 'home_select_array', 'role_select_array', 'timezone_select_array', 'themes'));
 	}
 
 	/**
@@ -86,6 +99,8 @@ class SettingController extends Controller {
 			'theme'              => 'required|theme',
 			'timezone'           => 'required|timezone',
 			// 'language'        => 'required|language',
+			'registration'       => '', // checkbox
+			'default_role'       => 'role',
 		);
 
 		$validator = $this->validator->make($this->input->all(), $rules); // validate input
@@ -106,7 +121,12 @@ class SettingController extends Controller {
 			'home'               => $this->input->get('home'),
 			'theme'              => $this->input->get('theme'),
 			'timezone'           => $this->input->get('timezone'),
+			'registration'       => (bool) $this->input->get('registration'),
 		));
+
+		if ($this->input->get('registration'))
+			$settings->default_role = $this->input->get('default_role');
+
 		$settings->save();
 
 		$this->notification->success(t('messages.settings.save-success'));

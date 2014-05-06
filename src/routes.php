@@ -4,8 +4,8 @@ Route::group(array('prefix' => Config::get('vessel::vessel.uri', 'vessel')), fun
 {
 	Route::group(array('before' => 'vessel_auth'), function()
 	{
-		Route::get('/', array('as' => 'vessel', 'uses' => 'Hokeo\\Vessel\\BackController@getHome'));
-		Route::get('logout', array('as' => 'vessel.logout', 'uses' => 'Hokeo\\Vessel\\BackController@getLogout'));
+		Route::get('/', array('as' => 'vessel', 'uses' => 'Hokeo\\Vessel\\PageController@getPages'));
+		Route::get('logout', array('as' => 'vessel.logout', 'uses' => 'Hokeo\\Vessel\\UserController@getLogout'));
 
 		Route::group(array('before' => 'p.pages_manage'), function()
 		{
@@ -75,8 +75,11 @@ Route::group(array('prefix' => Config::get('vessel::vessel.uri', 'vessel')), fun
 
 	Route::group(array('before' => 'vessel_guest'), function()
 	{
-		Route::get('login', array('as' => 'vessel.login', 'uses' => 'Hokeo\\Vessel\\BackController@getLogin'));
-		Route::post('login', array('as' => 'vessel.login', 'uses' => 'Hokeo\\Vessel\\BackController@postLogin'));
+		Route::get('login', array('as' => 'vessel.login', 'uses' => 'Hokeo\\Vessel\\UserController@getLogin'));
+		Route::post('login', array('as' => 'vessel.login', 'uses' => 'Hokeo\\Vessel\\UserController@postLogin'));
+
+		// Route::get('register', array('as' => 'vessel.register', 'uses' => 'Hokeo\\Vessel\\BackController@getRegister'));
+		// Route::post('register', array('as' => 'vessel.register', 'uses' => 'Hokeo\\Vessel\\BackController@postRegister'));
 	});
 
 	Route::post('api/flashinput', array('as' => 'vessel.api.flashinput', 'uses' => 'Hokeo\\Vessel\\ApiController@flashinput'));

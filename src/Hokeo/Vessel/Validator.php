@@ -148,6 +148,12 @@ class Validator extends \Illuminate\Validation\Validator {
 		return isset($mappers[$value]);
 	}
 
+	// Checks if id is a role
+	public function validateRole($attribute, $value, $parameters)
+	{
+		return ($this->role->find($value)) ? true : false;
+	}
+
 	// Checks if array of ids are all existing roles
 	public function validateRoles($attribute, $value, $parameters)
 	{

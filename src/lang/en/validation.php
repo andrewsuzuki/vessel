@@ -77,6 +77,7 @@ return array(
 	'theme'             => 'The specified theme was not valid.',
 	'timezone'          => 'The specified timezone was not valid.',
 	'menu_mapper'       => 'The specified menu mapper was not valid.',
+	'role'              => 'The specified role was not valid.',
 	'roles'             => 'The specified user roles were not valid.',
 	'permissions'       => 'The specified role permissions were not valid.',
 	'username'          => 'The username must contain alphanumeric characters, underscores, and hyphens.',

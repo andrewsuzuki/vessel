@@ -256,6 +256,17 @@ function loadHashTab() {
 	}
 }
 
+function toggleSettingsDefaultRoleSelect() {
+	sel = $('input#registration').first();
+	if (sel.length) {
+		if (sel.is(':checked')) {
+			$('select#default_role').prop('disabled', false);
+		} else {
+			$('select#default_role').prop('disabled', true);
+		}
+	}
+}
+
 $(document).ready(function() {
 
 	loadHashTab();
@@ -283,6 +294,12 @@ $(document).ready(function() {
 
 	// grab set theme value and choose it
 	loadSetTheme();
+
+	toggleSettingsDefaultRoleSelect();
+
+	$(document).on('change', 'input#registration', function() {
+		toggleSettingsDefaultRoleSelect();
+	});
 
 	if ($('.dd').length) {
 

@@ -333,7 +333,8 @@ class VesselServiceProvider extends ServiceProvider {
 				$app['notification'],
 				$app['Andrewsuzuki\\Perm\\Perm'],
 				$app['Hokeo\\Vessel\\Theme'],
-				$app['Hokeo\\Vessel\\PageHelper']
+				$app['Hokeo\\Vessel\\PageHelper'],
+				$app['Hokeo\\Vessel\\Role']
 				);
 		});
 	}
