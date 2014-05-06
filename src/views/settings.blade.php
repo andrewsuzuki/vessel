@@ -43,19 +43,31 @@
 						</div>
 						<div class="form-group">
 							{{ Form::label('registration', t('settings.registration'), array('class' => 'col-sm-4 control-label')) }}
-							<div class="col-sm-8">
+							<div class="col-sm-8 form-inline">
 								<div class="checkbox">
 									<label>
 										{{ Form::checkbox('registration', 'yes') }}
 										{{ t('settings.allow-user-registration') }}
 									</label>
 								</div>
+								&nbsp;
+								<div class="checkbox">
+									<label>
+										{{ Form::checkbox('registration_confirm', 'yes') }}
+										{{ t('settings.require-email-confirmation') }}
+									</label>
+								</div>
 							</div>
 						</div>
 						<div class="form-group">
-							{{ Form::label('default_role', t('settings.default-role'), array('class' => 'col-sm-4 control-label')) }}
+							{{ Form::label('default_roles', t('settings.default-roles'), array('class' => 'col-sm-4 control-label')) }}
 							<div class="col-sm-8">
-								{{ Form::select('default_role', $role_select_array, null, array('class' => 'form-control input-sm')) }}
+
+								@foreach ($roles as $role)
+								<div class="checkbox"><label>{{ Form::checkbox('default_roles[]', $role->id) }} {{ $role->name }}</label></div>
+
+								@endforeach
+
 							</div>
 						</div>
 						<div class="form-group">

@@ -59,9 +59,6 @@ class SettingController extends Controller {
 	{
 		$this->view->share('title', t('settings.main-title'));
 
-		// load persistent site settings and cast to object (emulates model for Form)
-		$settings = (object) $this->perm->load('vessel.site')->all();
-
 		// homepage select array
 		$home_select_array = $this->pagehelper->possibleHomeArray();
 
@@ -71,16 +68,19 @@ class SettingController extends Controller {
 			return str_replace(['_', '/'], [' ', ' / '], $timezone);
 		}, $timezones));
 
-		// role select array
-		$role_select_array = array();
-		foreach ($this->role->all() as $role)
-			$role_select_array[$role->id] = $role->name;
-		$role_select_array = array_reverse($role_select_array, true); // reverse array to keep likely inferior roles at top
+		// load persistent site settings
+		$settings = $this->perm->load('vessel.site');
+
+		// roles
+		$roles = $this->role->all();
+
+		// cast all settings to object (emulates model for form)
+		$settings = (object) $settings->all();
 
 		// theme select array
 		$themes = $this->theme->getAvailable();
 
-		return $this->view->make('vessel::settings')->with(compact('settings', 'home_select_array', 'role_select_array', 'timezone_select_array', 'themes'));
+		return $this->view->make('vessel::settings')->with(compact('settings', 'home_select_array', 'roles', 'timezone_select_array', 'themes'));
 	}
 
 	/**
@@ -92,15 +92,16 @@ class SettingController extends Controller {
 	{
 		// validation rules
 		$rules = array(
-			'title'              => 'required',
-			'description'        => '',
-			'url'                => 'required|url',
-			'home'               => 'required|home_page_id',
-			'theme'              => 'required|theme',
-			'timezone'           => 'required|timezone',
-			// 'language'        => 'required|language',
-			'registration'       => '', // checkbox
-			'default_role'       => 'role',
+			'title'                => 'required',
+			'description'          => '',
+			'url'                  => 'required|url',
+			'home'                 => 'required|home_page_id',
+			'theme'                => 'required|theme',
+			'timezone'             => 'required|timezone',
+			// 'language'          => 'required|language',
+			'registration'         => '', // checkbox
+			'registration_confirm' => '', // checkbox
+			'default_roles'        => 'roles',
 		);
 
 		$validator = $this->validator->make($this->input->all(), $rules); // validate input
@@ -125,7 +126,10 @@ class SettingController extends Controller {
 		));
 
 		if ($this->input->get('registration'))
-			$settings->default_role = $this->input->get('default_role');
+		{
+			$settings->registration_confirm = (bool) $this->input->get('registration_confirm');
+			$settings->default_roles        = $this->input->get('default_roles');
+		}
 
 		$settings->save();
 

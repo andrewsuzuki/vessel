@@ -3,7 +3,7 @@
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8"> 
 	<meta charset="utf-8">
-	<title>Vessel Login</title>
+	<title>Vessel</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
 
@@ -33,25 +33,12 @@
 
 				<div class="panel panel-default">
 					<div class="panel-heading">
-						<h3 class="panel-title"><a href="http://vesselcms.com" target="_blank">Vessel</a></h3>
+						<h3 class="panel-title"><a href="http://vesselcms.com" target="_blank">{{ $title }}</a></h3>
 					</div>
 					<div class="panel-body">
-						{{ Form::open(array('route' => array('vessel.login')), array('role' => 'form')) }}
-							<fieldset>
-								<div class="form-group">
-									{{ Form::text('usernameemail', null, array('class' => 'form-control', 'placeholder' => t('general.username-or-email'))) }}
-								</div>
-								<div class="form-group">
-									{{ Form::password('password', array('class' => 'form-control', 'placeholder' => t('general.password'))) }}
-								</div>
-								<div class="checkbox">
-									<label>
-										{{ Form::checkbox('remember') }} {{ t('general.remember-me') }}
-									</label>
-								</div>
-								{{ Form::submit(t('general.log-in'), array('class' => 'btn btn-lg btn-primary btn-block'))}}
-							</fieldset>
-						{{ Form::close() }}
+						
+						@yield('content')
+
 					</div>
 				</div>
 			</div>

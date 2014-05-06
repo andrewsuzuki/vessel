@@ -6,8 +6,11 @@ use Illuminate\Http\Request;
 use Illuminate\Auth\AuthManager;
 use Illuminate\Validation\Factory;
 use Illuminate\Hashing\HasherInterface;
+use Illuminate\Mail\Mailer;
+use Illuminate\Routing\UrlGenerator;
 use Illuminate\Routing\Redirector;
 use Krucas\Notification\Notification;
+use Andrewsuzuki\Perm\Perm;
 
 class UserController extends Controller {
 
@@ -21,11 +24,15 @@ class UserController extends Controller {
 
 	protected $hash;
 
+	protected $mail;
+
+	protected $url;
+
 	protected $redirect;
 
 	protected $notification;
 
-	protected $t;
+	protected $perm;
 
 	protected $user; // model
 
@@ -37,8 +44,11 @@ class UserController extends Controller {
 		AuthManager $auth,
 		Factory $validator,
 		HasherInterface $hash,
+		Mailer $mail,
+		UrlGenerator $url,
 		Redirector $redirect,
 		Notification $notification,
+		Perm $perm,
 		User $user,
 		Role $role,
 		Permission $permission)
@@ -48,8 +58,11 @@ class UserController extends Controller {
 		$this->auth         = $auth;
 		$this->validator    = $validator;
 		$this->hash         = $hash;
+		$this->mail         = $mail;
+		$this->url          = $url;
 		$this->redirect     = $redirect;
 		$this->notification = $notification;
+		$this->perm         = $perm;
 		$this->user         = $user;
 		$this->role         = $role;
 		$this->permission   = $permission;
@@ -62,7 +75,11 @@ class UserController extends Controller {
 	 */
 	public function getLogin()
 	{
-		return $this->view->make('vessel::login');
+		$settings = $this->perm->load('vessel.site');
+		$registration_enabled = $settings->registration === true;
+
+		$this->view->share('title', 'Vessel');
+		return $this->view->make('vessel::login')->with(compact('registration_enabled'));
 	}
 
 	/**
@@ -72,20 +89,17 @@ class UserController extends Controller {
 	 */
 	public function postLogin()
 	{
-		$attempt = array(
-			'password' => $this->input->get('password'),
-			'confirmed'=> true
-		);
+		$attempt = array('password' => $this->input->get('password'));
+
+		$settings = $this->perm->load('vessel.site');
+		if ($settings->registration_confirm === true)
+			$attempt['confirmed'] = true;
 
 		// check if username or email
 		if (strpos($this->input->get('usernameemail'), '@') === false)
-		{
 			$attempt['username'] = $this->input->get('usernameemail');
-		}
 		else
-		{
 			$attempt['email'] = $this->input->get('usernameemail');
-		}
 
 		// attempt login
 		if ($this->auth->attempt($attempt, $this->input->get('remember')))
@@ -94,6 +108,7 @@ class UserController extends Controller {
 			return $this->redirect->intended('vessel');
 		}
 
+		// back with error
 		$this->notification->error(t('messages.auth.login-error'));
 		return $this->redirect->route('vessel.login')->withInput($this->input->except('password'));
 	}
@@ -108,6 +123,98 @@ class UserController extends Controller {
 		$this->auth->logout();
 		$this->notification->success(t('messages.auth.logout-success'));
 		return $this->redirect->route('vessel');
+	}
+
+	/**
+	 * Get user register page (guest+registration_enabled-filtered)
+	 * 
+	 * @return response
+	 */
+	public function getRegister()
+	{
+		$this->view->share('title', 'Register');
+		return $this->view->make('vessel::register');
+	}
+
+	/**
+	 * Handle user register (guest+registration_enabled-filtered)
+	 * 
+	 * @return redirect response
+	 */
+	public function postRegister()
+	{
+		$validator = $this->validator->make($this->input->all(), $this->user->rules('new', true)); // validate input
+
+		if ($validator->fails())
+		{
+			// redirect back with error and input
+			$this->notification->error($validator->messages()->first());
+			return $this->redirect->route('vessel.register')->withInput($this->input->except('password'));
+		}
+
+		// save user
+		
+		$user = $this->user->newInstance();
+
+		$user->username   = $this->input->get('username');
+		$user->email      = $this->input->get('email');
+		$user->first_name = $this->input->get('first_name');
+		$user->last_name  = $this->input->get('last_name');
+		$user->password   = $this->hash->make($this->input->get('password'));
+
+		$user->confirmation = md5(str_random(40).$user->username.microtime());
+
+		$settings = $this->perm->load('vessel.site');
+		if ($settings->registration_confirm === true)
+		{
+			// send confirmation email
+			$user->confirmed = false;
+
+			$this->mail->queue('vessel::emails.auth.confirm', array(
+				'username'          => $user->username,
+				'confirmation_link' => $this->url->route('vessel.register.confirm', array('confirmation_string' => $user->confirmation))
+			), function($message) use ($user) {
+				$message->to($user->email);
+				$message->subject('Confirm your email');
+			});
+		}
+		else
+		{
+			// mark new user as confirmed
+			$user->confirmed = true;
+		}
+
+		$user->save();
+
+		$user->roles()->sync($settings->default_roles); // sync roles
+
+		$this->notification->success(t('messages.register.register-success', array('username' => $user->username)));
+		return $this->redirect->intended('vessel');
+	}
+
+	/**
+	 * Confirm a user given confirmation string
+	 * 
+	 * @return response
+	 */
+	public function getRegisterConfirm($confirmation)
+	{
+		$user = $this->user->where('confirmation', $confirmation)->first();
+
+		if ($user)
+		{
+			// save as confirmed
+			$user->confirmed = true;
+			$user->save();
+
+			$this->notification->success(t('messages.register.confirm-success', array('username' => $user->username)));
+		}
+		else
+		{
+			$this->notification->success(t('messages.register.confirm-error'));
+		}
+
+		$this->redirect->route('vessel');
 	}
 
 	/**
@@ -236,9 +343,15 @@ class UserController extends Controller {
 
 		// save settings
 		
-		// if new user, save username
+		// if new user, save username and confirmation info
 		if ($id === null)
+		{
 			$user->username = $this->input->get('username');
+
+			$user->confirmation = md5(str_random(40).$user->username.microtime());
+			$settings = $this->perm->load('vessel.site');
+			$user->confirmed    = $settings->registration_confirm !== true;
+		}
 
 		$user->email      = $this->input->get('email');
 		$user->first_name = $this->input->get('first_name');

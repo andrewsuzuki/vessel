@@ -40,7 +40,7 @@ if (!function_exists('can'))
 {
 	function can($key)
 	{
-		return \Auth::user()->can($key);
+		return \Auth::check() && \Auth::user()->can($key);
 	}
 }
 

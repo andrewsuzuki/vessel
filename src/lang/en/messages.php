@@ -16,9 +16,13 @@ return array(
 	),
 
 	'auth' => array(
-		'login-success'  => 'You have been logged in as <strong>:name</strong>.',
+		'login-success'  => 'You have been logged in as :name.',
 		'login-error'    => 'Your credentials were incorrect.',
 		'logout-success' => 'You have been logged out successfully.',
+	),
+
+	'register' => array(
+		'register-success' => 'User account :username has been registered.',
 	),
 
 	'pages' => array(

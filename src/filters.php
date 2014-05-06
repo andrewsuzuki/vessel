@@ -10,6 +10,12 @@ Route::filter('vessel_guest', function()
 	if (Auth::check()) return Redirect::route('vessel');
 });
 
+Route::filter('registration_enabled', function()
+{
+	$settings = Andrewsuzuki\Perm\Facades\Perm::load('vessel.site');
+	if (!$settings->registration) return Redirect::guest('vessel/login');
+});
+
 $vessel_permission_filters = array(
 	'pages_manage'    => null,
 	'pages_view'      => null,

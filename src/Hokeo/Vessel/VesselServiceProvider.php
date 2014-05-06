@@ -316,8 +316,11 @@ class VesselServiceProvider extends ServiceProvider {
 				$app['auth'],
 				$app['validator'],
 				$app['hash'],
+				$app['mailer'],
+				$app['url'],
 				$app['redirect'],
 				$app['notification'],
+				$app['Andrewsuzuki\\Perm\\Perm'],
 				$app['Hokeo\\Vessel\\User'],
 				$app['Hokeo\\Vessel\\Role'],
 				$app['Hokeo\\Vessel\\Permission']

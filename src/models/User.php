@@ -61,7 +61,7 @@ class User extends Model implements UserInterface, RemindableInterface {
 	 */
 	public static function rules($mode = 'edit', $self = false, $user = null)
 	{
-		$base = array(
+		$rules = array(
 			'email' => 'required|email|unique:vessel_users,email'.(($mode == 'edit') ? ','.$user->id : ''),
 			'first_name' => '',
 			'last_name' => '',
@@ -70,16 +70,16 @@ class User extends Model implements UserInterface, RemindableInterface {
 
 		if (!$self)
 		{
-			$base['user_roles'] = 'required|array|roles';
+			$rules['user_roles'] = 'required|array|roles';
 		}
 
 		if ($mode == 'new')
 		{
-			$base['username'] = 'required|username|unique:vessel_users';
-			$base['password'] = 'required|'.$base['password'];
+			$rules['username'] = 'required|username|unique:vessel_users';
+			$rules['password'] = 'required|'.$rules['password'];
 		}
 
-		return $base;
+		return $rules;
 	}
 
 	// Roles and Permissions

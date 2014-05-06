@@ -33,6 +33,7 @@ return array(
 	'log-in'           => 'Log in',
 	'logout'           => 'Logout',
 	'log-out'          => 'Log-out',
+	'register'         => 'Register',
 	'email'            => 'Email',
 	'username-or-email'=> 'Username or Email',
 	'remember-me'      => 'Remember me',

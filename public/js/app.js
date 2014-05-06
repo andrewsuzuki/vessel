@@ -261,8 +261,10 @@ function toggleSettingsDefaultRoleSelect() {
 	if (sel.length) {
 		if (sel.is(':checked')) {
 			$('select#default_role').prop('disabled', false);
+			$('input[name=registration_confirm]').prop('disabled', false);
 		} else {
 			$('select#default_role').prop('disabled', true);
+			$('input[name=registration_confirm]').prop('disabled', true);
 		}
 	}
 }
