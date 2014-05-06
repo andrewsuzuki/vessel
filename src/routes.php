@@ -80,7 +80,7 @@ Route::group(array('prefix' => Config::get('vessel::vessel.uri', 'vessel')), fun
 
 		Route::get('register', array('as' => 'vessel.register', 'before' => 'registration_enabled', 'uses' => 'Hokeo\\Vessel\\UserController@getRegister'));
 		Route::post('register', array('as' => 'vessel.register', 'before' => 'registration_enabled', 'uses' => 'Hokeo\\Vessel\\UserController@postRegister'));
-		Route::get('register/confirm', array('as' => 'vessel.register.confirm', 'before' => 'registration_enabled', 'uses' => 'Hokeo\\Vessel\\UserController@getRegisterConfirm'));
+		Route::get('register/confirm/{confirmation}', array('as' => 'vessel.register.confirm', 'before' => 'registration_enabled', 'uses' => 'Hokeo\\Vessel\\UserController@getRegisterConfirm'));
 	});
 
 	Route::post('api/flashinput', array('as' => 'vessel.api.flashinput', 'uses' => 'Hokeo\\Vessel\\ApiController@flashinput'));
