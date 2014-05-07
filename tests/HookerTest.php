@@ -2,97 +2,23 @@
 
 use Hokeo\Vessel\Plugin;
 
-class PluginTest extends TestBase {
+class HookerTest extends TestBase {
 
 	public $plugin;
 
-	public $path;
-
-	public $plugin1info;
-
-	public $plugin2info;
-
-	public $plugin3info;
-
 	public function setup()
 	{
-		$this->path = '/path/to/plugins';
 
-		$this->plugin1info = array(
-			'name'      => 'vendor1/plugin1',
-			'pluggable' => 'Vendor1\\Plugin1\\Plugin1',
-			'title'     => 'Plugin 1',
-			'author'    => 'Vendor 1',
-		);
-
-		$this->plugin2info = array(
-			'name'      => 'vendor1/plugin2',
-			'pluggable' => 'Vendor1\\Plugin2\\Plugin2',
-			'title'     => 'Plugin 2',
-			'author'    => 'Vendor 1',
-		);
-
-		$this->plugin3info = array(
-			'name'      => 'vendor2/plugin3',
-			'pluggable' => 'Vendor2\\Plugin3\\Plugin3',
-			'title'     => 'Plugin 3',
-			'author'    => 'Vendor 2',
-		);
 	}
 
-	public function newPlugin(array $methods = array())
+	public function newHooker(array $methods = array())
 	{
-		return $this->newClass('\\Hokeo\\Vessel\\Plugin', array(
-				'app'         => 'Illuminate\Foundation\Application',
-				'config'      => 'Illuminate\Config\Repository',
-				'classloader' => 'Illuminate\Support\ClassLoader',
-				'filesystem'  => 'Illuminate\Filesystem\Filesystem',
-				'perm'        => 'Andrewsuzuki\Perm\Perm',
-			), $methods);
-	}
-
-	public function testGetBasePath()
-	{
-		$p = $this->newPlugin();
-
-		$this->assertEquals(base_path().'/plugins', $p->getBasePath());
-	}
-
-	public function testGetAvailable()
-	{
-		$p = $this->newPlugin(array(
-			'filesystem' => function($fs) {
-				$fs->shouldReceive('directories')->times(3)->andReturn(
-					array($this->path.'/vendor1', $this->path.'/vendor2'),
-					array($this->path.'/vendor1/plugin1', $this->path.'/vendor1/plugin2'),
-					array($this->path.'/vendor2/plugin3')
-					);
-				$fs->shouldReceive('exists')->times(3)->andReturn(false, true, true);
-				$fs->shouldReceive('getRequire')->times(2)->andReturn($this->plugin2info, $this->plugin3info);
-				return $fs;
-			},
-			'classloader' => function($cl) {
-				$cl->shouldReceive('addDirectories');
-				$cl->shouldReceive('load');
-				return $cl;
-			},
-			'perm' => function($p) {
-				$p->shouldReceive('load');
-				$p->shouldReceive('set');
-				$p->shouldReceive('save');
-				return $p;
-			},
-		));
-
-		$this->assertEquals(array(
-			'vendor1/plugin2' => $this->plugin2info,
-			'vendor2/plugin3' => $this->plugin3info,
-		), $p->getAvailable());
+		return $this->newClass('\\Hokeo\\Vessel\\Hooker', array(), $methods);
 	}
 
 	public function testHook()
 	{	
-		$p = $this->newPlugin();
+		$p = $this->newHooker();
 
 		$p->hook('test.hook.name', function() {
 			return 'test';
@@ -129,7 +55,7 @@ class PluginTest extends TestBase {
 	 */
 	public function testHookExceptionIfNotValidName()
 	{
-		$p = $this->newPlugin();
+		$p = $this->newHooker();
 
 		$p->hook(function() {}, function() {
 			return 'test';
@@ -142,14 +68,14 @@ class PluginTest extends TestBase {
 	 */
 	public function testHookExceptionIfNotValidCallback()
 	{
-		$p = $this->newPlugin();
+		$p = $this->newHooker();
 
 		$p->hook('test.hook.name', array('foo', 'bar'));
 	}
 
 	public function testAllHooks()
 	{
-		$p = $this->newPlugin();
+		$p = $this->newHooker();
 		$callback = function() {
 			return 'test';
 		};
@@ -159,7 +85,7 @@ class PluginTest extends TestBase {
 
 	public function testHookIsSet()
 	{
-		$p = $this->newPlugin();
+		$p = $this->newHooker();
 
 		$p->hook('test.hook.name', function() {
 			return 'test';
@@ -171,7 +97,7 @@ class PluginTest extends TestBase {
 
 	public function testSortHook()
 	{
-		$p = $this->newPlugin();
+		$p = $this->newHooker();
 		$callback = function() {
 			return 'test';
 		};
@@ -191,7 +117,7 @@ class PluginTest extends TestBase {
 
 	public function testFire()
 	{
-		$p = $this->newPlugin();
+		$p = $this->newHooker();
 
 		$p->hook('test.hook.name', function() {
 			return 'test';

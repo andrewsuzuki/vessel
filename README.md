@@ -55,10 +55,11 @@ Feel free to post any issues or comments here on github.
 Todo and recently completed, roughly in order:
 
 * ~~Replace entrust with native role/permission mechanism~~
-* Lang + Validation messages
+* ~~Lang + Validation messages~~
+* ~~User Registration~~
+* ~~Rehash plugin system~~
 * Breadcrumbs?
 * User Password resets
-* User Registration
 * Cool formatters (redactor/wysiwyg, image, text, advanced-custom-fields-like, table, custom, etc)
 * Lots of hooks
 * Installer

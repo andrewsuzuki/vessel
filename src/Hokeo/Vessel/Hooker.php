@@ -1,165 +1,17 @@
 <?php namespace Hokeo\Vessel;
 
-use Illuminate\Foundation\Application;
-use Illuminate\Config\Repository;
-use Illuminate\Support\ClassLoader;
-use Illuminate\Filesystem\Filesystem;
-use Andrewsuzuki\Perm\Perm;
-
-class Plugin {
-
-	protected $app;
-	
-	protected $config;
-
-	protected $classloader;
-
-	protected $filesystem;
-
-	protected $perm;
-
-	protected $plugins_path;
-
-	protected $available;
-
-	protected $plugins;
+class Hooker {
 
 	protected $hooks;
 
-	public function __construct(
-		Application $app,
-		Repository $config,
-		ClassLoader $classloader,
-		Filesystem $filesystem,
-		Perm $perm)
-	{
-		$this->app          = $app;
-		$this->config       = $config;
-		$this->classloader  = $classloader;
-		$this->filesystem   = $filesystem;
-		$this->perm         = $perm;
-		$this->filesystem   = $filesystem;
-
-		$this->plugins_path = base_path().'/plugins';
-		$this->available    = null;
-		$this->plugins      = array();
-		$this->hooks        = array();
-	}
-
 	/**
-	 * Returns base plugins directory path
+	 * Hooker constructor
 	 * 
-	 * @return string
+	 * @return void
 	 */
-	public function getBasePath()
+	public function __construct()
 	{
-		return $this->plugins_path;
-	}
-
-	/**
-	 * Get available plugins and validate
-	 * 
-	 * @return array
-	 */
-	public function getAvailable($save = false)
-	{
-		$vendors = $this->filesystem->directories($this->plugins_path);
-
-		$available = array();
-
-		foreach ($vendors as $vendor)
-		{
-			$plugins = $this->filesystem->directories($vendor);
-
-			foreach ($plugins as $plugin)
-			{
-				if ($this->filesystem->exists($plugin.DIRECTORY_SEPARATOR.'plugin.php'))
-				{
-					$this->classloader->addDirectories(array($this->plugins_path));
-
-					// try to include plugin info file
-					try
-					{
-						$info = $this->filesystem->getRequire($plugin.DIRECTORY_SEPARATOR.'plugin.php');
-					}
-					catch (\Exception $e)
-					{
-
-					}
-
-					// validate plugin info
-					if ($info && is_array($info) &&
-						isset($info['name']) && strlen($info['name']) &&
-						isset($info['pluggable']) && strlen($info['pluggable']) &&
-						isset($info['title']) && strlen($info['title']) &&
-						isset($info['author']) && strlen($info['author']) &&
-						$info['name'] == basename(dirname($plugin)).'/'.basename($plugin)
-						)
-					{
-						// load pluggable (plugin)
-						$this->classloader->load($info['pluggable']);
-
-						// validate pluggable
-						if (defined('V_TEST_NOW') || (class_exists($info['pluggable']) && get_parent_class($info['pluggable']) == 'Hokeo\\Vessel\\Pluggable'))
-						{
-							// add to available
-							$available[$info['name']] = $info;
-						}
-					}
-				}
-			}
-		}
-
-		$this->available = $available;
-		if ($save)
-			$this->perm->load('vessel.plugins')->set('available', $available)->save();
-		return $available;
-	}
-
-	/**
-	 * Enable all available plugins
-	 */
-	public function enableAll()
-	{
-		// Get available plugins
-		if (is_null($this->available))
-		{
-			try
-			{
-				$this->available = $this->perm->load('vessel.plugins')->get('available');
-				if (!$this->available) throw new \Exception;
-			}
-			catch (\Exception $e)
-			{
-				$this->getAvailable(true);
-			}
-		}
-
-		foreach ($this->available as $plugin)
-		{
-			$this->enable($plugin['name']);
-		}
-	}
-
-	/**
-	 * Enable an available plugin.
-	 * 
-	 * @param  string $name Name of plugin (plugin directory)
-	 * @return boolean      If plugin was enabled
-	 */
-	public function enable($name)
-	{
-		if (isset($this->available[$name]))
-		{
-			// autoload plugins
-			$this->classloader->addDirectories(array($this->plugins_path));
-
-			// register service provider if it's good
-			if (class_exists($this->available[$name]['pluggable']) && get_parent_class($this->available[$name]['pluggable']) == 'Hokeo\\Vessel\\Pluggable')
-			{
-				$this->app->register($this->available[$name]['pluggable']);
-			}
-		}
+		$this->hooks = array();
 	}
 
 	/**

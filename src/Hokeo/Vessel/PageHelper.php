@@ -30,8 +30,6 @@ class PageHelper {
 
 	protected $pagehistory; // model
 
-	protected $plugin;
-
 	protected $pages_path;
 
 	public function __construct(
@@ -44,8 +42,7 @@ class PageHelper {
 		Notification $notification,
 		FormatterManager $fm,
 		Page $page,
-		Pagehistory $pagehistory,
-		Plugin $plugin)
+		Pagehistory $pagehistory)
 	{
 		$this->fm           = $fm;
 		$this->input        = $input;
@@ -57,7 +54,6 @@ class PageHelper {
 		$this->notification = $notification;
 		$this->page         = $page;
 		$this->pagehistory  = $pagehistory;
-		$this->plugin       = $plugin;
 	}
 
 	/**

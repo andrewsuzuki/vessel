@@ -10,8 +10,6 @@ class MenuManager extends VMenu {
 
 	protected $url;
 
-	protected $plugin;
-
 	protected $menu; // model
 
 	protected $menuitem; // model
@@ -28,14 +26,12 @@ class MenuManager extends VMenu {
 	public function __construct(
 		HtmlBuilder $html,
 		UrlGenerator $url,
-		Plugin $plugin,
 		Menu $menu,
 		Menuitem $menuitem,
 		Page $page)
 	{
 		$this->html     = $html;
 		$this->url      = $url;
-		$this->plugin   = $plugin;
 		$this->menu     = $menu;
 		$this->menuitem = $menuitem;
 		$this->page     = $page;
@@ -136,7 +132,7 @@ class MenuManager extends VMenu {
 
 		$handle = $this->addSavedMenuitems($handle, $menu->menuitems->toHierarchy()); // add hierarchical menuitems to handler
 
-		$handle = $this->plugin->fire('back.menu.front', array($handle, $menu), true); // plugin filter on handler
+		$handle = fire('back.menu.front', array($handle, $menu), true); // plugin filter on handler
 
 		$mapper = (is_string($map)) ? $map : $menu->mapper; // determine mapper to use
 
@@ -299,7 +295,7 @@ class MenuManager extends VMenu {
 	public function getMenuablePages()
 	{
 		$pages = $this->page->all();
-		return $this->plugin->fire('back.menumanager.getmenuablepages', $pages, true);
+		return fire('back.menumanager.getmenuablepages', $pages, true);
 	}
 
 	/**
@@ -328,7 +324,7 @@ class MenuManager extends VMenu {
 			if ($info['permission'] && can($info['permission'])) $menu->add($this->url->route($route), $info['display']);
 
 		// filter
-		$menu = $this->plugin->fire('back.menu.main', $menu, true);
+		$menu = fire('back.menu.main', $menu, true);
 
 		// map html for bootstrap
 		$this->useRegisteredMapper($menu, 'bootstrap-navbar');

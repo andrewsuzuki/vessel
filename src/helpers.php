@@ -75,7 +75,7 @@ if (!function_exists('hook'))
 {
 	function hook()
 	{
-		return call_user_func_array(array('Hokeo\\Vessel\\Facades\\Plugin', 'hook'), func_get_args());
+		return call_user_func_array(array('Hokeo\\Vessel\\Facades\\Hooker', 'hook'), func_get_args());
 	}
 }
 
@@ -88,6 +88,6 @@ if (!function_exists('fire'))
 {
 	function fire()
 	{
-		return call_user_func_array(array('Hokeo\\Vessel\\Facades\\Plugin', 'fire'), func_get_args());
+		return call_user_func_array(array('Hokeo\\Vessel\\Facades\\Hooker', 'fire'), func_get_args());
 	}
 }
