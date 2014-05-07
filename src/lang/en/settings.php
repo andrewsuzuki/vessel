@@ -2,6 +2,7 @@
 
 return array(
 	'main-title'                 => 'Site Settings',
+	'plugins-title'              => 'Plugins',
 	'theme-title'                => 'Theme',
 	'default-description'        => 'Default Description',
 	'base-url'                   => 'Base URL',

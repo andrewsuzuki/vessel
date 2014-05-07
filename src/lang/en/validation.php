@@ -74,6 +74,7 @@ return array(
 	'formatter'         => 'The specified formatter was not valid.',
 	'template'          => 'The specified template was not valid.',
 	'home_page_id'      => 'The specified homepage was not valid.',
+	'plugins'           => 'The specified plugins do not exist.',
 	'theme'             => 'The specified theme was not valid.',
 	'timezone'          => 'The specified timezone was not valid.',
 	'menu_mapper'       => 'The specified menu mapper was not valid.',

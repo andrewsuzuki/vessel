@@ -14,6 +14,8 @@ class Validator extends \Illuminate\Validation\Validator {
 
 	protected $mm;
 
+	protected $pm;
+
 	protected $theme;
 
 	protected $page; // model
@@ -27,6 +29,7 @@ class Validator extends \Illuminate\Validation\Validator {
 		Filesystem $filesystem,
 		FormatterManager $fm,
 		MenuManager $mm,
+		PluginManager $pm,
 		Theme $theme,
 		Page $page,
 		Role $role,
@@ -40,6 +43,7 @@ class Validator extends \Illuminate\Validation\Validator {
 		$this->filesystem = $filesystem;
 		$this->fm         = $fm;
 		$this->mm         = $mm;
+		$this->pm         = $pm;
 		$this->theme      = $theme;
 		$this->page       = $page;
 		$this->role       = $role;
@@ -126,6 +130,17 @@ class Validator extends \Illuminate\Validation\Validator {
 	{
 		$page = $this->page->find($value);
 		return $page && $page->visible && $page->isRoot();
+	}
+
+	// Checks if all plugins in array are available
+	public function validatePlugins($attribute, $value, $parameters)
+	{	
+		if (!is_array($value) || empty($value)) return true;
+
+		$available = $this->pm->getAvailable();
+		foreach ($value as $dir)
+			if (!in_array($dir, $available)) return false;
+		return true;
 	}
 
 	// Checks if theme exists

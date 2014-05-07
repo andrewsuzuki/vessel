@@ -53,6 +53,7 @@ class VesselServiceProvider extends ServiceProvider {
 				$this->app['files'],
 				$this->app['Hokeo\\Vessel\\FormatterManager'],
 				$this->app['Hokeo\\Vessel\\MenuManager'],
+				$this->app['Hokeo\\Vessel\\PluginManager'],
 				$this->app['Hokeo\\Vessel\\Theme'],
 				$this->app['Hokeo\\Vessel\\Page'],
 				$this->app['Hokeo\\Vessel\\Role'],
@@ -345,6 +346,7 @@ class VesselServiceProvider extends ServiceProvider {
 				$app['Andrewsuzuki\\Perm\\Perm'],
 				$app['Hokeo\\Vessel\\Theme'],
 				$app['Hokeo\\Vessel\\PageHelper'],
+				$app['Hokeo\\Vessel\\PluginManager'],
 				$app['Hokeo\\Vessel\\Role']
 				);
 		});

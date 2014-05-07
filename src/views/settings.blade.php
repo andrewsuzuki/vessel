@@ -80,6 +80,22 @@
 					</div>
 				</div>
 
+				<h2>{{ t('settings.plugins-title') }}</h2>
+
+					@foreach ($plugins as $name => $dir)
+
+						<div class="checkbox">
+							<label>
+								{{ Form::checkbox('plugins[]', $dir, in_array($name, $plugins_enabled)) }}
+								{{ $dir }}
+							</label>
+						</div>
+
+					@endforeach
+
+				<div class="clearfix mb-15"></div>
+				{{ Form::submit(t('general.save'), array('class' => 'btn btn-success mb-15')) }}
+
 				<h2>{{ t('settings.theme-title') }}</h2>
 
 				{{ Form::hidden('theme', null) }}
