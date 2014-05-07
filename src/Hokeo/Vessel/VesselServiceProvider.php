@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Html\HtmlBuilder;
-use Illuminate\Support\ClassLoader;
 
 class VesselServiceProvider extends ServiceProvider {
 
@@ -76,6 +75,10 @@ class VesselServiceProvider extends ServiceProvider {
 		// set config package hint
 		$this->app['config']->package('hokeo/vessel', __DIR__.'/../../config');
 
+		if (!defined('VESSEL_DIR_VESSEL')) define('VESSEL_DIR_VESSEL', __DIR__);
+		if (!defined('VESSEL_DIR_SRC'))    define('VESSEL_DIR_SRC',    dirname(dirname(VESSEL_DIR_VESSEL)));
+		if (!defined('VESSEL_DIR_MAIN'))   define('VESSEL_DIR_MAIN',   dirname(VESSEL_DIR_SRC));
+
 		// Register dependencies
 		$dependent_provides = [
 			'Krucas\\Notification\\NotificationServiceProvider',
@@ -120,21 +123,27 @@ class VesselServiceProvider extends ServiceProvider {
 			return $trans;
 		});
 
-		$this->app->bindShared('Hokeo\\Vessel\\Plugin', function($app) {
-			return new Plugin(
+		$this->app->bindShared('Hokeo\\Vessel\\PluginManager', function($app) {
+			return new PluginManager(
 				$app['app'],
-				$app['config'],
-				new ClassLoader,
 				$app['files'],
-				$app['Andrewsuzuki\\Perm\\Perm']
+				$app['Andrewsuzuki\\Perm\\Perm'],
+				$app['Hokeo\\Vessel\\PluginLoader']
 				);
+		});
+
+		$this->app->bindShared('Hokeo\\Vessel\\PluginLoader', function($app) {
+			return new PluginLoader;
+		});
+
+		$this->app->bindShared('Hokeo\\Vessel\\Hooker', function($app) {
+			return new Hooker;
 		});
 
 		$this->app->bindShared('Hokeo\\Vessel\\MenuManager', function($app) {
 			return new MenuManager(
 				$app['html'],
 				$app['url'],
-				$app['Hokeo\\Vessel\\Plugin'],
 				$app['Hokeo\\Vessel\\Menu'],
 				$app['Hokeo\\Vessel\\Menuitem'],
 				$app['Hokeo\\Vessel\\Page']
@@ -144,8 +153,7 @@ class VesselServiceProvider extends ServiceProvider {
 		$this->app->bindShared('Hokeo\\Vessel\\FormatterManager', function($app) {
 			return new FormatterManager(
 				$app['app'],
-				$app['blade.compiler'],
-				$app['Hokeo\\Vessel\\Plugin']
+				$app['blade.compiler']
 				);
 		});
 
@@ -164,8 +172,7 @@ class VesselServiceProvider extends ServiceProvider {
 				$app['notification'],
 				$app['Hokeo\\Vessel\\FormatterManager'],
 				$app['Hokeo\\Vessel\\Page'],
-				$app['Hokeo\\Vessel\\Pagehistory'],
-				$app['Hokeo\\Vessel\\Plugin']
+				$app['Hokeo\\Vessel\\Pagehistory']
 				);
 		});
 
@@ -177,8 +184,7 @@ class VesselServiceProvider extends ServiceProvider {
 				$app['validator'],
 				$app['notification'],
 				$app['Hokeo\\Vessel\\FormatterManager'],
-				$app['Hokeo\\Vessel\\Block'],
-				$app['Hokeo\\Vessel\\Plugin']
+				$app['Hokeo\\Vessel\\Block']
 				);
 		});
 
@@ -187,18 +193,17 @@ class VesselServiceProvider extends ServiceProvider {
 				$app['url'],
 				$app['files'],
 				$app['config'],
-				$app['image'],
-				$app['Hokeo\\Vessel\\Plugin']
+				$app['image']
 				);
 		});
 
 		$this->app->bindShared('Hokeo\\Vessel\\Theme', function($app) {
-			return new Theme($app['app'],
+			return new Theme(
+				$app['app'],
 				$app['config'],
 				$app['view'],
 				$app['files'],
-				$app['Andrewsuzuki\\Perm\\Perm'],
-				$app['Hokeo\\Vessel\\Plugin']
+				$app['Andrewsuzuki\\Perm\\Perm']
 				);
 		});
 
@@ -206,15 +211,18 @@ class VesselServiceProvider extends ServiceProvider {
 
 		$this->app->make('Hokeo\\Vessel\\Vessel'); // construct
 
-		$this->app['Hokeo\\Vessel\\Plugin']->enableAll(); // enable all plugins
+		// register plugin autoloader, prepended to stack
+		$this->app['Hokeo\\Vessel\\PluginLoader']->addPluginPaths();
+		$this->app['Hokeo\\Vessel\\PluginLoader']->register(true);
+
+		// register enabled plugins
+		$this->app['Hokeo\\Vessel\\PluginManager']->registerEnabled();
 
 		// route matched event
 		$this->app['router']->matched(function($route, $request) {
 			// determine if we're in front or back based on route name, and set VESSEL_FRONT boolean
 			if (!defined('VESSEL_FRONT'))
-			{
 				define('VESSEL_FRONT', (($this->app['request']->is($this->app['config']->get('vessel::vessel.uri', 'vessel').'/*')) ? false : true));
-			}
 		});
 	}
 

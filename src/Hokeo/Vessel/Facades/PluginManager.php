@@ -2,10 +2,10 @@
 
 use Illuminate\Support\Facades\Facade;
 
-class Plugin extends Facade {
+class PluginManager extends Facade {
 
 	protected static function getFacadeAccessor()
 	{
-		return 'Hokeo\\Vessel\\Plugin';
+		return 'Hokeo\\Vessel\\PluginManager';
 	}
 }

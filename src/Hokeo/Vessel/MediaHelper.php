@@ -15,8 +15,6 @@ class MediaHelper {
 
 	protected $image;
 
-	protected $plugin;
-
 	protected $upload_path;
 
 	protected $upload_url;
@@ -32,14 +30,12 @@ class MediaHelper {
 		UrlGenerator $url,
 		Filesystem $file,
 		Repository $config,
-		Image $image,
-		Plugin $plugin)
+		Image $image)
 	{
 		$this->url    = $url;
 		$this->file   = $file;
 		$this->config = $config;
 		$this->image  = $image;
-		$this->plugin = $plugin;
 
 		// get upload path from config
 		$upload_path       = rtrim($this->config->get('vessel::upload_path', 'public/uploads'), '/');

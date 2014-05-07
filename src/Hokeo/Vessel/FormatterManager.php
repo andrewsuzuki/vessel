@@ -9,17 +9,14 @@ class FormatterManager {
 
 	protected $blade;
 
-	protected $plugin;
-
 	protected $formatters;
 
 	protected $native;
 
-	public function __construct(Application $app, BladeCompiler $blade, Plugin $plugin)
+	public function __construct(Application $app, BladeCompiler $blade)
 	{
 		$this->app    = $app;
 		$this->blade  = $blade;
-		$this->plugin = $plugin;
 
 		$this->formatters = array();
 		$this->native     = array('Plain', 'Html', 'Markdown');

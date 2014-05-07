@@ -11,7 +11,7 @@ abstract class AbstractObserverToHook {
 
 	public function fire($event, $model)
 	{
-		\Hokeo\Vessel\Facades\Plugin::fire($this->getName($event), array($model), true);
+		\Hokeo\Vessel\Facades\Hooker::fire($this->getName($event), array($model), true);
 	}
 
 	public function creating($model)
