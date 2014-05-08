@@ -1,7 +1,6 @@
-<?php
+<?php namespace Hokeo\MarkdownFormatter;
 
-namespace Hokeo\Vessel\Formatter;
-
+use cebe\markdown\Markdown;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
 use Hokeo\Vessel\FormatterInterface;
@@ -9,75 +8,8 @@ use Hokeo\Vessel\Facades\Vessel;
 use Hokeo\Vessel\Facades\Asset;
 use Hokeo\Vessel\Facades\FormatterManager;
 
-class Markdown extends \cebe\markdown\Markdown implements FormatterInterface
+class MarkdownParser extends Markdown
 {
-	/**
-	 * Return name of formatter
-	 * 
-	 * @return string
-	 */
-	public function fmName()
-	{
-		return 'Markdown';
-	}
-
-	/**
-	 * Gets formattable content types
-	 * 
-	 * @return array
-	 */
-	public function fmFor()
-	{
-		return array('page', 'block');
-	}
-
-	/**
-	 * Returns editor interface html
-	 * 
-	 * @return string
-	 */
-	public function fmInterface($raw, $made)
-	{
-		return View::make('vessel::editor.Markdown.editor')->with(array('content' => $raw))->render();
-	}
-
-	/**
-	 * Process editor interface submission
-	 * 
-	 * @return array Raw content, and null (for made=raw)
-	 */
-	public function fmProcess()
-	{
-		$raw  = Input::get('content');
-		$made = FormatterManager::compileBlade($this->parse(FormatterManager::phpEntities($raw)));
-		return array($raw, $made);
-	}
-
-	/**
-	 * Sets up formatter for editing interface
-	 * 
-	 * @return void
-	 */
-	public function fmSetup()
-	{
-		Asset::js(asset('packages/hokeo/vessel/editor/Markdown/EpicEditor/js/epiceditor.min.js'), 'epic-editor');
-		Asset::js(asset('packages/hokeo/vessel/editor/Markdown/EpicEditor/js/epiceditor-init.js'), 'epic-editor-init');
-	}
-
-	/**
-	 * Uses formatter (front end)
-	 * 
-	 * @param  string $raw  Raw saved content
-	 * @param  string $made Made saved content
-	 * @return string       Content to display
-	 */
-	public function fmUse($raw, $made)
-	{
-		return Vessel::returnEval($made);
-	}
-
-	// CEBE/MARKDOWN CODE BLOCK EXTENSION (code pre (```) blocks and code as-is (~~~) blocks)
-	
 	protected function identifyLine($lines, $current)
 	{
 		if (strncmp($lines[$current], '```', 3) === 0) {

@@ -2,12 +2,12 @@
 
 interface FormatterInterface
 {
-	public function fmName();
-	public function fmFor();
+	public function name();
+	public function forTypes();
 
-	public function fmInterface($raw, $made);
-	public function fmProcess();
+	public function setupInterface();
+	public function getInterface($raw, $made);
 
-	public function fmSetup();
-	public function fmUse($raw, $made);
+	public function submit();
+	public function make($raw, $made);
 }

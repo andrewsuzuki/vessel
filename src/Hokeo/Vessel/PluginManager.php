@@ -40,58 +40,26 @@ class PluginManager {
 	}
 
 	/**
-	 * Get available plugins
-	 * 
-	 * @return array
-	 */
-	public function getAvailable()
-	{
-		$available = array();
-
-		$vendors = $this->file->directories($this->getBasePath());
-
-		foreach ($vendors as $vendor)
-		{
-			$plugins = $this->file->directories($vendor);
-
-			foreach ($plugins as $plugin)
-			{
-				if ($this->file->exists($plugin.DIRECTORY_SEPARATOR.'Plugin.php'))
-				{
-					// add to available (namespace prefix => vendor/plugin subdirectory)
-					$vsub = basename($vendor);
-					$psub = basename($plugin);
-					$namespace = ucfirst(strtolower($vsub)).'\\'.ucfirst(strtolower($psub)).'\\';
-					$available[$namespace] = $vsub.DIRECTORY_SEPARATOR.$psub;
-				}
-			}
-		}
-
-		return $available;
-	}
-
-	/**
-	 * Register all enabled plugins
-	 * 
-	 * @return void
-	 */
-	public function registerEnabled()
-	{
-		$enabled = $this->perm->load('vessel.plugins')->get('enabled');
-		if (!is_array($enabled)) return;
-
-		foreach ($enabled as $namespace)
-			$this->register($namespace);
-	}
-
-	/**
-	 * Register a plugin in a given autoloaded plugin namespace
-	 * 
-	 * @return boolean If plugin was registered
+	 * Register plugin(s) in a given autoloaded plugin namespace
+	 *
+	 * @param  string|array $namespace Plugin namespace prefix, or array of namespaces
+	 * @return boolean                 If all plugins were registered
 	 */
 	public function register($namespace)
 	{
-		$class = $namespace.'Plugin';
+		// handle arrays with a loop and some recursion
+		if (is_array($namespace))
+		{
+			$ok = true;
+
+			foreach ($namespace as $plugin)
+				if (!$this->register($plugin) && $ok) $ok = false;
+
+			return $ok;
+		}
+
+		// handle single by getting main plugin class
+		$class = $this->getMainPluginClass($namespace);
 
 		// register Plugin as a service provider if it exists and extends Pluggable
 		if (class_exists($class) && get_parent_class($class) == 'Hokeo\\Vessel\\Pluggable')
@@ -112,5 +80,77 @@ class PluginManager {
 	public function getRegistered()
 	{
 		return $this->registered;
+	}
+
+	/**
+	 * Register all enabled plugins
+	 * 
+	 * @return void
+	 */
+	public function registerEnabled()
+	{
+		$enabled = $this->perm->load('vessel.plugins')->get('enabled');
+		if (!is_array($enabled)) return;
+		$this->register($enabled);
+	}
+
+	/**
+	 * Register native plugins (formatters, mappers, etc)
+	 * 
+	 * @return void
+	 */
+	public function registerNative()
+	{
+		$this->register(array(
+			'Hokeo\\PlainFormatter',
+			'Hokeo\\MarkdownFormatter',
+			'Hokeo\\HtmlFormatter',
+		));
+	}
+
+	/**
+	 * Get available plugins
+	 * 
+	 * @return array
+	 */
+	public function getAvailable()
+	{
+		$available = array();
+
+		$vendors = $this->file->directories($this->getBasePath());
+
+		foreach ($vendors as $vendor)
+		{
+			$plugins = $this->file->directories($vendor);
+
+			foreach ($plugins as $plugin)
+			{
+				if ($this->file->exists($plugin.DIRECTORY_SEPARATOR.basename($plugin).'.php'))
+				{
+					// add to available (namespace prefix => vendor/plugin subdirectory)
+					$vsub = basename($vendor);
+					$psub = basename($plugin);
+					$namespace = ucfirst(strtolower($vsub)).'\\'.ucfirst(strtolower($psub)).'\\';
+					$available[$namespace] = $vsub.DIRECTORY_SEPARATOR.$psub;
+				}
+			}
+		}
+
+		return $available;
+	}
+
+	/**
+	 * Returns fully-qualified main plugin class name from plugin namespace
+	 *
+	 * e.g. 'Hokeo\\MarkdownFormatter' => 'Hokeo\\MarkdownFormatter\\Hokeo\\MarkdownFormatter'
+	 *
+	 * @param  string $namespace Plugin namespace
+	 * @return string            Main plugin class
+	 */
+	public function getMainPluginClass($namespace)
+	{
+		$namespace = rtrim($namespace, '\\');
+		$parts = explode('\\', $namespace);
+		return $namespace.'\\'.end($parts);
 	}
 }

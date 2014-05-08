@@ -38,7 +38,6 @@ class MenuController extends Controller {
 		Notification $notification,
 		Redirector $redirect,
 		Asset $asset,
-		Plugin $plugin,
 		MenuManager $menumanager,
 		Menu $menu)
 	{
@@ -50,7 +49,6 @@ class MenuController extends Controller {
 		$this->notification = $notification;
 		$this->redirect     = $redirect;
 		$this->asset        = $asset;
-		$this->plugin       = $plugin;
 		$this->menumanager  = $menumanager;
 		$this->menu         = $menu;
 	}

@@ -72,9 +72,9 @@ class PageController extends Controller
 			$this->input->old('formatter')
 			);
 
-		$interface = $formatter->fmInterface('', '');
+		$interface = $formatter->getInterface('', '');
 
-		$formatter->fmSetup();
+		$formatter->setupInterface();
 
 		$formatters_select_array = $this->fm->filterForSelect('page');
 		$formatter_current = get_class($formatter);
@@ -139,9 +139,9 @@ class PageController extends Controller
 		$raw = ($pagehistory) ? $pagehistory->raw : $page->raw;
 		$made = ($pagehistory) ? $pagehistory->made : $page->made;
 
-		$interface = $formatter->fmInterface($raw, $made);
+		$interface = $formatter->getInterface($raw, $made);
 
-		$formatter->fmSetup();
+		$formatter->setupInterface();
 
 		$formatters_select_array = $this->fm->filterForSelect('page');
 		$formatter_current = get_class($formatter);

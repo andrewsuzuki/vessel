@@ -153,8 +153,7 @@ class VesselServiceProvider extends ServiceProvider {
 
 		$this->app->bindShared('Hokeo\\Vessel\\FormatterManager', function($app) {
 			return new FormatterManager(
-				$app['app'],
-				$app['blade.compiler']
+				$app['app']
 				);
 		});
 
@@ -216,7 +215,8 @@ class VesselServiceProvider extends ServiceProvider {
 		$this->app['Hokeo\\Vessel\\PluginLoader']->addPluginPaths();
 		$this->app['Hokeo\\Vessel\\PluginLoader']->register(true);
 
-		// register enabled plugins
+		// register native and enabled plugins
+		$this->app['Hokeo\\Vessel\\PluginManager']->registerNative();
 		$this->app['Hokeo\\Vessel\\PluginManager']->registerEnabled();
 
 		// route matched event
@@ -297,7 +297,6 @@ class VesselServiceProvider extends ServiceProvider {
 				$app['notification'],
 				$app['redirect'],
 				$app['Hokeo\\Vessel\\Asset'],
-				$app['Hokeo\\Vessel\\Plugin'],
 				$app['Hokeo\\Vessel\\MenuManager'],
 				$app['Hokeo\\Vessel\\Menu']
 				);
@@ -312,7 +311,6 @@ class VesselServiceProvider extends ServiceProvider {
 				$app['auth'],
 				$app['config'],
 				new \Illuminate\Support\Facades\Response,
-				$app['Hokeo\\Vessel\\Plugin'],
 				$app['Hokeo\\Vessel\\Asset'],
 				$app['Hokeo\\Vessel\\MediaHelper']
 				);
@@ -440,7 +438,7 @@ class VesselServiceProvider extends ServiceProvider {
 	{
 		return [
 			'Hokeo\\Vessel\\Vessel',
-			'Hokeo\\Vessel\\Plugin',
+			'Hokeo\\Vessel\\PluginManager',
 			'Hokeo\\Vessel\\FormatterManager',
 			'Hokeo\\Vessel\\Asset',
 			'Hokeo\\Vessel\\PageHelper',

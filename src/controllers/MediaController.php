@@ -39,7 +39,6 @@ class MediaController extends Controller
 		AuthManager $auth,
 		Repository $config,
 		Response $response,
-		Plugin $plugin,
 		Asset $asset,
 		MediaHelper $mediahelper)
 	{
@@ -51,7 +50,6 @@ class MediaController extends Controller
 		$this->config       = $config;
 		$this->response     = $response;
 		$this->asset        = $asset;
-		$this->plugin       = $plugin;
 		$this->mediahelper  = $mediahelper;
 	}
 
@@ -88,7 +86,7 @@ class MediaController extends Controller
 		$this->asset->css(asset('packages/hokeo/vessel/css/fileupload/jquery.fileupload-ui.css'), 'jfu-ui');
 
 		// include blueimp gallery skeleton html
-		$this->plugin->hook('back.scripts-pre', function() {
+		hook('back.scripts-pre', function() {
 			return $this->view->make('vessel::partials.blueimp-gallery')->render();
 		});
 

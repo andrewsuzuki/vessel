@@ -110,7 +110,7 @@ class PageHelper {
 			return $this->redirect->route('vessel.pages.'.$mode, $backparams)->withInput();
 		}
 
-		$processed = $formatter->fmProcess(); // process + format raw content
+		$processed = $formatter->submit(); // process + format raw content
 
 		// verify processing returns array with two elements
 		if (!is_array($processed) || count($processed) !== 2)

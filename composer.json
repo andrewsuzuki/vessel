@@ -40,8 +40,7 @@
             "src/observers",
             "src/library",
             "src/migrations",
-            "src/seeds",
-            "src/formatters"
+            "src/seeds"
         ],
         "psr-0": {
             "Hokeo\\Vessel\\": "src/"

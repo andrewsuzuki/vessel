@@ -168,7 +168,7 @@ class FrontController extends Controller {
 
 					$this->theme->setElement([
 						'content' => function() use ($main, $formatter) {
-							return $formatter->fmUse($main->raw, $main->made);
+							return $formatter->make($main->raw, $main->made);
 						},
 					]);
 

@@ -63,6 +63,7 @@ Todo and recently completed, roughly in order:
 * Cool formatters (redactor/wysiwyg, image, text, advanced-custom-fields-like, table, custom, etc)
 * Lots of hooks
 * Installer
+* HHVM support
 * Docs
 * Packagist submission
 
