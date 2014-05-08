@@ -1,9 +1,10 @@
 <?php
 
-if (!defined('V_TEST_NOW'))
-{
-	define('V_TEST_NOW', true);
-}
+if (!defined('V_TEST_NOW')) define('V_TEST_NOW', true);
+
+if (!defined('VESSEL_DIR_VESSEL')) define('VESSEL_DIR_VESSEL', dirname(__DIR__).DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Hokeo'.DIRECTORY_SEPARATOR.'Vessel');
+if (!defined('VESSEL_DIR_SRC'))    define('VESSEL_DIR_SRC',    dirname(dirname(VESSEL_DIR_VESSEL)));
+if (!defined('VESSEL_DIR_MAIN'))   define('VESSEL_DIR_MAIN',   dirname(VESSEL_DIR_SRC));
 
 $cwd = getcwd();
 $nudir = dirname(dirname(dirname($cwd)));

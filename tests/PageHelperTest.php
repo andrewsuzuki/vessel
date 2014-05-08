@@ -42,15 +42,15 @@ class PageHelperTest extends \Illuminate\Foundation\Testing\TestCase {
 		$this->authenticate();
 
 		$page_fields = array(
-			'title' => 'Test Save New Page',
-			'formatter' => 'Hokeo\\Vessel\\Formatter\\Plain',
-			'content' => 'This is the test save new page content.',
-			'slug' => 'test-save-new-page',
-			'parent' => 'none',
-			'nest_url' => '1',
+			'title'       => 'Test Save New Page',
+			'formatter'   => 'Hokeo\\PlainFormatter\\Formatter',
+			'content'     => 'This is the test save new page content.',
+			'slug'        => 'test-save-new-page',
+			'parent'      => 'none',
+			'nest_url'    => '1',
 			'description' => 'Descrip of test save new page.',
-			'visible' => '1',
-			'template' => 'none',
+			'visible'     => '1',
+			'template'    => 'none',
 		);
 
 		$this->app->make('request')->merge($page_fields);
@@ -63,17 +63,14 @@ class PageHelperTest extends \Illuminate\Foundation\Testing\TestCase {
 
 		$this->assertNotNull($page);
 
-		if ($page)
-		{
-			$this->assertEquals($page_fields['title'], $page->title);
-			$this->assertEquals($page_fields['formatter'], $page->formatter);
-			$this->assertEquals($page_fields['content'], $page->raw);
-			$this->assertEquals($page_fields['slug'], $page->slug);
-			$this->assertEquals(null, $page->parent);
-			$this->assertEquals($page_fields['nest_url'], $page->nest_url);
-			$this->assertEquals($page_fields['description'], $page->description);
-			$this->assertEquals($page_fields['visible'], $page->visible);
-			$this->assertEquals($page_fields['template'], $page->template);
-		}
+		$this->assertEquals($page_fields['title'], $page->title);
+		$this->assertEquals($page_fields['formatter'], $page->formatter);
+		$this->assertEquals($page_fields['content'], $page->raw);
+		$this->assertEquals($page_fields['slug'], $page->slug);
+		$this->assertEquals(null, $page->parent);
+		$this->assertEquals($page_fields['nest_url'], $page->nest_url);
+		$this->assertEquals($page_fields['description'], $page->description);
+		$this->assertEquals($page_fields['visible'], $page->visible);
+		$this->assertEquals($page_fields['template'], $page->template);
 	}
 }
