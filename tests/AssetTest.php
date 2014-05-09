@@ -4,13 +4,15 @@ use Hokeo\Vessel\Asset;
 
 class AssetTest extends TestBase {
 
+	protected $base_path = '/base/path/to/assets';
+
 	public function newAsset(array $methods = array())
 	{		
 		return $this->newClass('\\Hokeo\\Vessel\\Asset', array(
-				'files' => 'Illuminate\Filesystem\Filesystem',
+				'file'  => 'Illuminate\Filesystem\Filesystem',
 				'url'   => 'Illuminate\Routing\UrlGenerator',
 		), $methods, function ($params) {
-			$params[] = 'base/path/to/assets';
+			$params[] = $this->base_path;
 			return $params;
 		});
 	}
@@ -228,4 +230,189 @@ class AssetTest extends TestBase {
 			'<!--[if lt IE 8]><script type="text/javascript" src="good3"></script><![endif]-->'."\n".
 		"\n<!-- End assets-js -->\n\n", $a->make('js'));
 	}
+
+	public function testPublish()
+	{
+		$a = $this->newAsset(array(
+			'file' => function($file) {
+				$file->shouldReceive('exists')->with($this->base_path.'/2aa166bfa25bc9664c585069c804a379/test.css')->times(1)->andReturn(false);
+				$file->shouldReceive('isFile')->with('/copy/this/test.css')->times(1)->andReturn(true);
+				$file->shouldReceive('isDirectory')->with($this->base_path.'/2aa166bfa25bc9664c585069c804a379')->times(1)->andReturn(true);
+				$file->shouldReceive('copy')->with('/copy/this/test.css', $this->base_path.'/2aa166bfa25bc9664c585069c804a379/test.css')->times(1)->andReturn(true);
+
+				$file->shouldReceive('exists')->with($this->base_path.'/2aa166bfa25bc9664c585069c804a379/test')->times(1)->andReturn(false);
+				$file->shouldReceive('isFile')->with('/copy/this/test')->times(1)->andReturn(false);
+				$file->shouldReceive('isDirectory')->with('/copy/this/test')->times(1)->andReturn(true);
+				$file->shouldReceive('isDirectory')->with($this->base_path.'/2aa166bfa25bc9664c585069c804a379')->times(1)->andReturn(true);
+				$file->shouldReceive('copyDirectory')->with('/copy/this/test', $this->base_path.'/2aa166bfa25bc9664c585069c804a379/test')->times(1)->andReturn(true);
+
+				$file->shouldReceive('exists')->with($this->base_path.'/2aa166bfa25bc9664c585069c804a379/test.css')->times(1)->andReturn(false);
+				$file->shouldReceive('isFile')->with('/copy/this/test.css')->times(1)->andReturn(true);
+				$file->shouldReceive('isDirectory')->with($this->base_path.'/2aa166bfa25bc9664c585069c804a379')->times(1)->andReturn(true);
+				$file->shouldReceive('copy')->with('/copy/this/test.css', $this->base_path.'/2aa166bfa25bc9664c585069c804a379/test.css')->times(1)->andReturn(false);
+
+				$file->shouldReceive('exists')->with($this->base_path.'/2aa166bfa25bc9664c585069c804a379/test')->times(1)->andReturn(false);
+				$file->shouldReceive('isFile')->with('/copy/this/test')->times(1)->andReturn(false);
+				$file->shouldReceive('isDirectory')->with('/copy/this/test')->times(1)->andReturn(true);
+				$file->shouldReceive('isDirectory')->with($this->base_path.'/2aa166bfa25bc9664c585069c804a379')->times(1)->andReturn(true);
+				$file->shouldReceive('copyDirectory')->with('/copy/this/test', $this->base_path.'/2aa166bfa25bc9664c585069c804a379/test')->times(1)->andReturn(false);
+
+				$file->shouldReceive('exists')->with($this->base_path.'/2aa166bfa25bc9664c585069c804a379/test')->times(1)->andReturn(false);
+				$file->shouldReceive('isFile')->with('/copy/this/test')->times(1)->andReturn(false);
+				$file->shouldReceive('isDirectory')->with('/copy/this/test')->times(1)->andReturn(false);
+
+				$file->shouldReceive('exists')->with($this->base_path.'/2aa166bfa25bc9664c585069c804a379/test.css')->times(1)->andReturn(true);
+
+				return $file;
+			}
+		));
+
+		$this->assertTrue($a->publish('/copy/this/test.css', 'Hokeo/Vessel'));
+		$this->assertTrue($a->publish('/copy/this/test', 'Hokeo/Vessel'));
+		$this->assertFalse($a->publish('/copy/this/test.css', 'Hokeo/Vessel'));
+		$this->assertFalse($a->publish('/copy/this/test', 'Hokeo/Vessel'));
+		$this->assertFalse($a->publish('/copy/this/test', 'Hokeo/Vessel'));
+		$this->assertFalse($a->publish('/copy/this/test.css', 'Hokeo/Vessel'));
+	}
+
+	public function testUnpublish()
+	{
+		$a = $this->newAsset(array(
+			'file' => function($file) {
+				$file->shouldReceive('isFile')->with($this->base_path.'/2aa166bfa25bc9664c585069c804a379/test.css')->times(4)->andReturn(true);
+				$file->shouldReceive('delete')->with($this->base_path.'/2aa166bfa25bc9664c585069c804a379/test.css')->times(3)->andReturn(true);
+				$file->shouldReceive('delete')->with($this->base_path.'/2aa166bfa25bc9664c585069c804a379/test.css')->times(1)->andReturn(false);
+
+				$file->shouldReceive('isFile')->with($this->base_path.'/2aa166bfa25bc9664c585069c804a379/test')->times(4)->andReturn(false);
+				$file->shouldReceive('isDirectory')->with($this->base_path.'/2aa166bfa25bc9664c585069c804a379/test')->times(4)->andReturn(true);
+				$file->shouldReceive('deleteDirectory')->with($this->base_path.'/2aa166bfa25bc9664c585069c804a379/test')->times(3)->andReturn(true);
+				$file->shouldReceive('deleteDirectory')->with($this->base_path.'/2aa166bfa25bc9664c585069c804a379/test')->times(1)->andReturn(false);
+
+				$file->shouldReceive('isFile')->with($this->base_path.'/2aa166bfa25bc9664c585069c804a379/does_not_exist')->times(1)->andReturn(false);
+				$file->shouldReceive('isDirectory')->with($this->base_path.'/2aa166bfa25bc9664c585069c804a379/does_not_exist')->times(1)->andReturn(false);
+
+				return $file;
+			}
+		));
+
+		$this->assertTrue($a->unpublish('test.css', 'Hokeo/Vessel'));
+		$this->assertTrue($a->unpublish('foo/bar/test.css', 'Hokeo/Vessel'));
+		$this->assertTrue($a->unpublish('/foo/bar/test.css', 'Hokeo/Vessel'));
+		$this->assertFalse($a->unpublish('test.css', 'Hokeo/Vessel'));
+
+		$this->assertTrue($a->unpublish('test', 'Hokeo/Vessel'));
+		$this->assertTrue($a->unpublish('foo/bar/test', 'Hokeo/Vessel'));
+		$this->assertTrue($a->unpublish('/foo/bar/test', 'Hokeo/Vessel'));
+		$this->assertFalse($a->unpublish('test', 'Hokeo/Vessel'));
+
+		$this->assertFalse($a->unpublish('does_not_exist', 'Hokeo/Vessel'));
+	}
+
+	public function testIsPublished()
+	{
+		$a = $this->newAsset(array(
+			'file' => function($file) {
+				$file->shouldReceive('exists')->with($this->base_path.'/2aa166bfa25bc9664c585069c804a379/test.css')->times(1)->andReturn(true);
+				$file->shouldReceive('exists')->with($this->base_path.'/2aa166bfa25bc9664c585069c804a379/test2.css')->times(1)->andReturn(true);
+				$file->shouldReceive('exists')->with($this->base_path.'/2aa166bfa25bc9664c585069c804a379/test3.css')->times(1)->andReturn(true);
+				$file->shouldReceive('exists')->with($this->base_path.'/098f6bcd4621d373cade4e832627b4f6/test.js')->times(1)->andReturn(false);
+				return $file;
+			}
+		));
+
+		$this->assertTrue($a->isPublished('test.css', 'Hokeo/Vessel'));
+		$this->assertTrue($a->isPublished('foo/bar/test2.css', 'Hokeo/Vessel'));
+		$this->assertTrue($a->isPublished('/foo/bar/test3.css', 'Hokeo/Vessel'));
+		$this->assertFalse($a->isPublished('test.js', 'test'));
+	}
+
+	public function testCreateNamespace()
+	{
+		$a = $this->newAsset(array(
+			'file' => function($file) {
+				$file->shouldReceive('isDirectory')->with($this->base_path.'/2aa166bfa25bc9664c585069c804a379')->times(1)->andReturn(true);
+
+				$file->shouldReceive('isDirectory')->with($this->base_path.'/2aa166bfa25bc9664c585069c804a379')->times(1)->andReturn(false);
+				$file->shouldReceive('makeDirectory')->with($this->base_path.'/2aa166bfa25bc9664c585069c804a379', 511, true, false)->times(1)->andReturn(true);
+
+				$file->shouldReceive('isDirectory')->with($this->base_path.'/2aa166bfa25bc9664c585069c804a379')->times(1)->andReturn(false);
+				$file->shouldReceive('makeDirectory')->with($this->base_path.'/2aa166bfa25bc9664c585069c804a379', 511, true, false)->times(1)->andReturn(false);
+				return $file;
+			}
+		));
+
+		$this->assertTrue($a->createNamespace('Hokeo/Vessel'));
+		$this->assertTrue($a->createNamespace('Hokeo/Vessel'));
+		$this->assertFalse($a->createNamespace('Hokeo/Vessel'));
+	}
+
+	public function testNamespaceExists()
+	{
+		$a = $this->newAsset(array(
+			'file' => function($file) {
+				$file->shouldReceive('isDirectory')->with($this->base_path.'/2aa166bfa25bc9664c585069c804a379')->times(1)->andReturn(true);
+				$file->shouldReceive('isDirectory')->with($this->base_path.'/098f6bcd4621d373cade4e832627b4f6')->times(1)->andReturn(false);
+				return $file;
+			}
+		));
+
+		$this->assertTrue($a->namespaceExists('Hokeo/Vessel'));
+		$this->assertFalse($a->namespaceExists('test'));
+	}
+
+	public function testDeleteNamespace()
+	{
+		$a = $this->newAsset(array(
+			'file' => function($file) {
+				$file->shouldReceive('deleteDirectory')->with($this->base_path.'/2aa166bfa25bc9664c585069c804a379')->times(1)->andReturn(true);
+				$file->shouldReceive('deleteDirectory')->with($this->base_path.'/098f6bcd4621d373cade4e832627b4f6')->times(1)->andReturn(false);
+				return $file;
+			}
+		));
+
+		$this->assertTrue($a->deleteNamespace('Hokeo/Vessel'));
+		$this->assertFalse($a->deleteNamespace('test'));
+	}
+
+	public function testGetDirFromNamespace()
+	{
+		$a = $this->newAsset();
+
+		$this->assertEquals($this->base_path.'/098f6bcd4621d373cade4e832627b4f6', $a->getDirFromNamespace('test'));
+		$this->assertEquals($this->base_path.'/2aa166bfa25bc9664c585069c804a379', $a->getDirFromNamespace('Hokeo/Vessel'));
+		$this->assertEquals($this->base_path.'/2aa166bfa25bc9664c585069c804a379/file.js', $a->getDirFromNamespace('Hokeo/Vessel', 'file.js'));
+		$this->assertEquals($this->base_path.'/2aa166bfa25bc9664c585069c804a379/file2.js', $a->getDirFromNamespace('Hokeo/Vessel', '/file2.js'));
+		$this->assertEquals($this->base_path.'/2aa166bfa25bc9664c585069c804a379/path/to/file3.js', $a->getDirFromNamespace('Hokeo/Vessel', '/path/to/file3.js'));
+		$this->assertEquals($this->base_path.'/2aa166bfa25bc9664c585069c804a379/file4.js', $a->getDirFromNamespace('2aa166bfa25bc9664c585069c804a379', 'file4.js', false));
+		$this->assertEquals($this->base_path.'/2aa166bfa25bc9664c585069c804a379', $a->getDirFromNamespace('2aa166bfa25bc9664c585069c804a379', null, false));
+	}
+
+	public function testGetUrlFromNamespace()
+	{
+		$a = $this->newAsset(array(
+			'url' => function($url) {
+				$url->shouldReceive('to')->with('/assets/098f6bcd4621d373cade4e832627b4f6')->times(1)->andReturn('good');
+				$url->shouldReceive('to')->with('/assets/2aa166bfa25bc9664c585069c804a379')->times(1)->andReturn('good2');
+				$url->shouldReceive('to')->with('/assets/2aa166bfa25bc9664c585069c804a379/file.js')->times(1)->andReturn('good3');
+				$url->shouldReceive('to')->with('/assets/2aa166bfa25bc9664c585069c804a379/file2.js')->times(1)->andReturn('good4');
+				$url->shouldReceive('to')->with('/assets/2aa166bfa25bc9664c585069c804a379')->times(1)->andReturn('good5');
+				return $url;
+			}
+		));
+
+		$this->assertEquals('good', $a->getUrlFromNamespace('test'));
+		$this->assertEquals('good2', $a->getUrlFromNamespace('Hokeo/Vessel'));
+		$this->assertEquals('good3', $a->getUrlFromNamespace('Hokeo/Vessel', 'file.js'));
+		$this->assertEquals('good4', $a->getUrlFromNamespace('2aa166bfa25bc9664c585069c804a379', 'file2.js', false));
+		$this->assertEquals('good5', $a->getUrlFromNamespace('2aa166bfa25bc9664c585069c804a379', null, false));
+	}
+
+	public function testEncodeNamespace()
+	{
+		$a = $this->newAsset();
+
+		$this->assertEquals('098f6bcd4621d373cade4e832627b4f6', $a->encodeNamespace('test'));
+		$this->assertEquals('2aa166bfa25bc9664c585069c804a379', $a->encodeNamespace('Hokeo/Vessel'));
+	}
+
 }

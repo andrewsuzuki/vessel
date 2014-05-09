@@ -185,7 +185,6 @@ class Asset {
 		return $html;
 	}
 
-
 	/**
 	 * Publish an asset or directory to the public directory under a namespace (subdirectory)
 	 *
@@ -215,7 +214,7 @@ class Asset {
 	}
 
 	/**
-	 * Remove a published asset from the public directory
+	 * Remove a published asset or directory from the public directory
 	 * 
 	 * @return bool
 	 */
@@ -277,13 +276,15 @@ class Asset {
 	/**
 	 * Get full path to asset subdirectory, given namespace
 	 *
-	 * @param  string $namespace Asset namespace
-	 * @param  bool   $encode    Whether to encode namespace
+	 * @param  string      $namespace Asset namespace
+	 * @param  string|null $filename  Filename to append if desired
+	 * @param  bool        $encode    Whether to encode namespace
 	 * @return string
 	 */
-	public function getDirFromNamespace($namespace, $encode = true)
+	public function getDirFromNamespace($namespace, $filename = null, $encode = true)
 	{
-		return $this->base_path.DIRECTORY_SEPARATOR.(($encode) ? $this->encodeNamespace($namespace) : $namespace);
+		return $this->base_path.DIRECTORY_SEPARATOR.(($encode) ? $this->encodeNamespace($namespace) : $namespace)
+			.((is_string($filename) && strlen($filename)) ? '/'.ltrim($filename, '/') : '');
 	}
 
 	/**
@@ -297,7 +298,7 @@ class Asset {
 	public function getUrlFromNamespace($namespace, $filename = null, $encode = true)
 	{
 		return $this->url->to('/'.$this->url_prefix.'/'.(($encode) ? $this->encodeNamespace($namespace) : $namespace)
-			.((is_string($filename) && strlen($filename)) ? '/'.$filename : ''));
+			.((is_string($filename) && strlen($filename)) ? '/'.ltrim($filename, '/') : ''));
 	}
 
 	/**
