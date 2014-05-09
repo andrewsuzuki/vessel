@@ -46,7 +46,8 @@ class Formatter implements FormatterInterface
 	 */
 	public function getInterface($raw, $made)
 	{
-		return View::make('vessel::editor.Plain.editor')->with(array('content' => $raw))->render();
+		View::addNamespace('hokeo/plainformatter', __DIR__.'/views');
+		return View::make('hokeo/plainformatter::editor')->with(array('content' => $raw))->render();
 	}
 
 	/**

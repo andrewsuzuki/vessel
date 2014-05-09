@@ -62,7 +62,7 @@ class BlockHelper {
 				return;
 			}
 
-			return $formatter->fmUse($block->raw, $block->made);
+			return $formatter->make($block->raw, $block->made);
 		}
 	}
 	
@@ -117,7 +117,7 @@ class BlockHelper {
 		}
 
 		// process
-		$processed = $formatter->fmProcess();
+		$processed = $formatter->submit();
 
 		// verify processing returns array with two elements
 		if (!is_array($processed) || count($processed) !== 2)

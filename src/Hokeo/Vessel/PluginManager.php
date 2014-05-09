@@ -105,6 +105,7 @@ class PluginManager {
 			'Hokeo\\PlainFormatter',
 			'Hokeo\\MarkdownFormatter',
 			'Hokeo\\HtmlFormatter',
+			'Hokeo\\ImageFormatter',
 		));
 	}
 

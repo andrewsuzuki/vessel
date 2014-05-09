@@ -65,7 +65,7 @@ Todo and recently completed, roughly in order:
 * ~~Rehash plugin system~~
 * Breadcrumbs?
 * User Password resets
-* Cool formatters (redactor/wysiwyg, image, text, advanced-custom-fields-like, table, custom, etc)
+* Cool formatters (redactor/wysiwyg, image, ~~text~~, advanced-custom-fields-like, table, custom, etc)
 * Lots of hooks
 * Installer
 * HHVM support

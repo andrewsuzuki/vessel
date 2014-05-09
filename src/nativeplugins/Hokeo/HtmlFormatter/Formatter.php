@@ -49,7 +49,8 @@ class Formatter implements FormatterInterface
 	 */
 	public function getInterface($raw, $made)
 	{
-		return View::make('vessel::editor.Html.editor')->with(array('content' => $raw))->render();
+		View::addNamespace('hokeo/htmlformatter', __DIR__.'/views');
+		return View::make('hokeo/htmlformatter::editor')->with(array('content' => $raw))->render();
 	}
 
 	/**

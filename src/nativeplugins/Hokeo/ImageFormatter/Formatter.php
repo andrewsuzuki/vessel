@@ -1,4 +1,4 @@
-<?php namespace Hokeo\MarkdownFormatter;
+<?php namespace Hokeo\ImageFormatter;
 
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
@@ -17,7 +17,7 @@ class Formatter implements FormatterInterface
 	 */
 	public function name()
 	{
-		return 'Markdown';
+		return 'Image';
 	}
 
 	/**
@@ -27,7 +27,7 @@ class Formatter implements FormatterInterface
 	 */
 	public function forTypes()
 	{
-		return array('page', 'block');
+		return array('block');
 	}
 
 	/**
@@ -37,9 +37,7 @@ class Formatter implements FormatterInterface
 	 */
 	public function setupInterface()
 	{
-		Asset::publish(__DIR__.'/assets/EpicEditor', 'Hokeo/MarkdownFormatter');
-		Asset::js('EpicEditor/js/epiceditor.min.js', 'Hokeo/MarkdownFormatter', 'epiceditor');
-		Asset::js('EpicEditor/js/epiceditor-init.js', 'Hokeo/MarkdownFormatter');
+
 	}
 
 	/**
@@ -49,8 +47,8 @@ class Formatter implements FormatterInterface
 	 */
 	public function getInterface($raw, $made)
 	{
-		View::addNamespace('hokeo/markdownformatter', __DIR__.'/views');
-		return View::make('hokeo/markdownformatter::editor')->with(array('content' => $raw))->render();
+		View::addNamespace('hokeo/imageformatter', __DIR__.'/views');
+		return View::make('hokeo/imageformatter::editor')->with(array('image' => $raw))->render();
 	}
 
 	/**
@@ -60,10 +58,8 @@ class Formatter implements FormatterInterface
 	 */
 	public function submit()
 	{
-		$raw    = Input::get('content');
-		$parser = new MarkdownParser;
-		$made   = Blade::compileString($parser->parse(FormatterManager::phpEntities($raw)));
-		return array($raw, $made);
+		$raw  = Input::get('image');
+		return array($raw, $raw);
 	}
 
 	/**
@@ -75,6 +71,6 @@ class Formatter implements FormatterInterface
 	 */
 	public function make($raw, $made)
 	{
-		return Vessel::returnEval($made);
+		return '<img src="'.$made.'" alt="" />';
 	}
 }

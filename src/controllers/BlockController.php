@@ -68,9 +68,9 @@ class BlockController extends Controller
 			$this->input->old('formatter')
 			);
 
-		$interface = $formatter->fmInterface('', '');
-
-		$formatter->fmSetup();
+		$formatter->setupInterface();
+		
+		$interface = $formatter->getInterface('', '');
 
 		$formatters_select_array = $this->fm->filterForSelect('block');
 		$formatter_current = get_class($formatter);
@@ -98,9 +98,9 @@ class BlockController extends Controller
 			$block->formatter
 			);
 
-		$interface = $formatter->fmInterface($block->raw, $block->made);
+		$formatter->setupInterface();
 
-		$formatter->fmSetup();
+		$interface = $formatter->getInterface($block->raw, $block->made);
 
 		$formatters_select_array = $this->fm->filterForSelect('block');
 		$formatter_current = get_class($formatter);
