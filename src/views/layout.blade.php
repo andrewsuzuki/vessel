@@ -5,8 +5,6 @@
 	<meta charset="utf-8">
 	<title>Vessel</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-	<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
-
 	{{ $css }}
 
 	<!--[if lt IE 9]>
@@ -152,19 +150,13 @@
 	{{ fire('back.scripts-pre') }}
 	
 	<script> var base_site_url = '{{ URL::to('/') }}'; var base_vessel_url = '{{ URL::route('vessel') }}'; </script>
-	<script type='text/javascript' src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-	<script type='text/javascript' src="//cdnjs.cloudflare.com/ajax/libs/json2/20130526/json2.min.js"></script>
-	<script type='text/javascript' src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/js/bootstrap.min.js"></script>
-	<script type='text/javascript' src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.1.2/handlebars.min.js"></script>
-	<script type='text/javascript' src="{{ asset('packages/hokeo/vessel/js/jquery.slugify.js') }}"></script>
 
 	{{ fire('back.scripts-assets-pre') }}
-
 	{{ $js }}
 
 	{{ fire('back.scripts-assets-post') }}
 
-	<script type='text/javascript' src="<?php echo URL::asset('packages/hokeo/vessel/js/app.js') ?>"></script>
+	<script type='text/javascript' src="{{ Hokeo\VEssel\Facades\Asset::getUrlFromNamespace('Hokeo/Vessel', 'js/app.js') }}"></script>
 
 	{{ fire('back.scripts-post') }}
 

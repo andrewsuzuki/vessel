@@ -81,13 +81,13 @@ class VesselServiceProvider extends ServiceProvider {
 		if (!defined('VESSEL_DIR_MAIN'))   define('VESSEL_DIR_MAIN',   dirname(VESSEL_DIR_SRC));
 
 		// Register dependencies
-		$dependent_provides = [
+		$dependent_provides = array(
 			'Krucas\\Notification\\NotificationServiceProvider',
 			'Baum\\BaumServiceProvider',
 			'Intervention\\Image\\ImageServiceProvider',
 			'Menu\\MenuServiceProvider',
-			'Andrewsuzuki\\Perm\\PermServiceProvider'
-		];
+			'Andrewsuzuki\\Perm\\PermServiceProvider',
+		);
 
 		foreach ($dependent_provides as $provider)
 		{
@@ -104,14 +104,6 @@ class VesselServiceProvider extends ServiceProvider {
 		// IoC Bindings
 		
 		$this->bindModels();
-
-		$this->app->bindShared('Hokeo\\Vessel\\Vessel', function($app) {
-			return new Vessel(
-				$app['app'],
-				$app['config'],
-				$app['files']
-				);
-		});
 
 		$this->app->bindShared('Hokeo\\Vessel\\Translator', function($app)
 		{
@@ -158,7 +150,10 @@ class VesselServiceProvider extends ServiceProvider {
 		});
 
 		$this->app->bindShared('Hokeo\\Vessel\\Asset', function($app) {
-			return new Asset;
+			return new Asset(
+				$app['files'],
+				$app['url']
+				);
 		});
 
 		$this->app->bindShared('Hokeo\\Vessel\\PageHelper', function($app) {
@@ -207,6 +202,15 @@ class VesselServiceProvider extends ServiceProvider {
 				);
 		});
 
+		$this->app->bindShared('Hokeo\\Vessel\\Vessel', function($app) {
+			return new Vessel(
+				$app['app'],
+				$app['config'],
+				$app['files'],
+				$app['Hokeo\\Vessel\\Asset']
+				);
+		});
+
 		$this->bindControllers();
 
 		$this->app->make('Hokeo\\Vessel\\Vessel'); // construct
@@ -224,7 +228,11 @@ class VesselServiceProvider extends ServiceProvider {
 			// determine if we're in front or back based on route name, and set VESSEL_FRONT boolean
 			if (!defined('VESSEL_FRONT'))
 				define('VESSEL_FRONT', (($this->app['request']->is($this->app['config']->get('vessel::vessel.uri', 'vessel').'/*')) ? false : true));
+
+			if (!VESSEL_FRONT) $this->app['Hokeo\\Vessel\\Vessel']->addConstantBackAssets();
 		});
+
+		$this->app['Hokeo\\Vessel\\Vessel']->publishMainAssets();
 	}
 
 	/**

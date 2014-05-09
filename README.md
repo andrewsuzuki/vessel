@@ -20,6 +20,12 @@ Vessel aims to be:
 
 * Be documented extensively, for templaters, plugin developers, and clients.
 
+### Requirements
+
+* Laravel 4
+* PHP 5.4+
+* MCrypt PHP Extension
+
 ### Installation
 
 If you're brave and/or would like to help out, here's how to install a workbench'd Vessel.
@@ -36,7 +42,6 @@ $ cd ../../../
 $ composer dump-autoload
 $ php artisan migrate --bench=hokeo/vessel
 $ php artisan db:seed --class=Hokeo\\Vessel\\Seeds\\TestVesselSeeder
-$ php artisan asset:publish --bench=hokeo/vessel
 $ php artisan dump-autoload
 ```
 

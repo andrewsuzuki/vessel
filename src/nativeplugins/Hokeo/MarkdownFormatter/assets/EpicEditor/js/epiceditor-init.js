@@ -2,7 +2,7 @@ var editor = new EpicEditor({
 	clientSideStorage: false,
 	container: 'epiceditor',
 	textarea:  'content',
-	basePath: '/packages/hokeo/vessel/editor/Markdown/EpicEditor/themes',
+	basePath: '/assets/9f1d03a18f3c85bb96b8e20d105c58d1/EpicEditor/themes',
 	theme: {
 		base:    '/base/epiceditor.css',
 		preview: '/preview/github.css',

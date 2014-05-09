@@ -37,8 +37,9 @@ class Formatter implements FormatterInterface
 	 */
 	public function setupInterface()
 	{
-		Asset::js(asset('packages/hokeo/vessel/editor/Markdown/EpicEditor/js/epiceditor.min.js'), 'epic-editor');
-		Asset::js(asset('packages/hokeo/vessel/editor/Markdown/EpicEditor/js/epiceditor-init.js'), 'epic-editor-init');
+		Asset::publish(__DIR__.'/assets/EpicEditor', 'Hokeo/MarkdownFormatter');
+		Asset::js('EpicEditor/js/epiceditor.min.js', 'Hokeo/MarkdownFormatter', 'epiceditor');
+		Asset::js('EpicEditor/js/epiceditor-init.js', 'Hokeo/MarkdownFormatter');
 	}
 
 	/**

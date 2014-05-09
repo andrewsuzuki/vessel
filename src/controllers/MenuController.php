@@ -78,8 +78,9 @@ class MenuController extends Controller {
 		$menuable_pages       = $this->menumanager->getMenuablePages();
 		$mappers_select_array = $this->menumanager->getRegisteredMappersSelectArray();
 
-		$this->asset->css(asset('packages/hokeo/vessel/css/jquery.nestable.css'), 'jquery-nestable');
-		$this->asset->js(asset('packages/hokeo/vessel/js/jquery.nestable.js'), 'jquery-nestable');
+		$this->asset->css('css/jquery.nestable.css', 'Hokeo/Vessel');
+		$this->asset->js('js/jquery.nestable.js', 'Hokeo/Vessel');
+
 		$this->view->share('title', t('menus.new-menu-title'));
 		return $this->view->make('vessel::menu')->with(compact('menu', 'ddlist', 'menuable_pages', 'mappers_select_array', 'mode'));
 	}
@@ -99,8 +100,9 @@ class MenuController extends Controller {
 		$menuable_pages       = $this->menumanager->getMenuablePages();
 		$mappers_select_array = $this->menumanager->getRegisteredMappersSelectArray();
 
-		$this->asset->css(asset('packages/hokeo/vessel/css/jquery.nestable.css'), 'jquery-nestable');
-		$this->asset->js(asset('packages/hokeo/vessel/js/jquery.nestable.js'), 'jquery-nestable');
+		$this->asset->css('css/jquery.nestable.css', 'Hokeo/Vessel');
+		$this->asset->js('js/jquery.nestable.js', 'Hokeo/Vessel');
+
 		$this->view->share('title', t('menus.edit-menu-title', array('title' => $menu->title)));
 		return $this->view->make('vessel::menu')->with(compact('menu', 'ddlist', 'menuable_pages', 'mappers_select_array', 'mode'));
 	}

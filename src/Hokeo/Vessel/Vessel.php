@@ -12,11 +12,14 @@ class Vessel {
 
 	protected $filesystem;
 
-	public function __construct(Application $app, Repository $config, Filesystem $filesystem)
+	protected $asset;
+
+	public function __construct(Application $app, Repository $config, Filesystem $filesystem, Asset $asset)
 	{
 		$this->app        = $app;
 		$this->config     = $config;
 		$this->filesystem = $filesystem;
+		$this->asset      = $asset;
 
 		$this->checkDirs(array('plugins', 'themes', $this->config->get('vessel::upload_path', 'public/uploads')));
 		$this->setTimezone();
@@ -53,12 +56,44 @@ class Vessel {
 	/**
 	 * Sets laravel timezone based on site setting
 	 * 
-	 * @return type description
+	 * @return void
 	 */
 	public function setTimezone()
 	{
 		if (($timezone = $this->config->get('vset::site.timezone')))
 			$this->config->set('app.timezone', $timezone); // if a timezone is set, then rewrite laravel config value
+	}
+
+	/**
+	 * Publishes main vessel assets
+	 * 
+	 * @return void
+	 */
+	public function publishMainAssets()
+	{
+		if (!$this->asset->namespaceExists('Hokeo/Vessel'))
+		{
+			$dirs = array('css', 'fonts', 'img', 'js');
+
+			foreach ($dirs as $dir)
+				$this->asset->publish(VESSEL_DIR_MAIN.'/assets/'.$dir, 'Hokeo/Vessel');
+		}
+	}
+
+	/**
+	 * Adds constant backend assets
+	 * 
+	 * @return void
+	 */
+	public function addConstantBackAssets()
+	{
+		$this->asset->css('css/bootstrap.min.css',  'Hokeo/Vessel', 'bootstrap.css');
+
+		$this->asset->js('js/jquery-1.11.1.min.js', 'Hokeo/Vessel', 'jquery');
+		$this->asset->js('js/json2.min.js',         'Hokeo/Vessel', 'json2');
+		$this->asset->js('js/bootstrap.min.js',     'Hokeo/Vessel', 'bootstrap.js');
+		$this->asset->js('js/handlebars.min.js',    'Hokeo/Vessel', 'handlebars');
+		$this->asset->js('js/jquery.slugify.js',    'Hokeo/Vessel', 'slugify');
 	}
 
 	/**

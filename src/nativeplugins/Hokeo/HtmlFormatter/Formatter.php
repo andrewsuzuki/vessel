@@ -37,8 +37,9 @@ class Formatter implements FormatterInterface
 	 */
 	public function setupInterface()
 	{
-		Asset::js('//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ace.js', 'ace');
-		Asset::js(asset('packages/hokeo/vessel/editor/Html/Ace/js/ace-init.js'), 'ace-init');
+		Asset::publish(__DIR__.'/assets/Ace', 'Hokeo/HtmlFormatter');
+		Asset::js('Ace/ace-1.1.3.min.js', 'Hokeo/HtmlFormatter', 'ace');
+		Asset::js('Ace/ace-init.js', 'Hokeo/HtmlFormatter');
 	}
 
 	/**
