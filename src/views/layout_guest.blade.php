@@ -29,6 +29,7 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-md-4 col-md-offset-4">
+				
 				{{ \Krucas\Notification\Facades\Notification::showAll() }}
 
 				<div class="panel panel-default">

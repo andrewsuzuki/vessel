@@ -25,7 +25,9 @@
 			</div>
 
 			<div class="form-group">
+				
 				{{ $interface or '' }}
+
 			</div>
 
 			<div class="form-horizontal">

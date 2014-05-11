@@ -130,38 +130,30 @@ class FrontController extends Controller {
 					});
 
 					$this->theme->setElement([
-
 						'site-title' => function() {
 							return $this->config->get('vset::site.title', '');
 						},
-
 						'page-title' => function() use ($main) {
 							return $main->title;
 						},
-
 						'description' => function($call) use ($main) {
 							if ($main->description)
 								return $main->description;
 							else
 								return $this->config->get('vset::site.description', '');
 						},
-
 						'site-desc' => function() {
 							return $this->config->get('vset::site.description', '');
 						},
-
 						'page-desc' => function() use ($main) {
 							return $main->description;
 						},
-
 						'menu' => function($call, $name) use ($main) {
 							return $this->mm->getSavedMenu($name);
 						},
-
 						'block' => function($call, $slug) {
 							return $this->blockhelper->display($slug);
 						},
-
 					]);
 
 					$formatter = $this->fm->get($main->formatter);
