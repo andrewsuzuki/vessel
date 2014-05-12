@@ -33,7 +33,8 @@ class RouteGetTest extends \Illuminate\Foundation\Testing\TestCase {
 
 	public function testGetHome()
 	{
-		$this->doRouteTest('/');
+		$this->doRouteTest('/', true, true, false);
+		$this->assertRedirectedToRoute('vessel.pages');
 	}
 		
 	public function testGetLogin()
