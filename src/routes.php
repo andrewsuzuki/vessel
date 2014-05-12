@@ -4,7 +4,10 @@ Route::group(array('prefix' => Config::get('vessel::vessel.uri', 'vessel')), fun
 {
 	Route::group(array('before' => 'vessel_auth'), function()
 	{
-		Route::get('/', array('as' => 'vessel', 'uses' => 'Hokeo\\Vessel\\PageController@getPages'));
+		Route::get('/', array('as' => 'vessel', function() {
+			return Redirect::route('vessel.pages');
+		}));
+
 		Route::get('logout', array('as' => 'vessel.logout', 'uses' => 'Hokeo\\Vessel\\UserController@getLogout'));
 
 		Route::group(array('before' => 'p.pages_manage'), function()
